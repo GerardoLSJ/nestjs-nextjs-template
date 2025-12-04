@@ -1,0 +1,22 @@
+{
+  "name": "@auth-tutorial/web",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "name": "web",
+    "targets": {
+      "test": {
+        "executor": "@nx/jest:jest",
+        "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+        "options": {
+          "jestConfig": "apps/web/jest.config.ts"
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "next": "~16.0.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
