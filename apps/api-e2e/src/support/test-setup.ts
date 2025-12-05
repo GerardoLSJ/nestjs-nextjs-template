@@ -1,4 +1,3 @@
-/* eslint-disable */
 import axios from 'axios';
 
 // Configure axios for tests to use.

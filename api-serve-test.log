@@ -1,0 +1,33 @@
+
+ NX   Running target serve for project api and 1 task it depends on:
+
+
+
+> nx run api:build  [local cache]
+
+[2m> [22mwebpack-cli build --node-env=production
+
+chunk (runtime: main) [1m[32mmain.js[39m[22m (main) 2.88 KiB [1m[33m[entry][39m[22m [1m[32m[rendered][39m[22m
+webpack compiled [1m[32msuccessfully[39m[22m (e2c40fd6379862ed)
+
+> nx run api:serve:development
+
+[1m[33mNX Daemon is not running. Node process will not restart automatically after file changes.[39m[22m
+[2m> [22m[2mnx run[22m api:build:development  [2m[local cache][22m
+[2m> [22mwebpack-cli build --node-env=development
+chunk (runtime: main) [1m[32mmain.js[39m[22m (main) 2.88 KiB [1m[33m[entry][39m[22m [1m[32m[rendered][39m[22m
+webpack compiled [1m[32msuccessfully[39m[22m (605f9481fb70d2ff)
+[0m[7m[1m[32m NX [39m[22m[27m[0m  [32mSuccessfully ran target [1mbuild[22m for project api[39m
+[2mNx read the output from the cache instead of running the command for 1 out of 1 tasks.[22m
+[1m[31mDebugger listening on ws://localhost:9229/6908b1d5-1600-4887-a210-b8c21355f59f[39m[22m
+[1m[31mDebugger listening on ws://localhost:9229/6908b1d5-1600-4887-a210-b8c21355f59f[39m[22m
+[1m[31mFor help, see: https://nodejs.org/en/docs/inspector[39m[22m
+[1m[31m[39m[22m
+[32m[Nest] 23012  - [39m12/05/2025, 5:25:10 AM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 23012  - [39m12/05/2025, 5:25:10 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +5ms[39m
+[32m[Nest] 23012  - [39m12/05/2025, 5:25:10 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/api}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 23012  - [39m12/05/2025, 5:25:10 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api, GET} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 23012  - [39m12/05/2025, 5:25:10 AM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +1ms[39m
+[32m[Nest] 23012  - [39m12/05/2025, 5:25:10 AM [32m    LOG[39m [32m🚀 Application is running on: http://localhost:3333/api[39m
+Terminate batch job (Y/N)? 
+^C

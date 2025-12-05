@@ -1,0 +1,73 @@
+version: 2
+updates:
+  # npm dependencies
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+    open-pull-requests-limit: 5
+    reviewers:
+      - 'gerar' # Replace with your GitHub username
+    labels:
+      - 'dependencies'
+      - 'automated'
+    commit-message:
+      prefix: 'chore'
+      include: 'scope'
+    groups:
+      # Group Nx packages together
+      nx:
+        patterns:
+          - '@nx/*'
+          - 'nx'
+      # Group NestJS packages together
+      nestjs:
+        patterns:
+          - '@nestjs/*'
+      # Group React packages together
+      react:
+        patterns:
+          - 'react'
+          - 'react-dom'
+          - '@types/react*'
+      # Group Next.js packages together
+      nextjs:
+        patterns:
+          - 'next'
+          - '@next/*'
+      # Group testing packages together
+      testing:
+        patterns:
+          - 'jest'
+          - '@jest/*'
+          - '@testing-library/*'
+          - 'playwright'
+          - '@playwright/*'
+      # Group ESLint packages together
+      eslint:
+        patterns:
+          - 'eslint'
+          - 'eslint-*'
+          - '@eslint/*'
+      # Group TypeScript packages together
+      typescript:
+        patterns:
+          - 'typescript'
+          - '@types/*'
+          - 'typescript-eslint'
+
+  # GitHub Actions dependencies
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+    open-pull-requests-limit: 3
+    labels:
+      - 'dependencies'
+      - 'github-actions'
+    commit-message:
+      prefix: 'ci'

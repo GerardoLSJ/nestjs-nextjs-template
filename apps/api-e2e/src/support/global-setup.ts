@@ -1,5 +1,5 @@
-import { execa } from 'execa';
 import { waitForPortOpen } from '@nx/node/utils';
+import { execa } from 'execa';
 
 /* eslint-disable */
 var __TEARDOWN_MESSAGE__: string;

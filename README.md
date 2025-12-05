@@ -1,109 +1,237 @@
-# AuthTutorial
+# auth-tutorial
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+An Nx monorepo featuring a NestJS backend API and Next.js frontend web application with comprehensive testing setup.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## Project Overview
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+This project is an Nx workspace containing:
 
-## Generate a library
+- **NestJS API** - Backend REST API server
+- **Next.js Web App** - Frontend React application
+- **Shared Types Library** - TypeScript types shared between API and Web
+- **E2E Testing** - End-to-end tests for both API and Web applications
 
-```sh
-npx nx g @nx/js:lib packages/pkg1 --publishable --importPath=@my-org/pkg1
-```
-
-## Run tasks
-
-To build the library use:
-
-```sh
-npx nx build pkg1
-```
-
-To run any task with Nx use:
-
-```sh
-npx nx <target> <project-name>
-```
-
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
-
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Versioning and releasing
-
-To version and release the library use
+## Project Structure
 
 ```
-npx nx release
+auth-tutorial/
+├── apps/
+│   ├── api/              # NestJS backend API
+│   ├── api-e2e/          # API end-to-end tests (Jest)
+│   ├── web/              # Next.js frontend
+│   └── web-e2e/          # Web end-to-end tests (Playwright)
+├── libs/
+│   └── shared-types/     # Shared TypeScript types library
+└── packages/             # Additional packages (if needed)
 ```
 
-Pass `--dry-run` to see what would happen without actually releasing the library.
+## Quick Start
 
-[Learn more about Nx release &raquo;](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### Prerequisites
 
-## Keep TypeScript project references up to date
+- Node.js (v18 or higher recommended)
+- npm (comes with Node.js)
 
-Nx automatically updates TypeScript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html) in `tsconfig.json` files to ensure they remain accurate based on your project dependencies (`import` or `require` statements). This sync is automatically done when running tasks such as `build` or `typecheck`, which require updated references to function correctly.
+### Installation
 
-To manually trigger the process to sync the project graph dependencies information to the TypeScript project references, run the following command:
-
-```sh
-npx nx sync
+```bash
+npm install
 ```
 
-You can enforce that the TypeScript project references are always in the correct state when running in CI by adding a step to your CI job configuration that runs the following command:
+### Start Development Servers
 
-```sh
-npx nx sync:check
+```bash
+npm run dev:all
 ```
 
-[Learn more about nx sync](https://nx.dev/reference/nx-commands#sync)
+This starts both the API server (http://localhost:3333/api) and Web server (http://localhost:3000) concurrently using the `concurrently` package. The API will display colored logs in blue, and the Web app in green.
 
-## Set up CI!
+## Available Commands
 
-### Step 1
+### Workspace-Level Commands
 
-To connect to Nx Cloud, run the following command:
+| Command                | Description                                                          | Definition                                                                                                         |
+| ---------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `npm run dev:all`      | Starts both API (port 3333) and Web (port 3000) servers concurrently | Defined in [`package.json`](package.json) - uses `concurrently` to run `nx serve api` and `nx dev web` in parallel |
+| `npm run lint:all`     | Runs ESLint on all projects                                          | Defined in [`package.json`](package.json) - uses Nx `run-many --target=lint`                                       |
+| `npm run test:all`     | Runs Jest unit tests on all projects                                 | Defined in [`package.json`](package.json) - uses Nx `run-many --target=test`                                       |
+| `npm run e2e:all`      | Runs all E2E tests (Jest for API, Playwright for Web)                | Defined in [`package.json`](package.json) - uses Nx `run-many --target=e2e`                                        |
+| `npm run health-check` | Runs lint, test, and e2e sequentially - full system verification     | Defined in [`package.json`](package.json) - chains `lint:all`, `test:all`, `e2e:all`                               |
 
-```sh
-npx nx connect
+## Individual Project Commands
+
+These Nx commands allow you to run tasks on specific projects:
+
+| Command                    | Description            | Where Target is Defined                                                        |
+| -------------------------- | ---------------------- | ------------------------------------------------------------------------------ |
+| `npx nx serve api`         | Start API server only  | [`apps/api/project.json`](apps/api/project.json) serve target                  |
+| `npx nx dev web`           | Start Web server only  | [`apps/web/project.json`](apps/web/project.json) dev target                    |
+| `npx nx test api`          | Run API unit tests     | [`apps/api/project.json`](apps/api/project.json) test target                   |
+| `npx nx test web`          | Run Web unit tests     | [`apps/web/project.json`](apps/web/project.json) test target                   |
+| `npx nx test shared-types` | Run shared-types tests | [`libs/shared-types/project.json`](libs/shared-types/project.json) test target |
+| `npx nx lint api`          | Lint API project       | [`apps/api/project.json`](apps/api/project.json) lint target                   |
+| `npx nx lint web`          | Lint Web project       | [`apps/web/project.json`](apps/web/project.json) lint target                   |
+| `npx nx e2e api-e2e`       | Run API E2E tests      | [`apps/api-e2e/project.json`](apps/api-e2e/project.json) e2e target            |
+| `npx nx e2e web-e2e`       | Run Web E2E tests      | [`apps/web-e2e/project.json`](apps/web-e2e/project.json) e2e target            |
+
+### Additional Nx Commands
+
+```bash
+# View project dependency graph
+npx nx graph
+
+# Run a specific target on all projects
+npx nx run-many --target=<target> --all
+
+# Clear Nx cache
+npx nx reset
 ```
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+## For LLM Agents
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### Health Check
 
-### Step 2
+To verify the entire system is working correctly:
 
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
+```bash
+npm run health-check
 ```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+**Expected Outcome:** Exit code 0 indicates all linting, unit tests, and E2E tests passed successfully.
 
-## Install Nx Console
+### Quick Start
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+```bash
+npm install
+npm run dev:all
+```
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+The API will be available at http://localhost:3333/api, with interactive API documentation at http://localhost:3333/api/docs (Swagger UI). The Web app will be available at http://localhost:3000.
 
-## Useful links
+## Server URLs
 
-Learn more:
+- **API Server:** http://localhost:3333/api
+- **API Documentation:** http://localhost:3333/api/docs (Swagger UI)
+- **Web Application:** http://localhost:3000
 
-- [Learn more about this workspace setup](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## Configuration Files
 
-And join the Nx community:
+Key configuration files in this workspace:
+
+- [`nx.json`](nx.json) - Nx workspace configuration
+- [`package.json`](package.json) - npm scripts and dependencies
+- [`tsconfig.base.json`](tsconfig.base.json) - Base TypeScript configuration
+- [`eslint.config.mjs`](eslint.config.mjs) - ESLint configuration
+- [`jest.preset.js`](jest.preset.js) - Jest preset configuration
+
+### Project-Specific Configurations
+
+- **API:** [`apps/api/project.json`](apps/api/project.json)
+- **Web:** [`apps/web/project.json`](apps/web/project.json), [`apps/web/next.config.js`](apps/web/next.config.js)
+- **API E2E:** [`apps/api-e2e/jest.config.ts`](apps/api-e2e/jest.config.ts)
+- **Web E2E:** [`apps/web-e2e/playwright.config.ts`](apps/web-e2e/playwright.config.ts)
+- **Shared Types:** [`libs/shared-types/project.json`](libs/shared-types/project.json)
+
+## Testing
+
+### Unit Tests
+
+```bash
+# Run all unit tests
+npm run test:all
+
+# Run tests for specific project
+npx nx test api
+npx nx test web
+npx nx test shared-types
+```
+
+### E2E Tests
+
+```bash
+# Run all E2E tests
+npm run e2e:all
+
+# Run specific E2E tests
+npx nx e2e api-e2e
+npx nx e2e web-e2e
+```
+
+## Linting
+
+```bash
+# Lint all projects
+npm run lint:all
+
+# Lint specific project
+npx nx lint api
+npx nx lint web
+```
+
+## Troubleshooting
+
+### Common Issues and Solutions
+
+#### Missing `reflect-metadata` Import
+
+**Issue:** NestJS decorators not working properly or reflection errors.
+
+**Solution:** Ensure `reflect-metadata` is imported at the very top of [`apps/api/src/main.ts`](apps/api/src/main.ts):
+
+```typescript
+import 'reflect-metadata';
+```
+
+#### Webpack Output Path Configuration
+
+**Issue:** Build artifacts not generated in the correct location for NX monorepos.
+
+**Solution:** Configure the output path in [`apps/api/webpack.config.js`](apps/api/webpack.config.js):
+
+```javascript
+output: {
+  path: path.join(__dirname, '../../dist/apps/api'),
+}
+```
+
+#### Incorrect Executor for Node.js Apps
+
+**Issue:** Using `@nx/webpack:dev-server` instead of the correct Node.js executor.
+
+**Solution:** Use `@nx/js:node` executor in [`apps/api/project.json`](apps/api/project.json) for Node.js applications:
+
+```json
+"serve": {
+  "executor": "@nx/js:node",
+  "options": {
+    "buildTarget": "api:build",
+    "watch": true
+  }
+}
+```
+
+#### Windows Compatibility for Parallel Scripts
+
+**Issue:** Using `&` or `&&` for running parallel commands doesn't work reliably on Windows.
+
+**Solution:** Use the `concurrently` package instead:
+
+```json
+"dev:all": "concurrently --names \"API,WEB\" -c \"bgBlue.bold,bgGreen.bold\" \"npx nx run api:serve\" \"npx nx run web:dev\""
+```
+
+## Learn More
+
+- [Nx Documentation](https://nx.dev)
+- [NestJS Documentation](https://docs.nestjs.com)
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Playwright Documentation](https://playwright.dev)
+
+## Community
+
+Join the Nx community:
+
 - [Discord](https://go.nx.dev/community)
 - [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
 - [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- [Our blog](https://nx.dev/blog)
