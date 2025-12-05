@@ -7,7 +7,9 @@
       "Bash(taskkill:*)",
       "Bash(curl:*)",
       "Bash(netstat:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(npm install:*)",
+      "Bash(powershell:*)"
     ],
     "deny": [],
     "ask": []
