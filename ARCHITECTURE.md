@@ -59,9 +59,10 @@
 
 #### Testing
 
-- **Unit Tests**: Jest 30.x
-- **Integration Tests**: Jest with supertest (API)
-- **E2E Tests**: Playwright (Web), Jest (API)
+- **Unit Tests**: Jest 30.x + React Testing Library
+- **Integration Tests**: Jest with supertest (API), Jest with MSW (Web)
+- **E2E Tests**: Playwright (Web - future), Jest (API - current)
+- **API Mocking**: MSW (Mock Service Worker) for frontend tests
 
 ### Project Structure
 
@@ -70,25 +71,68 @@ auth-tutorial/
 ├── apps/
 │   ├── api/                    # NestJS REST API
 │   │   ├── src/
-│   │   │   ├── app/           # Application modules
+│   │   │   ├── auth/          # Auth feature module
 │   │   │   │   ├── dto/       # Data Transfer Objects
-│   │   │   │   ├── *.controller.ts
-│   │   │   │   ├── *.service.ts
-│   │   │   │   └── *.module.ts
+│   │   │   │   ├── guards/    # Auth guards (JWT, etc.)
+│   │   │   │   ├── strategies/ # Passport strategies
+│   │   │   │   ├── decorators/ # Custom decorators (@CurrentUser)
+│   │   │   │   ├── auth.controller.ts
+│   │   │   │   ├── auth.service.ts
+│   │   │   │   ├── auth.service.spec.ts     # ✅ Unit tests (mocked DB)
+│   │   │   │   ├── auth.e2e-spec.ts         # ✅ E2E tests (real DB)
+│   │   │   │   └── auth.module.ts
+│   │   │   ├── database/      # Database module (Prisma)
+│   │   │   │   ├── prisma.service.ts
+│   │   │   │   └── database.module.ts
+│   │   │   ├── app/           # Root application module
+│   │   │   │   ├── app.controller.ts
+│   │   │   │   ├── app.service.ts
+│   │   │   │   └── app.module.ts
 │   │   │   └── main.ts        # Application entry point
+│   │   ├── prisma/            # Prisma schema & migrations
+│   │   │   ├── schema.prisma
+│   │   │   └── migrations/
+│   │   ├── jest.config.ts     # Unit test configuration (excludes *.e2e-spec.ts)
+│   │   ├── jest.e2e.config.ts # E2E test configuration (only *.e2e-spec.ts)
 │   │   ├── project.json       # Nx project configuration
 │   │   └── webpack.config.js  # Webpack configuration for build
-│   ├── api-e2e/               # API E2E tests
+│   ├── api-e2e/               # [DEPRECATED] Moved to apps/api/src/**/*.e2e-spec.ts
 │   ├── web/                   # Next.js frontend
-│   │   ├── src/app/           # Next.js App Router
-│   │   │   ├── api/           # API routes (if needed)
-│   │   │   ├── page.tsx       # Pages
-│   │   │   └── layout.tsx     # Layouts
+│   │   ├── src/
+│   │   │   ├── app/           # Next.js App Router
+│   │   │   │   ├── login/     # Login page
+│   │   │   │   │   ├── page.tsx
+│   │   │   │   │   ├── page.spec.tsx     # ⚠️ Component tests (basic, needs improvement)
+│   │   │   │   │   └── login.module.css
+│   │   │   │   ├── page.tsx       # Home page
+│   │   │   │   ├── page.spec.tsx  # ⚠️ Component tests (basic, needs improvement)
+│   │   │   │   └── layout.tsx     # Root layout
+│   │   │   ├── components/    # [FUTURE] Reusable UI components
+│   │   │   │   └── **/*.spec.tsx  # Component tests
+│   │   │   ├── lib/           # Utilities & API client
+│   │   │   │   ├── queryClient.ts
+│   │   │   │   ├── api-client.ts      # [FUTURE] Type-safe API client
+│   │   │   │   └── **/*.spec.ts       # Unit tests
+│   │   │   ├── hooks/         # [FUTURE] Custom React hooks (useAuth, useUser, etc.)
+│   │   │   │   └── **/*.spec.ts       # Hook tests with renderHook()
+│   │   │   └── test/          # [FUTURE] Test utilities & mocks
+│   │   │       ├── mocks/
+│   │   │       │   ├── handlers.ts    # MSW request handlers
+│   │   │       │   └── server.ts      # MSW server setup (Node.js)
+│   │   │       ├── utils.tsx          # Test helpers (custom render, etc.)
+│   │   │       └── setup.ts           # Global test setup
+│   │   ├── jest.config.ts     # Test configuration
 │   │   └── project.json
-│   └── web-e2e/               # Web E2E tests (Playwright)
+│   └── web-e2e/               # [FUTURE] Web E2E tests (Playwright)
+│       ├── src/
+│       │   ├── login.spec.ts      # Login flow E2E tests
+│       │   ├── register.spec.ts   # Registration flow E2E tests
+│       │   └── protected-routes.spec.ts
+│       └── playwright.config.ts
 ├── libs/
 │   └── shared-types/          # Shared TypeScript definitions
 │       └── src/lib/
+│           └── auth.types.ts  # Auth-related types
 └── packages/                  # Additional packages (future use)
 ```
 
@@ -189,22 +233,413 @@ Pre-commit hooks enforce:
 
 ### Testing Strategy
 
-1. **Unit Tests** (Fast, isolated)
+This project uses a **layered testing strategy** to balance speed, confidence, and maintainability. Tests are organized by speed and isolation level, with clear guidelines on what to test at each layer.
 
-   - Test individual functions and classes
-   - Mock external dependencies
-   - Coverage: Business logic, utilities, services
+#### Test Pyramid Overview
 
-2. **Integration Tests** (Moderate speed)
+```
+          /\
+         /  \  E2E Tests (Slow, High Confidence)
+        /────\
+       /      \  Integration Tests (Moderate, Good Coverage)
+      /────────\
+     /          \  Unit Tests (Fast, Isolated)
+    /────────────\
+```
 
-   - Test module interactions
-   - Test database operations (when added)
-   - Test API endpoints with real HTTP calls
+---
 
-3. **E2E Tests** (Slow, comprehensive)
-   - Test complete user flows
-   - Test API contracts
-   - Test critical user journeys
+#### Backend (API) Testing Strategy
+
+##### 1. Unit Tests (`*.spec.ts`) - **CURRENT IMPLEMENTATION** ✅
+
+**Purpose**: Test business logic in isolation with mocked dependencies
+
+**Tools**: Jest, mocked PrismaService, mocked JwtService, mocked bcrypt
+
+**Location**: Colocated with source files (e.g., `auth.service.spec.ts`)
+
+**What to Test**:
+
+- Service methods with mocked database
+- Business logic and data transformations
+- Error handling and edge cases
+- Validation logic
+
+**Example**: [apps/api/src/auth/auth.service.spec.ts](apps/api/src/auth/auth.service.spec.ts)
+
+- ✅ 10/10 tests passing
+- ✅ Tests registration logic, login logic, validation
+- ✅ All dependencies mocked (PrismaService, JwtService, bcrypt)
+- ✅ Fast execution (~2s for all tests)
+
+**Command**: `npx nx test api`
+
+##### 2. E2E Tests (`*.e2e-spec.ts`) - **CURRENT IMPLEMENTATION** ✅
+
+**Purpose**: Test API endpoints with real HTTP requests and real database
+
+**Tools**: Jest, supertest, real PostgreSQL database
+
+**Location**: Colocated with modules (e.g., `auth.e2e-spec.ts`)
+
+**What to Test**:
+
+- Complete HTTP request/response cycle
+- Database operations (create, read, update, delete)
+- Authentication and authorization flows
+- API contract compliance (status codes, response shapes)
+- Real validation behavior
+
+**Example**: [apps/api/src/auth/auth.e2e-spec.ts](apps/api/src/auth/auth.e2e-spec.ts)
+
+- ✅ 6/6 tests passing
+- ✅ Tests registration, login, validation errors
+- ✅ Uses real database (requires `docker-compose up -d`)
+- ✅ Creates unique users per test run to avoid conflicts
+
+**Setup Required**:
+
+```bash
+docker-compose up -d              # Start PostgreSQL
+cd apps/api && npx prisma migrate dev  # Apply migrations
+npx nx run api:e2e                # Run E2E tests
+```
+
+**Command**: `npx nx run api:e2e`
+
+##### 3. Integration Tests (API Layer) - **NOT YET IMPLEMENTED** ⚠️
+
+**Note**: For this project, E2E tests with real database provide sufficient integration testing. Adding a separate integration test layer with mocked database would be redundant and add complexity without significant value.
+
+**Recommendation**: ❌ **Skip this layer** - E2E tests already cover API integration scenarios
+
+---
+
+#### Frontend (Web) Testing Strategy
+
+##### 1. Unit Tests (`*.spec.ts`) - **PARTIALLY IMPLEMENTED** ⚠️
+
+**Purpose**: Test utilities, helpers, and pure functions in isolation
+
+**Tools**: Jest
+
+**Location**: `apps/web/src/lib/**/*.spec.ts`
+
+**What to Test**:
+
+- Pure utility functions
+- Data transformations
+- Helper functions
+- Validation logic
+
+**Current Status**:
+
+- ⚠️ No utility tests yet (no complex utilities to test)
+
+**Recommendation**: ✅ **Add as needed** - Only create when complex utilities exist
+
+##### 2. Component Tests (`*.spec.tsx`) - **NEEDS IMPROVEMENT** ⚠️
+
+**Purpose**: Test React components in isolation without API dependencies
+
+**Tools**: Jest, React Testing Library, MSW (for API mocking)
+
+**Location**: Colocated with components (e.g., `page.spec.tsx`)
+
+**What to Test**:
+
+- Component rendering with different props
+- User interactions (clicks, form inputs)
+- Conditional rendering
+- Component state changes
+- Error states and loading states
+
+**Current Status**:
+
+- ⚠️ [apps/web/src/app/page.spec.tsx](apps/web/src/app/page.spec.tsx:44-48) - Basic smoke test only
+- ⚠️ Missing login page tests
+- ⚠️ No MSW setup for API mocking
+- ⚠️ No TanStack Query tests
+
+**Identified Gaps**:
+
+1. **Missing MSW Setup** - Need to mock API calls without hitting backend
+2. **Missing TanStack Query Wrapper** - Components using useQuery need QueryProvider
+3. **Weak Assertions** - Current tests only check rendering, not behavior
+4. **No Loading/Error States** - Not testing async state handling
+5. **No Form Interaction Tests** - Not testing user inputs and submissions
+
+**Recommendation**: ✅ **High Priority - Implement MSW for Web Testing**
+
+Create `apps/web/src/test/` directory with:
+
+- `mocks/handlers.ts` - MSW request handlers
+- `mocks/server.ts` - MSW server setup
+- `utils.tsx` - Custom render with QueryClient wrapper
+- `setup.ts` - Global test setup
+
+**Example Test Pattern**:
+
+```typescript
+// apps/web/src/app/login/page.spec.tsx
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { server } from '../../test/mocks/server';
+import { rest } from 'msw';
+import LoginPage from './page';
+import { renderWithQueryClient } from '../../test/utils';
+
+describe('LoginPage', () => {
+  it('should login successfully with valid credentials', async () => {
+    const user = userEvent.setup();
+    renderWithQueryClient(<LoginPage />);
+
+    await user.type(screen.getByLabelText(/email/i), 'test@example.com');
+    await user.type(screen.getByLabelText(/password/i), 'password123');
+    await user.click(screen.getByRole('button', { name: /log in/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/welcome/i)).toBeInTheDocument();
+    });
+  });
+
+  it('should show error with invalid credentials', async () => {
+    server.use(
+      rest.post('http://localhost:3333/api/auth/login', (req, res, ctx) => {
+        return res(ctx.status(401), ctx.json({ message: 'Invalid credentials' }));
+      })
+    );
+
+    const user = userEvent.setup();
+    renderWithQueryClient(<LoginPage />);
+
+    await user.type(screen.getByLabelText(/email/i), 'wrong@example.com');
+    await user.type(screen.getByLabelText(/password/i), 'wrongpass');
+    await user.click(screen.getByRole('button', { name: /log in/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
+    });
+  });
+});
+```
+
+**Benefits of MSW**:
+
+- ✅ Test frontend without running backend
+- ✅ Test error scenarios easily
+- ✅ Test loading states
+- ✅ No database required for frontend tests
+- ✅ Fast test execution
+- ✅ Deterministic test results
+
+**Command**: `npx nx test web`
+
+##### 3. Hook Tests (`hooks/**/*.spec.ts`) - **NOT YET NEEDED** ⚠️
+
+**Purpose**: Test custom React hooks in isolation
+
+**Tools**: Jest, @testing-library/react-hooks
+
+**When to Create**:
+
+- When creating custom hooks like `useAuth`, `useUser`, `useLogin`
+- When hooks contain complex logic
+
+**Current Status**:
+
+- ⚠️ No custom hooks yet (using TanStack Query directly)
+
+**Recommendation**: ⏰ **Add Later** - Create when custom hooks are extracted
+
+**Example**:
+
+```typescript
+// apps/web/src/hooks/useAuth.spec.ts
+import { renderHook, waitFor } from '@testing-library/react';
+import { useAuth } from './useAuth';
+import { wrapper } from '../test/utils';
+
+describe('useAuth', () => {
+  it('should return authenticated user', async () => {
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.user).toEqual({
+      id: '1',
+      email: 'test@example.com',
+      name: 'Test User',
+    });
+  });
+});
+```
+
+##### 4. Integration Tests (Frontend) - **COVERED BY COMPONENT TESTS** ✅
+
+**Note**: Component tests with MSW already provide integration testing for frontend. They test components + TanStack Query + API mocking together.
+
+**Recommendation**: ❌ **Skip separate integration layer** - Component tests with MSW are sufficient
+
+##### 5. E2E Tests (`apps/web-e2e/**/*.spec.ts`) - **NOT YET IMPLEMENTED** ⚠️
+
+**Purpose**: Test complete user flows in real browser
+
+**Tools**: Playwright
+
+**What to Test**:
+
+- Critical user journeys (login → register → protected routes)
+- Multi-page flows
+- Real browser behavior (navigation, cookies, localStorage)
+- Visual regressions (optional)
+
+**Current Status**:
+
+- ⚠️ `apps/web-e2e/` project exists but has no tests
+
+**Recommendation**: ⏰ **Low Priority - Add Later**
+
+**Rationale**:
+
+- API E2E tests already validate backend functionality
+- Component tests with MSW validate frontend logic
+- Playwright E2E tests are slow and brittle
+- Best suited for critical flows after feature completion
+
+**When to Add**:
+
+- After Phase 3 (Polish & Production)
+- When testing cross-browser compatibility
+- When testing complex multi-step flows
+- For regression testing before releases
+
+**Example**:
+
+```typescript
+// apps/web-e2e/src/login-flow.spec.ts
+import { test, expect } from '@playwright/test';
+
+test('complete authentication flow', async ({ page }) => {
+  // Register
+  await page.goto('http://localhost:3000/register');
+  await page.fill('[name="email"]', 'newuser@example.com');
+  await page.fill('[name="password"]', 'password123');
+  await page.fill('[name="name"]', 'New User');
+  await page.click('button[type="submit"]');
+
+  // Verify redirect to home
+  await expect(page).toHaveURL('http://localhost:3000/');
+  await expect(page.locator('text=Welcome, New User')).toBeVisible();
+
+  // Logout
+  await page.click('text=Logout');
+  await expect(page).toHaveURL('http://localhost:3000/login');
+});
+```
+
+**Command**: `npx nx run web-e2e:e2e`
+
+---
+
+#### Contract Testing - **PARTIALLY IMPLEMENTED** ✅
+
+**Purpose**: Ensure API and Frontend agree on data structures
+
+**Current Implementation**:
+
+- ✅ Shared types in `libs/shared-types/src/lib/auth.types.ts`
+- ✅ Both API and Web import same types
+- ✅ TypeScript compiler enforces contract
+
+**Future Enhancement** ⏰:
+
+- Consider Orval for auto-generating API client from OpenAPI spec
+- Generates TypeScript types + React Query hooks automatically
+- Reduces manual type maintenance
+
+**Recommendation**: ⏰ **Add in Phase 2** - After contract-first development is established
+
+---
+
+#### Testing Gaps Summary
+
+| Test Type                           | Status | Priority | Recommendation                                            |
+| ----------------------------------- | ------ | -------- | --------------------------------------------------------- |
+| **Backend Unit Tests**              | ✅     | -        | Implemented, keep maintaining                             |
+| **Backend E2E Tests**               | ✅     | -        | Implemented, keep maintaining                             |
+| **Backend Integration Tests**       | ⚠️     | ❌ Skip  | E2E tests provide sufficient coverage                     |
+| **Frontend Unit Tests (Utils)**     | ⚠️     | ⏰ Later | Add when complex utilities exist                          |
+| **Frontend Component Tests**        | ⚠️     | ✅ High  | **Implement MSW + improve assertions**                    |
+| **Frontend Hook Tests**             | ⚠️     | ⏰ Later | Add when custom hooks are created                         |
+| **Frontend Integration Tests**      | ⚠️     | ❌ Skip  | Component tests with MSW are sufficient                   |
+| **Frontend E2E Tests (Playwright)** | ⚠️     | ⏰ Later | Add in Phase 3 for critical flows                         |
+| **Contract Testing (Orval)**        | ⚠️     | ⏰ Later | Add in Phase 2 for auto-generated client                  |
+| **Visual Regression Tests**         | ❌     | ❌ Skip  | Too complex for auth tutorial, consider for UI-heavy apps |
+| **Performance Tests**               | ❌     | ❌ Skip  | Not needed for tutorial scope                             |
+| **Security Tests**                  | ❌     | ⏰ Later | Consider OWASP ZAP or similar in Phase 3                  |
+
+**Legend**:
+
+- ✅ High Priority - Implement soon
+- ⏰ Later - Implement when feature complexity requires it
+- ❌ Skip - Too complex or covered by simpler tests
+
+---
+
+#### Recommended Next Steps for Testing
+
+**Phase 1.2** (Current - Users Module):
+
+1. ✅ Add unit tests for UserService (similar to AuthService)
+2. ✅ Add E2E tests for /users/me endpoints
+
+**Phase 1.3** (Login/Register Frontend):
+
+1. ✅ **HIGH PRIORITY** - Setup MSW for frontend testing
+2. ✅ Install dependencies: `npm install -D msw @testing-library/user-event`
+3. ✅ Create `apps/web/src/test/` directory structure
+4. ✅ Write comprehensive tests for login page
+5. ✅ Write comprehensive tests for register page (when created)
+6. ✅ Test loading states, error states, success states
+
+**Phase 2** (Contract Generation):
+
+1. ⏰ Consider Orval for auto-generating API client
+2. ⏰ Generate TypeScript types + React Query hooks from OpenAPI
+
+**Phase 3** (Polish & Production):
+
+1. ⏰ Add Playwright E2E tests for critical flows
+2. ⏰ Add security testing (OWASP ZAP)
+3. ⏰ Increase test coverage to 80%+ (already met for backend)
+
+---
+
+#### Test Commands Reference
+
+```bash
+# Backend Tests
+npx nx test api                    # Unit tests (fast, mocked DB)
+npx nx run api:e2e                 # E2E tests (slow, real DB required)
+
+# Frontend Tests
+npx nx test web                    # Unit + Component tests (with MSW)
+
+# All Tests
+npm run test:all                   # All unit tests
+npm run e2e:all                    # All E2E tests
+npm run health-check               # Full health check (lint + test + e2e)
+
+# Watch Mode
+npx nx test api --watch            # Watch mode for TDD
+npx nx test web --watch
+
+# Coverage
+npx nx test api --coverage         # Generate coverage report
+npx nx test web --coverage
+```
 
 ### Nx Optimization
 

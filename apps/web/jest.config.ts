@@ -7,6 +7,10 @@ export default {
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/apps/web',
+  setupFiles: ['<rootDir>/src/test/polyfills.ts'],
+  setupFilesAfterEnv: ['<rootDir>/src/test/setup.ts'],
+  testEnvironment: 'jsdom',
+  transformIgnorePatterns: ['node_modules/(?!(msw|@mswjs|@bundled-es-modules|until-async)/)'],
   coverageThreshold: {
     global: {
       branches: 70,
