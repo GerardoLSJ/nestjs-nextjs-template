@@ -55,3 +55,4 @@ test-output
 .env*.local
 apps/**/.env
 apps/**/.env.local
+nul
