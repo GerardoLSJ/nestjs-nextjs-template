@@ -2,31 +2,35 @@
 
 import styles from './page.module.css';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
+import { EventForm } from '../components/events/EventForm';
+import { EventList } from '../components/events/EventList';
 import { useAuth } from '../hooks/useAuth';
+import { useEvents } from '../hooks/useEvents';
 
 export default function Index() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const { events, isLoading, createEvent, deleteEvent } = useEvents();
+
+  if (isLoading) {
+    return (
+      <ProtectedRoute>
+        <div className={styles.container}>
+          <p>Loading...</p>
+        </div>
+      </ProtectedRoute>
+    );
+  }
 
   return (
     <ProtectedRoute>
       <div className={styles.container}>
-        <div className={styles.card}>
+        <div className={styles.header}>
           <h1 className={styles.title}>Welcome, {user?.name}!</h1>
-          <p className={styles.subtitle}>You are successfully logged in.</p>
-
-          <div className={styles.userInfo}>
-            <p>
-              <strong>Email:</strong> {user?.email}
-            </p>
-            <p>
-              <strong>User ID:</strong> {user?.id}
-            </p>
-          </div>
-
-          <button onClick={logout} className={styles.logoutButton}>
-            Logout
-          </button>
+          <p className={styles.subtitle}>Plan your events</p>
         </div>
+
+        <EventForm onSubmit={createEvent} />
+        <EventList events={events} onDelete={deleteEvent} />
       </div>
     </ProtectedRoute>
   );

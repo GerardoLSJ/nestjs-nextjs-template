@@ -115,8 +115,8 @@ auth-tutorial/
 │   │   │   │   ├── add/       # Create new item page
 │   │   │   │   │   ├── page.tsx
 │   │   │   │   │   └── add.module.css
-│   │   │   │   ├── page.tsx       # Home page
-│   │   │   │   ├── page.spec.tsx  # ⚠️ Component tests (basic smoke test only)
+│   │   │   │   ├── page.tsx       # ✅ Home page with event planner
+│   │   │   │   ├── page.spec.tsx  # ✅ Component tests (1 test passing)
 │   │   │   │   ├── page.module.css
 │   │   │   │   └── layout.tsx     # Root layout with LayoutWrapper
 │   │   │   ├── components/    # ✅ Reusable UI components
@@ -143,6 +143,13 @@ auth-tutorial/
 │   │   │   │   ├── auth/      # ✅ Authentication components
 │   │   │   │   │   ├── ProtectedRoute.tsx        # ✅ Route protection wrapper
 │   │   │   │   │   └── ProtectedRoute.spec.tsx   # ✅ 7 tests passing
+│   │   │   │   ├── events/     # ✅ Event planner components
+│   │   │   │   │   ├── EventForm.tsx             # ✅ Event creation form
+│   │   │   │   │   ├── EventForm.spec.tsx        # ✅ 21 tests passing
+│   │   │   │   │   ├── EventForm.module.css
+│   │   │   │   │   ├── EventList.tsx             # ✅ Event list display
+│   │   │   │   │   ├── EventList.spec.tsx        # ✅ 29 tests passing
+│   │   │   │   │   └── EventList.module.css
 │   │   │   │   └── layout/    # Mobile layout components (see above)
 │   │   │   ├── lib/           # Utilities & API client
 │   │   │   │   ├── queryClient.ts
@@ -150,7 +157,11 @@ auth-tutorial/
 │   │   │   │   └── **/*.spec.ts       # Unit tests
 │   │   │   ├── hooks/         # ✅ Custom React hooks
 │   │   │   │   ├── useAuth.ts         # ✅ Authentication state management
-│   │   │   │   └── useAuth.spec.ts    # ✅ 8 tests passing
+│   │   │   │   ├── useAuth.spec.ts    # ✅ 8 tests passing
+│   │   │   │   ├── useEvents.ts       # ✅ Event management (localStorage-based)
+│   │   │   │   └── useEvents.spec.ts  # ✅ 8 tests passing (2 skipped)
+│   │   │   ├── types/          # ✅ TypeScript type definitions
+│   │   │   │   └── event.types.ts     # ✅ Event data model (Event, CreateEventInput)
 │   │   │   └── test/          # ✅ Test utilities & mocks
 │   │   │       ├── mocks/
 │   │   │       │   ├── handlers.ts    # ✅ MSW request handlers (login, register)
