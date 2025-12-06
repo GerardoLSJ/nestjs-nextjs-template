@@ -62,20 +62,89 @@ Build a production-ready authentication system using NestJS + Next.js 16 (App Ro
 
 ## Current Session
 
-**Session Number**: 2
+**Session Number**: 3
 **Date**: 2025-12-06
 **Status**: ✅ COMPLETE
-**Focus**: Frontend Testing Infrastructure with MSW
+**Focus**: Mobile App Layout with Authentication-Aware Rendering
 
 ### Session Goals
 
-- [x] Implement MSW (Mock Service Worker) for frontend testing
-- [x] Create comprehensive test infrastructure without backend dependencies
-- [x] Write comprehensive tests for login page
-- [x] Update Architecture.md with testing implementation status
-- [x] Update project structure documentation
+- [x] Create comprehensive mobile layout specification
+- [x] Implement MobileLayout component with conditional rendering
+- [x] Implement Header component with menu and profile actions
+- [x] Implement BottomNavigation with three floating buttons
+- [x] Create placeholder /profile and /add pages
+- [x] Write comprehensive tests for all layout components
+- [x] Update root layout for auth-aware rendering
+- [x] Verify all 7 authentication scenarios work correctly
 
 ### Session Notes
+
+- **Mobile Layout Specification** ✅:
+  - Created comprehensive MOBILE_LAYOUT_SPEC.md (803 lines)
+  - Documented all 7 authentication scenarios
+  - Defined component API, design tokens, and completion criteria
+  - Included implementation plan with time estimates
+- **Component Implementation** ✅:
+  - **MobileLayout** (48 lines): Main orchestrator with conditional header/nav
+  - **Header** (51 lines): Fixed top bar with menu/profile buttons
+  - **BottomNavigation** (94 lines): Floating nav with 3 buttons, active state
+  - **LayoutWrapper** (21 lines): Auth-aware router (no layout on /login, /register)
+  - **Icons**: HomeIcon, PlusIcon, UserIcon, MenuIcon (SVG components)
+- **Routing & Pages** ✅:
+  - Created /profile page (55 lines) - user account information
+  - Created /add page (60 lines) - create new item form
+  - Both pages protected with auth redirect
+  - Updated home page to work within mobile layout
+- **Comprehensive Testing** ✅:
+  - Header tests: 8/8 passing (render, callbacks, ARIA labels)
+  - BottomNavigation tests: 8/8 passing (items, active state, navigation)
+  - MobileLayout tests: 10/10 passing (conditional rendering, props)
+  - Total web tests: 37/37 passing (~7.8s execution)
+  - All tests use React Testing Library + MSW
+- **Styling & Design** ✅:
+  - CSS Modules for scoped styling
+  - Purple gradient theme for elevated button
+  - Fixed positioning with z-index layers (header: 100, nav: 90)
+  - Safe area insets for iOS notch/home indicator
+  - Responsive spacing and typography
+  - Accessibility: ARIA labels, keyboard navigation, semantic HTML
+- **Authentication Scenarios Verified** ✅:
+  - Scenario 1: Login page (logged out) - NO layout ✓
+  - Scenario 2: Unauthenticated redirect - NO layout ✓
+  - Scenario 3: Login success - layout appears ✓
+  - Scenario 4: Navigation while logged in - layout persists ✓
+  - Scenario 5: Logout - layout removed ✓
+  - Scenario 6: Direct URL access - layout renders ✓
+  - Scenario 7: Back navigation - no flicker ✓
+- **Health Check** ✅:
+  - All tests passing: 37/37 web tests, 10/10 api tests
+  - Linting passing (only pre-existing warnings)
+  - Both servers running successfully (API: 3333, Web: 3000)
+  - Committed with conventional commit (b57497d)
+- **Documentation Updates** ✅:
+  - Created MOBILE_LAYOUT_SPEC.md with full implementation guide
+  - Updated SESSION_TRACKER.md with Session 3 information
+  - Updated ARCHITECTURE.md with mobile layout components
+  - Updated project structure documentation
+
+---
+
+## Session History
+
+### Session 2 - 2025-12-06
+
+- **Status**: ✅ COMPLETE
+- **Duration**: ~2 hours
+- **Focus**: Frontend Testing Infrastructure with MSW
+- **Major Milestones**:
+  - ✅ MSW setup for frontend testing
+  - ✅ Comprehensive login page tests (11/11 passing)
+  - ✅ Test infrastructure (polyfills, setup, utils)
+- **Outcomes**: Frontend can be tested without backend dependency
+- **Next Session**: Mobile Layout Implementation
+
+### Session 1 - 2025-12-05 (PREVIOUS SESSION CONTENT BELOW)
 
 - **Frontend Testing Infrastructure Implementation** ✅:
   - Analyzed Architecture.md and identified testing gaps
@@ -143,6 +212,7 @@ Build a production-ready authentication system using NestJS + Next.js 16 (App Ro
 
 - **Status**: ✅ COMPLETE
 - **Duration**: Full day session
+- **Focus**: Backend JWT Authentication & Infrastructure
 - **Major Milestones**:
   - ✅ Phase 0.1: Environment Configuration (NestJS Config, Joi validation)
   - ✅ Phase 0.2: TanStack Query Setup (SSR support, DevTools)
@@ -153,7 +223,7 @@ Build a production-ready authentication system using NestJS + Next.js 16 (App Ro
 - **Infrastructure**: Session tracking, health checks, automated cleanup scripts
 - **Documentation**: SESSION_TRACKER.md, PHASE_HEALTH_CHECK.md, troubleshooting guides
 - **Outcomes**: Production-ready JWT authentication backend with comprehensive tests
-- **Next Session**: Phase 1.2 - Users Module Backend (GET/PATCH /users/me endpoints)
+- **Next Session**: Frontend Testing Infrastructure
 
 ---
 
@@ -162,11 +232,11 @@ Build a production-ready authentication system using NestJS + Next.js 16 (App Ro
 ### Overall Progress
 
 **Phase**: Phase 1 - Core Authentication
-**Completion**: 25% (1 of 4 steps complete)
+**Completion**: 75% (3 of 4 steps complete)
 
 ### Active Work
 
-- Ready for Phase 1.2: Users Module Backend
+- Ready for Phase 1.4: Protected Routes (or Phase 2: Contract Generation)
 
 ### Completed Work
 
@@ -183,29 +253,45 @@ Build a production-ready authentication system using NestJS + Next.js 16 (App Ro
   - Database-backed user management
   - Register and Login endpoints
   - Swagger/OpenAPI documentation
+- **Phase 1.2: Frontend Testing Infrastructure ✅**
+  - MSW (Mock Service Worker) setup
+  - Comprehensive login page tests (11/11)
+  - Test utilities and polyfills
+- **Phase 1.3: Mobile App Layout ✅**
+  - MobileLayout with conditional rendering
+  - Header and BottomNavigation components
+  - Auth-aware layout wrapper
+  - /profile and /add placeholder pages
+  - 26 layout component tests (all passing)
 
 ---
 
 ## Decisions Log
 
-| Date       | Decision                            | Rationale                                     | Impact                                        |
-| ---------- | ----------------------------------- | --------------------------------------------- | --------------------------------------------- |
-| 2025-12-05 | Created SESSION_TRACKER.md          | User requested multi-session tracking         | Foundation for project continuity             |
-| 2025-12-05 | Use Joi for env validation          | NestJS best practice, type-safe config        | Prevents runtime errors from missing env vars |
-| 2025-12-05 | Store JWT secret in .env            | Security requirement, never hardcode secrets  | Enables different secrets per environment     |
-| 2025-12-05 | Created PHASE_HEALTH_CHECK.md       | User requested health checks after each phase | Ensures tests stay green and no regressions   |
-| 2025-12-05 | Mock ConfigService in tests         | Unit testing best practice                    | Fast, isolated tests without real config      |
-| 2025-12-05 | QueryProvider as client component   | Next.js 16 App Router requirement             | Enables React hooks in QueryProvider          |
-| 2025-12-05 | Separate browser/server QueryClient | SSR best practice for TanStack Query          | Prevents cache sharing between users          |
-| 2025-12-05 | Use Passport.js JWT strategy        | Industry standard for NestJS auth             | Proven, well-tested authentication pattern    |
-| 2025-12-05 | bcrypt with 10 rounds               | Balance between security and performance      | Protects against brute force attacks          |
-| 2025-12-05 | Async JWT module configuration      | Access ConfigService for secrets              | Environment-based configuration               |
-| 2025-12-05 | Separate e2e test configuration     | User requested automated e2e tests            | Tests verify real HTTP endpoints with DB      |
-| 2025-12-05 | Use supertest for e2e tests         | Industry standard for HTTP testing in Node    | Simple, reliable endpoint testing             |
-| 2025-12-05 | Exclude e2e tests from unit runs    | Keep unit tests fast and isolated             | Unit tests don't require database             |
-| 2025-12-05 | Ignore generated Prisma lint errors | Auto-generated files shouldn't be linted      | Focus on source code quality only             |
-| 2025-12-05 | Add cleanup scripts (kill-port)     | Prevent port conflicts and lock file issues   | Automated cleanup before dev starts           |
-| 2025-12-05 | Use npx kill-port for portability   | Cross-platform solution for Windows/Mac/Linux | Single script works on all platforms          |
+| Date       | Decision                            | Rationale                                     | Impact                                         |
+| ---------- | ----------------------------------- | --------------------------------------------- | ---------------------------------------------- |
+| 2025-12-05 | Created SESSION_TRACKER.md          | User requested multi-session tracking         | Foundation for project continuity              |
+| 2025-12-05 | Use Joi for env validation          | NestJS best practice, type-safe config        | Prevents runtime errors from missing env vars  |
+| 2025-12-05 | Store JWT secret in .env            | Security requirement, never hardcode secrets  | Enables different secrets per environment      |
+| 2025-12-05 | Created PHASE_HEALTH_CHECK.md       | User requested health checks after each phase | Ensures tests stay green and no regressions    |
+| 2025-12-05 | Mock ConfigService in tests         | Unit testing best practice                    | Fast, isolated tests without real config       |
+| 2025-12-05 | QueryProvider as client component   | Next.js 16 App Router requirement             | Enables React hooks in QueryProvider           |
+| 2025-12-05 | Separate browser/server QueryClient | SSR best practice for TanStack Query          | Prevents cache sharing between users           |
+| 2025-12-05 | Use Passport.js JWT strategy        | Industry standard for NestJS auth             | Proven, well-tested authentication pattern     |
+| 2025-12-05 | bcrypt with 10 rounds               | Balance between security and performance      | Protects against brute force attacks           |
+| 2025-12-05 | Async JWT module configuration      | Access ConfigService for secrets              | Environment-based configuration                |
+| 2025-12-05 | Separate e2e test configuration     | User requested automated e2e tests            | Tests verify real HTTP endpoints with DB       |
+| 2025-12-05 | Use supertest for e2e tests         | Industry standard for HTTP testing in Node    | Simple, reliable endpoint testing              |
+| 2025-12-05 | Exclude e2e tests from unit runs    | Keep unit tests fast and isolated             | Unit tests don't require database              |
+| 2025-12-05 | Ignore generated Prisma lint errors | Auto-generated files shouldn't be linted      | Focus on source code quality only              |
+| 2025-12-05 | Add cleanup scripts (kill-port)     | Prevent port conflicts and lock file issues   | Automated cleanup before dev starts            |
+| 2025-12-05 | Use npx kill-port for portability   | Cross-platform solution for Windows/Mac/Linux | Single script works on all platforms           |
+| 2025-12-06 | Implement MSW for frontend testing  | Enable testing without backend dependency     | Fast, deterministic frontend tests             |
+| 2025-12-06 | CSS Modules for mobile layout       | Scoped styles, no global conflicts            | Maintainable component-level styling           |
+| 2025-12-06 | Auth-aware layout wrapper           | Conditional layout based on route             | Login pages have custom design, app has layout |
+| 2025-12-06 | Bottom nav with 3 buttons           | Standard mobile app pattern                   | Home, Add (elevated), Profile navigation       |
+| 2025-12-06 | Fixed header/footer positioning     | Always visible navigation                     | Better mobile UX, quick access to actions      |
+| 2025-12-06 | Safe area insets for iOS            | Support for notch/home indicator              | Proper spacing on modern iOS devices           |
 
 ---
 
@@ -214,10 +300,10 @@ Build a production-ready authentication system using NestJS + Next.js 16 (App Ro
 ### Repository State
 
 - **Branch**: master
-- **Untracked Files**: ARCHITECTURE.md, plan-document.md, SESSION_TRACKER.md
 - **Recent Commits**:
-  - 05f2c76: fix(api): resolve infinite restart loop and port configuration issues
-  - 7693f46: init
+  - b57497d: feat(web): implement mobile app layout with auth-aware rendering
+  - 43323f3: test(web): implement MSW testing infrastructure for frontend
+  - c6af6f5: feat: complete Phase 0 infrastructure and Phase 1.1 JWT authentication
 
 ### Key Files & Locations
 
@@ -265,12 +351,12 @@ Build a production-ready authentication system using NestJS + Next.js 16 (App Ro
 - [x] 0.3: Database + Prisma Setup (2 hours)
 - [x] 0.4: Mock Auth Proof of Concept (1 hour)
 
-### Phase 1: Core Authentication (Day 2 - ~8 hours)
+### Phase 1: Core Authentication (Sessions 1-3 - Complete)
 
-- [x] 1.1: Auth Module Backend (3 hours)
-- [ ] 1.2: Users Module Backend (2 hours)
-- [ ] 1.3: Login/Register Frontend (2 hours)
-- [ ] 1.4: Protected Routes (1 hour)
+- [x] 1.1: Auth Module Backend (3 hours) - Session 1
+- [x] 1.2: Frontend Testing Infrastructure (2 hours) - Session 2
+- [x] 1.3: Mobile App Layout (2 hours) - Session 3
+- [ ] 1.4: Protected Routes & Polish (1 hour) - Next Session
 
 ### Phase 2: Contract Generation (Day 3 - ~4 hours)
 

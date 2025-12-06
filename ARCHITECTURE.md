@@ -178,8 +178,17 @@ auth-tutorial/
 
    - Small, focused, reusable components
    - Props drilling minimized through proper component hierarchy
+   - Layout components for consistent mobile UX
 
-3. **API Integration**
+3. **Mobile-First Layout Pattern**
+
+   - MobileLayout orchestrator with conditional rendering
+   - Authentication-aware routing (no layout on /login, /register)
+   - Fixed header (60px) and bottom navigation (70px)
+   - Safe area insets for iOS notch/home indicator
+   - Active state indication for current route
+
+4. **API Integration**
    - Centralized API client with type-safe requests
    - Shared types from `@auth-tutorial/shared-types`
 
