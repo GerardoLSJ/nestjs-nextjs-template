@@ -6,14 +6,13 @@
 
 .card {
   background: white;
-  padding: 3rem;
+  padding: 2rem;
   border-radius: 1rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
   color: #1a202c;
@@ -21,30 +20,49 @@
 
 .subtitle {
   color: #718096;
-  font-size: 1.125rem;
-  margin-bottom: 2rem;
-}
-
-.userInfo {
-  background: #f7fafc;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  margin-bottom: 2rem;
-  text-align: left;
-}
-
-.userInfo p {
-  margin: 0.75rem 0;
-  color: #2d3748;
   font-size: 1rem;
+  margin-bottom: 2rem;
 }
 
-.userInfo strong {
-  color: #1a202c;
-  margin-right: 0.5rem;
+.form {
+  width: 100%;
 }
 
-.logoutButton {
+.field {
+  margin-bottom: 1.5rem;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 0.5rem;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.submitButton {
+  width: 100%;
   padding: 0.875rem 2rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -56,11 +74,11 @@
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.logoutButton:hover {
+.submitButton:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
-.logoutButton:active {
+.submitButton:active {
   transform: translateY(0);
 }

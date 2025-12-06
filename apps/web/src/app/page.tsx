@@ -32,34 +32,30 @@ export default function Index() {
 
   if (isLoading) {
     return (
-      <div className={styles.page}>
-        <div className={styles.container}>
-          <p>Loading...</p>
-        </div>
+      <div className={styles.container}>
+        <p>Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className={styles.page}>
-      <div className={styles.container}>
-        <div className={styles.card}>
-          <h1 className={styles.title}>Welcome, {user?.name}!</h1>
-          <p className={styles.subtitle}>You are successfully logged in.</p>
+    <div className={styles.container}>
+      <div className={styles.card}>
+        <h1 className={styles.title}>Welcome, {user?.name}!</h1>
+        <p className={styles.subtitle}>You are successfully logged in.</p>
 
-          <div className={styles.userInfo}>
-            <p>
-              <strong>Email:</strong> {user?.email}
-            </p>
-            <p>
-              <strong>User ID:</strong> {user?.id}
-            </p>
-          </div>
-
-          <button onClick={handleLogout} className={styles.logoutButton}>
-            Logout
-          </button>
+        <div className={styles.userInfo}>
+          <p>
+            <strong>Email:</strong> {user?.email}
+          </p>
+          <p>
+            <strong>User ID:</strong> {user?.id}
+          </p>
         </div>
+
+        <button onClick={handleLogout} className={styles.logoutButton}>
+          Logout
+        </button>
       </div>
     </div>
   );

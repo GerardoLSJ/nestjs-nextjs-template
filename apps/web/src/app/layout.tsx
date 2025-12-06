@@ -1,3 +1,4 @@
+import { LayoutWrapper } from '../components/layout/LayoutWrapper';
 import { QueryProvider } from '../providers/QueryProvider';
 import './global.css';
 
@@ -10,7 +11,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <LayoutWrapper>{children}</LayoutWrapper>
+        </QueryProvider>
       </body>
     </html>
   );
