@@ -38,6 +38,12 @@ async function bootstrap() {
     throw error;
   }
 
+  // Enable CORS for frontend communication
+  app.enableCors({
+    origin: process.env.ALLOWED_ORIGINS || 'http://localhost:3000',
+    credentials: true,
+  });
+
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
   console.log('[DEBUG] Global prefix set to:', globalPrefix);
