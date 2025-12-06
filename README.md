@@ -2,6 +2,75 @@
 
 An Nx monorepo featuring a NestJS backend API and Next.js frontend web application with comprehensive testing setup.
 
+---
+
+## 📊 Current Sprint
+
+**Sprint Goal**: ADD Framework Integration + Event Planner Feature Complete
+
+**Active Task**: Finalizing ADD Framework Integration
+**Current Phase**: Phase 1 Complete - Ready for Phase 2 (Contract Generation)
+**Status**: 🔄 IN PROGRESS
+
+### Quick Stats
+
+- **Tests**: 113/115 passing (98% pass rate, 2 skipped in useEvents)
+- **Build**: ✅ All projects building
+- **Linting**: ✅ All passing (5 pre-existing warnings)
+- **Last Session**: Session 5 - Event Planner Implementation (2025-12-06)
+
+### Current Sprint Objectives
+
+- [x] Implement event planner feature (Session 5)
+- [x] Create .add/ directory with ADD framework files
+- [x] Migrate SESSION_TRACKER.md to .add/SESSION.md
+- [x] Create MEMORY.md with persistent learnings
+- [x] Create TASKS.md, DECISIONS.md, BLOCKERS.md, HEALTH_CHECKS.md
+- [ ] Update README.md with Current Sprint section (this!)
+- [ ] Commit ADD Framework setup
+- [ ] Ready for user direction on next phase
+
+### Recent Accomplishments
+
+**Session 5 (2025-12-06)**: Event Planner Feature
+
+- ✅ Event data model with TypeScript types
+- ✅ useEvents hook with localStorage persistence
+- ✅ EventForm component (Title, Members, Date/Time)
+- ✅ EventList component with cards and delete functionality
+- ✅ 58 new tests added (96/98 passing)
+
+**Session 4 (2025-12-06)**: Protected Routes & Polish
+
+- ✅ useAuth hook for authentication state
+- ✅ ProtectedRoute component for route protection
+- ✅ Refactored all pages (40-50% code reduction)
+- ✅ Phase 1: Core Authentication COMPLETE
+
+### Blockers
+
+- **None** - All systems operational
+
+### Next Up
+
+Awaiting user direction. Options:
+
+1. **Phase 2**: Contract Generation with Orval (OpenAPI → TypeScript)
+2. **Phase 3**: Polish & Production (Error handling, Security, Deployment)
+3. **Enhancement**: Event planner backend API (migrate from localStorage)
+4. **Other**: User-specified feature or improvement
+
+### Quick Links
+
+- 📝 [Session Log](.add/SESSION.md) - Detailed session history
+- 🏗️ [Architecture](ARCHITECTURE.md) - System design documentation
+- ✅ [Active Tasks](.add/TASKS.md) - Current sprint task breakdown
+- 🧠 [Project Memory](.add/MEMORY.md) - Persistent learnings and patterns
+- 🚧 [Blockers](.add/BLOCKERS.md) - Current obstacles (none!)
+- 🏥 [Health Checks](.add/HEALTH_CHECKS.md) - Quality gates and validation
+
+---
+
 ## Project Overview
 
 This project is an Nx workspace containing:

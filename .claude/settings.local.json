@@ -24,7 +24,8 @@
       "Bash(npm run e2e:all:*)",
       "Bash(npx jest:*)",
       "Bash(npx eslint:*)",
-      "Bash(timeout 10 bash:*)"
+      "Bash(timeout 10 bash:*)",
+      "Bash(npm run lint:all:*)"
     ],
     "deny": [],
     "ask": []
