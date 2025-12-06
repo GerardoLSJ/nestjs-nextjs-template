@@ -55,6 +55,7 @@
   - Rationale: Enforce code quality before commits
 - **Commit Convention**: Commitlint with conventional commits
   - Rationale: Standardized commit messages for changelog generation
+  - See [HOW_TO_COMMIT.md](./HOW_TO_COMMIT.md) for detailed commit guidelines
 
 #### Testing
 
@@ -184,7 +185,7 @@ Pre-commit hooks enforce:
 
 - ESLint passes on staged files
 - Prettier formats staged files
-- Conventional commit message format
+- Conventional commit message format (see [HOW_TO_COMMIT.md](./HOW_TO_COMMIT.md))
 
 ### Testing Strategy
 
