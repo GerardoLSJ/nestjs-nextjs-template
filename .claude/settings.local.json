@@ -25,7 +25,10 @@
       "Bash(npx jest:*)",
       "Bash(npx eslint:*)",
       "Bash(timeout 10 bash:*)",
-      "Bash(npm run lint:all:*)"
+      "Bash(npm run lint:all:*)",
+      "Bash(npm run test:clean:*)",
+      "WebFetch(domain:docs.roocode.com)",
+      "Bash(git restore:*)"
     ],
     "deny": [],
     "ask": []
