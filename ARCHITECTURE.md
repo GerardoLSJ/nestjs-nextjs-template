@@ -39,7 +39,12 @@
 - **Framework**: Next.js 16.x (App Router)
   - Rationale: React framework with SSR, SSG, and excellent DX
 - **UI Library**: React 19.x
-- **Styling**: (To be determined based on requirements)
+- **Styling**: CSS Modules
+  - Rationale: Scoped styles, no global conflicts, component-level styling
+- **Layout**: Mobile-first responsive design
+  - Fixed header and bottom navigation
+  - Safe area insets for iOS notch/home indicator
+  - Authentication-aware layout rendering
 
 #### Shared Libraries
 
@@ -104,10 +109,35 @@ auth-tutorial/
 │   │   │   │   │   ├── page.tsx
 │   │   │   │   │   ├── page.spec.tsx     # ✅ Component tests (11 comprehensive tests)
 │   │   │   │   │   └── login.module.css
+│   │   │   │   ├── profile/   # User profile page
+│   │   │   │   │   ├── page.tsx
+│   │   │   │   │   └── profile.module.css
+│   │   │   │   ├── add/       # Create new item page
+│   │   │   │   │   ├── page.tsx
+│   │   │   │   │   └── add.module.css
 │   │   │   │   ├── page.tsx       # Home page
 │   │   │   │   ├── page.spec.tsx  # ⚠️ Component tests (basic smoke test only)
-│   │   │   │   └── layout.tsx     # Root layout
-│   │   │   ├── components/    # [FUTURE] Reusable UI components
+│   │   │   │   ├── page.module.css
+│   │   │   │   └── layout.tsx     # Root layout with LayoutWrapper
+│   │   │   ├── components/    # ✅ Reusable UI components
+│   │   │   │   ├── layout/    # Mobile layout components
+│   │   │   │   │   ├── MobileLayout.tsx         # ✅ Main layout orchestrator
+│   │   │   │   │   ├── MobileLayout.spec.tsx    # ✅ 10 tests passing
+│   │   │   │   │   ├── MobileLayout.module.css
+│   │   │   │   │   ├── LayoutWrapper.tsx        # ✅ Auth-aware layout router
+│   │   │   │   │   ├── Header/
+│   │   │   │   │   │   ├── Header.tsx           # ✅ Fixed top header
+│   │   │   │   │   │   ├── Header.spec.tsx      # ✅ 8 tests passing
+│   │   │   │   │   │   └── Header.module.css
+│   │   │   │   │   ├── BottomNavigation/
+│   │   │   │   │   │   ├── BottomNavigation.tsx # ✅ Floating bottom nav
+│   │   │   │   │   │   ├── BottomNavigation.spec.tsx # ✅ 8 tests passing
+│   │   │   │   │   │   └── BottomNavigation.module.css
+│   │   │   │   │   └── icons/
+│   │   │   │   │       ├── HomeIcon.tsx
+│   │   │   │   │       ├── PlusIcon.tsx
+│   │   │   │   │       ├── UserIcon.tsx
+│   │   │   │   │       └── MenuIcon.tsx
 │   │   │   │   └── **/*.spec.tsx  # Component tests
 │   │   │   ├── lib/           # Utilities & API client
 │   │   │   │   ├── queryClient.ts
@@ -374,17 +404,26 @@ npx nx run api:e2e                # Run E2E tests
 - ✅ [apps/web/src/test/setup.ts](apps/web/src/test/setup.ts) - Global test setup
 - ✅ [apps/web/src/test/polyfills.ts](apps/web/src/test/polyfills.ts) - Essential polyfills
 - ✅ [apps/web/src/app/login/page.spec.tsx](apps/web/src/app/login/page.spec.tsx) - 11 comprehensive tests
+- ✅ [apps/web/src/components/layout/Header/Header.spec.tsx](apps/web/src/components/layout/Header/Header.spec.tsx) - 8 comprehensive tests
+- ✅ [apps/web/src/components/layout/BottomNavigation/BottomNavigation.spec.tsx](apps/web/src/components/layout/BottomNavigation/BottomNavigation.spec.tsx) - 8 comprehensive tests
+- ✅ [apps/web/src/components/layout/MobileLayout.spec.tsx](apps/web/src/components/layout/MobileLayout.spec.tsx) - 10 comprehensive tests
 - ⚠️ [apps/web/src/app/page.spec.tsx](apps/web/src/app/page.spec.tsx:44-48) - Basic smoke test only
 
 **Test Coverage**:
 
+- ✅ 37/37 total web tests passing
 - ✅ 11/11 login page tests passing
+- ✅ 26/26 layout component tests passing (Header, BottomNav, MobileLayout)
 - ✅ Form rendering and validation
 - ✅ User interactions (typing, clicking)
 - ✅ Successful login flow (authentication, redirect, localStorage)
 - ✅ Failed login scenarios (invalid credentials, server errors)
 - ✅ Loading state management
 - ✅ Error handling and display
+- ✅ Mobile layout components (Header, BottomNavigation, MobileLayout)
+- ✅ Authentication-aware layout rendering
+- ✅ Active state navigation indication
+- ✅ Component prop variations and edge cases
 
 **Example**:
 
