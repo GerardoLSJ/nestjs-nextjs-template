@@ -62,25 +62,69 @@ Build a production-ready authentication system using NestJS + Next.js 16 (App Ro
 
 ## Current Session
 
-**Session Number**: 3
+**Session Number**: 4
 **Date**: 2025-12-06
 **Status**: ✅ COMPLETE
-**Focus**: Mobile App Layout with Authentication-Aware Rendering
+**Focus**: Protected Routes & Polish (Phase 1.4 Completion)
 
 ### Session Goals
 
-- [x] Create comprehensive mobile layout specification
-- [x] Implement MobileLayout component with conditional rendering
-- [x] Implement Header component with menu and profile actions
-- [x] Implement BottomNavigation with three floating buttons
-- [x] Create placeholder /profile and /add pages
-- [x] Write comprehensive tests for all layout components
-- [x] Update root layout for auth-aware rendering
-- [x] Verify all 7 authentication scenarios work correctly
+- [x] Create reusable auth hook (useAuth) for authentication state
+- [x] Implement ProtectedRoute wrapper component
+- [x] Update /profile and /add pages to use protected route pattern
+- [x] Write comprehensive tests for auth hook and protected routes
+- [x] Polish existing pages with better loading/error states
+- [x] Run health check to verify all tests pass
+- [x] Complete Phase 1: Core Authentication (100%)
+- [x] Update documentation (SESSION_TRACKER.md, ARCHITECTURE.md)
 
 ### Session Notes
 
-- **Mobile Layout Specification** ✅:
+- **useAuth Hook** ✅:
+  - Created reusable authentication hook (91 lines)
+  - Manages user state, token, loading, and authentication status
+  - Provides login() and logout() methods
+  - Handles localStorage persistence and recovery
+  - Gracefully handles invalid JSON in localStorage
+  - Automatic redirect to /login on logout
+- **ProtectedRoute Component** ✅:
+  - Higher-order component for route protection (44 lines)
+  - Automatic redirect to /login for unauthenticated users
+  - Customizable loading component
+  - Prevents flashing of protected content during auth check
+  - Integrates seamlessly with useAuth hook
+- **Page Refactoring** ✅:
+  - Updated home page (/) to use useAuth hook
+  - Updated /profile page to use ProtectedRoute + useAuth
+  - Updated /add page to use ProtectedRoute
+  - Removed duplicate localStorage logic across all pages
+  - Simplified components by 40-50% (removed manual auth checks)
+- **Comprehensive Testing** ✅:
+  - useAuth hook tests: 8/8 passing (useAuth.spec.ts)
+  - ProtectedRoute tests: 7/7 passing (ProtectedRoute.spec.tsx)
+  - Total web tests: 52/52 passing (~7.2s execution)
+  - All tests use React Testing Library + MSW mocking
+- **Code Quality** ✅:
+  - All linting passing (only 5 pre-existing warnings)
+  - Proper import ordering
+  - TypeScript strict mode compliance
+- **Health Check** ✅:
+  - All tests passing: 52/52 web tests, 10/10 api tests
+  - Linting passing for web
+  - Both servers running successfully
+  - Ready for Phase 2
+
+---
+
+## Session History
+
+### Session 3 - 2025-12-06
+
+- **Status**: ✅ COMPLETE
+- **Duration**: ~2 hours
+- **Focus**: Mobile App Layout with Authentication-Aware Rendering
+- **Session Notes**:
+  - **Mobile Layout Specification** ✅:
   - Created comprehensive MOBILE_LAYOUT_SPEC.md (803 lines)
   - Documented all 7 authentication scenarios
   - Defined component API, design tokens, and completion criteria
@@ -231,12 +275,12 @@ Build a production-ready authentication system using NestJS + Next.js 16 (App Ro
 
 ### Overall Progress
 
-**Phase**: Phase 1 - Core Authentication
-**Completion**: 75% (3 of 4 steps complete)
+**Phase**: Phase 1 - Core Authentication ✅ COMPLETE
+**Completion**: 100% (4 of 4 steps complete)
 
 ### Active Work
 
-- Ready for Phase 1.4: Protected Routes (or Phase 2: Contract Generation)
+- Ready for Phase 2: Contract Generation (Orval)
 
 ### Completed Work
 
@@ -247,22 +291,29 @@ Build a production-ready authentication system using NestJS + Next.js 16 (App Ro
   - 0.2: TanStack Query Setup ✅
   - 0.3: Database + Prisma Setup ✅
   - 0.4: Mock Auth Proof of Concept ✅
-- **Phase 1.1: Auth Module Backend ✅**
-  - JWT authentication with Passport.js
-  - bcrypt password hashing (rounds: 10)
-  - Database-backed user management
-  - Register and Login endpoints
-  - Swagger/OpenAPI documentation
-- **Phase 1.2: Frontend Testing Infrastructure ✅**
-  - MSW (Mock Service Worker) setup
-  - Comprehensive login page tests (11/11)
-  - Test utilities and polyfills
-- **Phase 1.3: Mobile App Layout ✅**
-  - MobileLayout with conditional rendering
-  - Header and BottomNavigation components
-  - Auth-aware layout wrapper
-  - /profile and /add placeholder pages
-  - 26 layout component tests (all passing)
+- **Phase 1: Core Authentication ✅ COMPLETE**
+  - **1.1: Auth Module Backend ✅**
+    - JWT authentication with Passport.js
+    - bcrypt password hashing (rounds: 10)
+    - Database-backed user management
+    - Register and Login endpoints
+    - Swagger/OpenAPI documentation
+  - **1.2: Frontend Testing Infrastructure ✅**
+    - MSW (Mock Service Worker) setup
+    - Comprehensive login page tests (11/11)
+    - Test utilities and polyfills
+  - **1.3: Mobile App Layout ✅**
+    - MobileLayout with conditional rendering
+    - Header and BottomNavigation components
+    - Auth-aware layout wrapper
+    - /profile and /add placeholder pages
+    - 26 layout component tests (all passing)
+  - **1.4: Protected Routes & Polish ✅**
+    - useAuth hook for authentication state management
+    - ProtectedRoute component for route protection
+    - Refactored all pages to use reusable auth pattern
+    - 15 new tests (8 hook tests + 7 component tests)
+    - All 52 web tests passing
 
 ---
 
@@ -351,12 +402,12 @@ Build a production-ready authentication system using NestJS + Next.js 16 (App Ro
 - [x] 0.3: Database + Prisma Setup (2 hours)
 - [x] 0.4: Mock Auth Proof of Concept (1 hour)
 
-### Phase 1: Core Authentication (Sessions 1-3 - Complete)
+### Phase 1: Core Authentication (Sessions 1-4) ✅ COMPLETE
 
 - [x] 1.1: Auth Module Backend (3 hours) - Session 1
 - [x] 1.2: Frontend Testing Infrastructure (2 hours) - Session 2
 - [x] 1.3: Mobile App Layout (2 hours) - Session 3
-- [ ] 1.4: Protected Routes & Polish (1 hour) - Next Session
+- [x] 1.4: Protected Routes & Polish (1 hour) - Session 4
 
 ### Phase 2: Contract Generation (Day 3 - ~4 hours)
 

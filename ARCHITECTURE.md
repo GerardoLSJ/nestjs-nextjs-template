@@ -139,12 +139,18 @@ auth-tutorial/
 │   │   │   │   │       ├── UserIcon.tsx
 │   │   │   │   │       └── MenuIcon.tsx
 │   │   │   │   └── **/*.spec.tsx  # Component tests
+│   │   │   ├── components/    # ✅ Reusable UI components
+│   │   │   │   ├── auth/      # ✅ Authentication components
+│   │   │   │   │   ├── ProtectedRoute.tsx        # ✅ Route protection wrapper
+│   │   │   │   │   └── ProtectedRoute.spec.tsx   # ✅ 7 tests passing
+│   │   │   │   └── layout/    # Mobile layout components (see above)
 │   │   │   ├── lib/           # Utilities & API client
 │   │   │   │   ├── queryClient.ts
 │   │   │   │   ├── api-client.ts      # [FUTURE] Type-safe API client
 │   │   │   │   └── **/*.spec.ts       # Unit tests
-│   │   │   ├── hooks/         # [FUTURE] Custom React hooks (useAuth, useUser, etc.)
-│   │   │   │   └── **/*.spec.ts       # Hook tests with renderHook()
+│   │   │   ├── hooks/         # ✅ Custom React hooks
+│   │   │   │   ├── useAuth.ts         # ✅ Authentication state management
+│   │   │   │   └── useAuth.spec.ts    # ✅ 8 tests passing
 │   │   │   └── test/          # ✅ Test utilities & mocks
 │   │   │       ├── mocks/
 │   │   │       │   ├── handlers.ts    # ✅ MSW request handlers (login, register)
@@ -407,13 +413,17 @@ npx nx run api:e2e                # Run E2E tests
 - ✅ [apps/web/src/components/layout/Header/Header.spec.tsx](apps/web/src/components/layout/Header/Header.spec.tsx) - 8 comprehensive tests
 - ✅ [apps/web/src/components/layout/BottomNavigation/BottomNavigation.spec.tsx](apps/web/src/components/layout/BottomNavigation/BottomNavigation.spec.tsx) - 8 comprehensive tests
 - ✅ [apps/web/src/components/layout/MobileLayout.spec.tsx](apps/web/src/components/layout/MobileLayout.spec.tsx) - 10 comprehensive tests
+- ✅ [apps/web/src/hooks/useAuth.spec.ts](apps/web/src/hooks/useAuth.spec.ts) - 8 comprehensive tests
+- ✅ [apps/web/src/components/auth/ProtectedRoute.spec.tsx](apps/web/src/components/auth/ProtectedRoute.spec.tsx) - 7 comprehensive tests
 - ⚠️ [apps/web/src/app/page.spec.tsx](apps/web/src/app/page.spec.tsx:44-48) - Basic smoke test only
 
 **Test Coverage**:
 
-- ✅ 37/37 total web tests passing
+- ✅ 52/52 total web tests passing (~7.2s execution)
 - ✅ 11/11 login page tests passing
 - ✅ 26/26 layout component tests passing (Header, BottomNav, MobileLayout)
+- ✅ 8/8 useAuth hook tests passing (state management, login, logout)
+- ✅ 7/7 ProtectedRoute component tests passing (auth redirect, loading states)
 - ✅ Form rendering and validation
 - ✅ User interactions (typing, clicking)
 - ✅ Successful login flow (authentication, redirect, localStorage)
@@ -422,6 +432,7 @@ npx nx run api:e2e                # Run E2E tests
 - ✅ Error handling and display
 - ✅ Mobile layout components (Header, BottomNavigation, MobileLayout)
 - ✅ Authentication-aware layout rendering
+- ✅ Protected route components with auth hooks
 - ✅ Active state navigation indication
 - ✅ Component prop variations and edge cases
 
@@ -465,22 +476,26 @@ describe('LoginPage', () => {
 
 **Command**: `npx nx test web`
 
-##### 3. Hook Tests (`hooks/**/*.spec.ts`) - **NOT YET NEEDED** ⚠️
+##### 3. Hook Tests (`hooks/**/*.spec.ts`) - **CURRENT IMPLEMENTATION** ✅
 
 **Purpose**: Test custom React hooks in isolation
 
-**Tools**: Jest, @testing-library/react-hooks
+**Tools**: Jest, @testing-library/react-hooks (renderHook)
 
-**When to Create**:
+**What to Test**:
 
-- When creating custom hooks like `useAuth`, `useUser`, `useLogin`
-- When hooks contain complex logic
+- Hook state management and updates
+- Side effects (localStorage, API calls)
+- Hook return values and methods
+- Edge cases and error handling
 
 **Current Status**:
 
-- ⚠️ No custom hooks yet (using TanStack Query directly)
+- ✅ useAuth hook implemented and tested (8/8 tests passing)
+- ✅ Tests cover authentication state, login, logout, error handling
+- ✅ Tests verify localStorage persistence and recovery
 
-**Recommendation**: ⏰ **Add Later** - Create when custom hooks are extracted
+**Recommendation**: ✅ **Maintain and expand** - Add tests for additional custom hooks
 
 **Example**:
 
