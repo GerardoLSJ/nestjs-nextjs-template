@@ -157,6 +157,34 @@
 
 ## Completed Side Tasks
 
+### ✅ Clean Test Utilities (Session 6)
+
+**Completed**: 2025-12-06
+
+**What was done**:
+
+- Added `npm run test:clean` - kills ports, cleans locks, runs all unit tests
+- Added `npm run e2e:clean` - kills ports, cleans locks, runs all E2E tests
+- Added `npm run health-check:clean` - kills ports, cleans locks, runs full health check
+
+**Impact**: Can now run tests in clean state without manual cleanup, prevents port conflicts and lock file issues
+
+---
+
+### ✅ ESLint Ignore Generated Files (Session 6)
+
+**Completed**: 2025-12-06
+
+**What was done**:
+
+- Added `'**/generated/**'` to ESLint ignores in `eslint.config.mjs:11`
+- Fixed linter failing with 1,694 problems (762 errors from Prisma generated files)
+- Linter now passes with only 38 warnings (all minor code quality issues)
+
+**Impact**: Health checks now pass, CI/CD won't be blocked by generated file linting
+
+---
+
 ### ✅ MSW Testing Infrastructure (Session 2)
 
 **Completed**: 2025-12-06

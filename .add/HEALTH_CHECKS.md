@@ -31,7 +31,17 @@ See [CONFIG.md](CONFIG.md) for mode configuration.
 - After completing a phase
 - Before creating a pull request
 
-**Current Status**: ✅ PASSING (as of Session 5)
+**Current Status**: ✅ PASSING (as of Session 6)
+
+**Clean Variants** (Session 6):
+
+If you experience port conflicts or lock file issues, use these clean variants:
+
+- `npm run test:clean` - Kills ports, cleans locks, runs unit tests
+- `npm run e2e:clean` - Kills ports, cleans locks, runs E2E tests
+- `npm run health-check:clean` - Kills ports, cleans locks, runs full health check
+
+These commands automatically run `npm run kill-ports` and `npm run clean-locks` before running tests.
 
 ---
 
