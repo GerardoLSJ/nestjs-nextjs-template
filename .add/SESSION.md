@@ -2,20 +2,67 @@
 
 ## Current Session
 
-**Session Number**: 6
+**Session Number**: 7
 **Date**: 2025-12-06
 **Status**: ✅ COMPLETE
-**Focus**: ADD Framework Integration
+**Focus**: Calendar Picker Component + Home Page Integration
 
 ### Session Objectives
 
-- [x] Integrate ADD (Agent-Driven Development) Framework
-- [x] Create .add/ directory structure with all required files
-- [x] Migrate SESSION_TRACKER.md content to .add/SESSION.md
-- [x] Update README.md with Current Sprint section
-- [x] Commit framework setup
+- [x] Create CalendarPicker component (simple, functional, testable)
+- [x] Create CalendarPicker styles (CSS Modules)
+- [x] Create comprehensive tests (CalendarPicker.spec.tsx)
+- [x] Integrate CalendarPicker into Home page
+- [x] Update EventForm to work with controlled dateTime
+- [x] Document any new design patterns in DECISIONS.md
+- [x] Run health checks and commit
 
 ### Session Notes
+
+- **CalendarPicker Component** ✅:
+  - Created [`CalendarPicker.tsx`](apps/web/src/components/calendar/CalendarPicker.tsx) (160 lines, month navigation, date selection)
+  - Created [`CalendarPicker.module.css`](apps/web/src/components/calendar/CalendarPicker.module.css) (purple gradient theme, responsive)
+  - Created [`CalendarPicker.spec.tsx`](apps/web/src/components/calendar/CalendarPicker.spec.tsx) (9 tests, 100% passing)
+  - Key features: min/max date support, today highlighting, selected state, accessibility (ARIA roles)
+- **Home Page Integration** ✅:
+  - Modified [`EventForm.tsx`](apps/web/src/components/events/EventForm.tsx) to accept controlled `dateTime` props
+  - Changed date/time input to time-only input (date selected via CalendarPicker)
+  - Updated [`page.tsx`](apps/web/src/app/page.tsx) to manage date state and coordinate between CalendarPicker and EventForm
+  - Added [`page.module.css`](apps/web/src/app/page.module.css) `.eventCreator` class for responsive layout
+  - Calendar and form displayed side-by-side on desktop, stacked on mobile
+- **Testing & Quality** ✅:
+  - Fixed timezone issue in CalendarPicker tests (use local date construction: `new Date(2025, 11, 6)`)
+  - Encountered file system sync issue with empty test file (fixed by temp file + force move)
+  - Updated [`EventForm.spec.tsx`](apps/web/src/components/events/EventForm.spec.tsx) for new controlled props
+  - Changed time input test from `userEvent.type` to `fireEvent.change` for deterministic results
+  - All web tests passed (11 suites, 105 passed, 2 skipped)
+  - Linting passed for all projects
+- **Documentation** ✅:
+  - Added ADR-014 (Calendar Picker Implementation) to [`DECISIONS.md`](.add/DECISIONS.md)
+
+### Key Learnings
+
+1. **Timezone Consistency**: Always use local date construction in tests (`new Date(year, month, day)`) to match component logic
+2. **File System Issues**: `write_to_file` can fail silently on Windows; workaround is temp file + force move
+3. **Time Input Testing**: Use `fireEvent.change` instead of `userEvent.type` for time inputs to avoid multiple onChange calls
+4. **Controlled Components**: Moving state to container enables better coordination between visual picker and form input
+
+---
+
+## Session 6 - 2025-12-06
+
+**Status**: ✅ COMPLETE
+**Focus**: ADD Framework Integration
+
+### Accomplishments
+
+- ✅ Integrated ADD (Agent-Driven Development) Framework
+- ✅ Created .add/ directory structure with all required files
+- ✅ Migrated SESSION_TRACKER.md content to .add/SESSION.md
+- ✅ Updated README.md with Current Sprint section
+- ✅ Committed framework setup
+
+### Session Details
 
 - **ADD Framework Integration** ✅:
   - Created .add/ directory with 8 markdown files

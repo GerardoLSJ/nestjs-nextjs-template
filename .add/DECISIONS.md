@@ -590,6 +590,46 @@ const isValid = await bcrypt.compare(password, hashedPassword);
 
 ---
 
+### ADR-014: Calendar Picker Implementation (2025-12-06)
+
+**Status**: ✅ ACCEPTED
+
+**Context**:
+
+- We needed a Calendar Picker component for the application to allow users to select dates for events.
+- Need a lightweight, custom solution without external heavy dependencies.
+
+**Decision**: Implement a custom `CalendarPicker` component using standard React hooks and CSS Modules.
+
+**Rationale**:
+
+- **Lightweight**: No external date library dependency (e.g. date-fns, moment).
+- **Customizable**: Full control over styling and behavior using CSS Modules.
+- **Accessible**: Built with ARIA roles and keyboard navigation considerations in mind.
+- **Simple**: Sufficient for current requirements (month view, single date selection).
+
+**Alternatives Considered**:
+
+- `react-calendar` (rejected: external dependency, harder to style custom theme).
+- `react-datepicker` (rejected: heavy dependency, overkill for simple use case).
+- HTML `<input type="date">` (rejected: limited styling, inconsistent across browsers).
+
+**Implementation**:
+
+- **State Management**: Local state for `viewDate` (current month/year).
+- **Date Logic**: Native `Date` object for generating grid.
+- **Styling**: `CalendarPicker.module.css` with project theme.
+- **Testing**: Comprehensive tests using `testing-library` and local date construction.
+
+**Impact**:
+
+- New reusable component `CalendarPicker`.
+- Zero external dependencies added.
+- Consistent theming with the rest of the app.
+- Critical testing lesson: Always construct dates using local time in tests to match component logic and avoid timezone failures.
+
+---
+
 ## Decision Template
 
 ```markdown

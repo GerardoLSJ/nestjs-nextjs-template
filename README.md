@@ -8,33 +8,39 @@ An Nx monorepo featuring a NestJS backend API and Next.js frontend web applicati
 
 **Sprint Goal**: ADD Framework Integration + Event Planner Feature Complete
 
-**Active Task**: Finalizing ADD Framework Integration
-**Current Phase**: Phase 1 Complete - Ready for Phase 2 (Contract Generation)
-**Status**: 🔄 IN PROGRESS
+**Active Task**: Calendar Picker Complete - Ready for Next Feature
+**Current Phase**: Phase 1 Complete - Feature Enhancements
+**Status**: ✅ COMPLETE
 
 ### Quick Stats
 
-- **Tests**: 113/115 passing (98% pass rate, 2 skipped in useEvents)
+- **Tests**: 122/124 passing (98% pass rate, 2 skipped in useEvents)
 - **Build**: ✅ All projects building
-- **Linting**: ✅ All passing (5 pre-existing warnings)
-- **Last Session**: Session 5 - Event Planner Implementation (2025-12-06)
+- **Linting**: ✅ All passing
+- **Last Session**: Session 7 - Calendar Picker + Home Integration (2025-12-06)
 
 ### Current Sprint Objectives
 
 - [x] Implement event planner feature (Session 5)
-- [x] Create .add/ directory with ADD framework files
-- [x] Migrate SESSION_TRACKER.md to .add/SESSION.md
-- [x] Create MEMORY.md with persistent learnings
-- [x] Create TASKS.md, DECISIONS.md, BLOCKERS.md, HEALTH_CHECKS.md
-- [ ] Update README.md with Current Sprint section (this!)
-- [ ] Commit ADD Framework setup
-- [ ] Ready for user direction on next phase
+- [x] Integrate ADD Framework (Session 6)
+- [x] Create CalendarPicker component (Session 7)
+- [x] Integrate CalendarPicker into Home page (Session 7)
+- [ ] Ready for Phase 2 (Contract Generation)
 
 ### Recent Accomplishments
 
-**Session 5 (2025-12-06)**: Event Planner Feature
+**Session 7 (2025-12-06)**: Calendar Picker + Integration
 
-- ✅ Event data model with TypeScript types
+- ✅ Custom CalendarPicker component (month nav, date selection, min/max dates)
+- ✅ Integrated into Home page with EventForm
+- ✅ Refactored EventForm to controlled date/time pattern
+- ✅ 9 new calendar tests, all passing
+- ✅ Zero external dependencies
+
+**Session 6 (2025-12-06)**: ADD Framework Integration
+
+- ✅ Full framework setup (.add/ directory)
+- ✅ Documentation restructuring
 - ✅ useEvents hook with localStorage persistence
 - ✅ EventForm component (Title, Members, Date/Time)
 - ✅ EventList component with cards and delete functionality

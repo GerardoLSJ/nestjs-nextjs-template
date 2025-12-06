@@ -7,12 +7,14 @@ import type { CreateEventInput } from '../../types/event.types';
 
 interface EventFormProps {
   onSubmit: (input: CreateEventInput) => void;
+  dateTime: string; // Controlled by container (page.tsx)
+  onDateTimeChange: (value: string) => void; // Used for standard input fallback/time input
 }
 
-export function EventForm({ onSubmit }: EventFormProps) {
+export function EventForm({ onSubmit, dateTime, onDateTimeChange }: EventFormProps) {
   const [title, setTitle] = useState('');
   const [members, setMembers] = useState('');
-  const [dateTime, setDateTime] = useState('');
+  // dateTime state is now controlled by props
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,10 +25,10 @@ export function EventForm({ onSubmit }: EventFormProps) {
       dateTime,
     });
 
-    // Reset form
+    // Reset form fields controlled by EventForm
     setTitle('');
     setMembers('');
-    setDateTime('');
+    // Note: dateTime reset is now handled by the container/caller of onDateTimeChange
   };
 
   return (
@@ -62,16 +64,21 @@ export function EventForm({ onSubmit }: EventFormProps) {
         />
       </div>
 
+      {/* Keep the input for time selection, or fallback if calendar picker is not used */}
       <div className={styles.field}>
         <label htmlFor="dateTime" className={styles.label}>
-          Date & Time
+          Time
         </label>
         <input
-          type="datetime-local"
+          type="time"
           id="dateTime"
           className={styles.input}
-          value={dateTime}
-          onChange={(e) => setDateTime(e.target.value)}
+          // We only use time input here, date is selected via CalendarPicker in page.tsx
+          value={dateTime.split('T')[1] || ''}
+          onChange={(e) => {
+            const datePart = dateTime.split('T')[0] || '';
+            onDateTimeChange(`${datePart}T${e.target.value}`);
+          }}
           required
         />
       </div>
