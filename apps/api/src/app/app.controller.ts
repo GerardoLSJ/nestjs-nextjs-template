@@ -1,5 +1,6 @@
 import { Controller, Get, Logger } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 
 import { AppService } from './app.service';
 
@@ -11,6 +12,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
+  @SkipThrottle() // Skip rate limiting for health check endpoint
   @ApiOperation({
     summary: 'Get application data',
     description: 'Returns a welcome message from the API',

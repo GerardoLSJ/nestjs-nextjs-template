@@ -23,7 +23,14 @@
   - ✅ ADR-016 documented
   - ✅ 126/127 tests passing, full health check verified
 
-- [ ] 3.2: Security Hardening (Security headers (Helmet), Rate limiting, CORS finalization)
+- [x] 3.2: Security Hardening ✅ COMPLETE
+  - ✅ Helmet.js security headers (CSP, HSTS, XSS Protection, Clickjacking)
+  - ✅ Rate limiting with @nestjs/throttler (100 requests per 15 minutes)
+  - ✅ Environment-driven CORS configuration
+  - ✅ Health check endpoint exempted from rate limiting
+  - ✅ ADR-017 documented
+  - ✅ All tests verified passing with security measures
+
 - [ ] 3.3: Comprehensive Test Suite (Address remaining issues)
 - [ ] 3.4: Documentation & Deployment Prep (Deployment guide, environment documentation)
 

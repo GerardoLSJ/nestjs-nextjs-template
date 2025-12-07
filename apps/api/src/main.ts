@@ -8,6 +8,8 @@ import 'reflect-metadata';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import helmet from 'helmet';
 
 import { AppModule } from './app/app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -39,6 +41,38 @@ async function bootstrap() {
     throw error;
   }
 
+  // Security: Add Helmet for security headers
+  // Helmet helps secure Express/NestJS apps by setting various HTTP headers
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          scriptSrc: ["'self'"],
+          imgSrc: ["'self'", 'data:', 'https:'],
+        },
+      },
+      // HSTS (HTTP Strict-Transport-Security)
+      // Forces HTTPS for future requests
+      hsts: {
+        maxAge: 31536000, // 1 year in seconds
+        includeSubDomains: true,
+        preload: true,
+      },
+      // Prevent MIME type sniffing
+      noSniff: true,
+      // Disable X-Powered-By header
+      hidePoweredBy: true,
+      // XSS Protection
+      xssFilter: true,
+      // Clickjacking protection
+      frameguard: {
+        action: 'deny',
+      },
+    })
+  );
+
   // Enable CORS for frontend communication
   app.enableCors({
     origin: process.env.ALLOWED_ORIGINS || 'http://localhost:3000',
@@ -51,6 +85,10 @@ async function bootstrap() {
 
   // Global exception filter for standardized error responses
   app.useGlobalFilters(new HttpExceptionFilter());
+
+  // Global rate limiting guard
+  // Limits requests to 100 per 15 minutes per IP address
+  app.useGlobalGuards(new ThrottlerGuard());
 
   // Global validation pipe for DTO validation
   app.useGlobalPipes(

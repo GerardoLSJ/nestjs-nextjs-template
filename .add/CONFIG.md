@@ -122,3 +122,129 @@ npm run db:down       # Stop PostgreSQL
 npm run db:migrate    # Run migrations
 npm run db:studio     # Open Prisma Studio
 ```
+
+## Security Configuration
+
+### CORS (Cross-Origin Resource Sharing)
+
+**Environment Variable**: `ALLOWED_ORIGINS`
+
+**Default Value**: `http://localhost:3000` (development)
+
+**Usage in Code**:
+
+```typescript
+// apps/api/src/main.ts
+app.enableCors({
+  origin: process.env.ALLOWED_ORIGINS || 'http://localhost:3000',
+  credentials: true,
+});
+```
+
+**Environment-Specific Values**:
+
+```bash
+# .env (development)
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
+
+# .env.production
+ALLOWED_ORIGINS=https://example.com,https://app.example.com
+
+# .env.test
+ALLOWED_ORIGINS=http://localhost:3000
+```
+
+**Multiple Origins Format**: Comma-separated list without spaces
+
+### HTTP Security Headers (Helmet.js)
+
+Headers automatically added to all API responses:
+
+| Header | Value | Purpose |
+|--------|-------|---------|
+| Content-Security-Policy | Restricts resource origins | XSS Prevention |
+| Strict-Transport-Security | max-age=31536000; includeSubDomains; preload | HTTPS Enforcement |
+| X-Content-Type-Options | nosniff | MIME Sniffing Prevention |
+| X-Frame-Options | DENY | Clickjacking Prevention |
+| X-XSS-Protection | 1; mode=block | Browser XSS Protection |
+
+**Configuration**: apps/api/src/main.ts (lines 44-74)
+
+### Rate Limiting
+
+**Module**: @nestjs/throttler
+
+**Default Limits**:
+- 100 requests per 15 minutes (900000ms)
+- Per IP address
+- Applied globally to all endpoints
+
+**Exceptions**:
+- Health check endpoint (GET /api) - uses @SkipThrottle() decorator
+
+**Rate Limit Response**:
+- Status: 429 Too Many Requests
+- Includes retry-after header with seconds to wait
+
+**Configuration**: apps/api/src/app/app.module.ts
+
+**Fine-tuning Rate Limits**:
+
+```typescript
+// In app.module.ts, adjust ThrottlerModule configuration:
+ThrottlerModule.forRoot([
+  {
+    name: 'default',
+    ttl: 900000,     // Time window in milliseconds
+    limit: 100,      // Number of requests allowed
+  },
+]),
+```
+
+**Exempting Endpoints**:
+
+```typescript
+// In any controller method:
+import { SkipThrottle } from '@nestjs/throttler';
+
+@SkipThrottle()
+@Get()
+getData() {
+  // This endpoint is not rate-limited
+}
+```
+
+### Production Security Checklist
+
+Before deploying to production:
+
+- [ ] Update `ALLOWED_ORIGINS` with production domain(s)
+- [ ] Verify HSTS header with `preload: true`
+- [ ] Test CSP directives against all resource types used
+- [ ] Adjust rate limits based on expected traffic
+- [ ] Enable HTTPS/TLS (required for security headers)
+- [ ] Review and adjust CSP directives for your specific resources
+- [ ] Test rate limiting with production traffic patterns
+- [ ] Monitor security headers with tools like securityheaders.com
+
+### Monitoring Security Headers
+
+**Using curl**:
+
+```bash
+curl -I https://api.example.com/api
+```
+
+Look for these headers in the response:
+- `Strict-Transport-Security`
+- `Content-Security-Policy`
+- `X-Frame-Options`
+- `X-Content-Type-Options`
+- `X-XSS-Protection`
+
+**Using Browser DevTools**:
+
+1. Open DevTools (F12)
+2. Go to Network tab
+3. Make a request to the API
+4. Check Response Headers for security headers

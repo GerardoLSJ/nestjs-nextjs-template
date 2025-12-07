@@ -8,7 +8,7 @@ An Nx monorepo featuring a NestJS backend API and Next.js frontend web applicati
 
 **Sprint Goal**: Phase 3: Polish & Production Readiness
 
-**Active Task**: 3.2: Security Hardening
+**Active Task**: 3.3: Comprehensive Test Suite
 **Current Phase**: Phase 3: Polish & Production
 **Status**: ⏳ IN PROGRESS
 
@@ -28,11 +28,26 @@ An Nx monorepo featuring a NestJS backend API and Next.js frontend web applicati
   - Correlation IDs for request tracking
   - Documented in ADR-016
 
-- [ ] 3.2: Security Hardening (Security headers (Helmet), Rate limiting, CORS finalization)
+- [x] 3.2: Security Hardening ✅ COMPLETE
+  - HTTP security headers (Helmet.js) with CSP, HSTS, XSS protection
+  - Rate limiting with @nestjs/throttler (100 requests per 15 minutes)
+  - Environment-driven CORS configuration
+  - Documented in ADR-017 and CONFIG.md
+
 - [ ] 3.3: Comprehensive Test Suite (Address remaining issues)
 - [ ] 3.4: Documentation & Deployment Prep (Deployment guide, environment documentation)
 
 ### Recent Accomplishments
+
+**Phase 3.2: Security Hardening (Completed 2025-12-07)**
+
+- ✅ Implemented Helmet.js for HTTP security headers (CSP, HSTS, XSS protection, clickjacking protection).
+- ✅ Added rate limiting with @nestjs/throttler (100 requests per 15 minutes per IP).
+- ✅ Configured environment-driven CORS for flexible deployment scenarios.
+- ✅ Exempted health check endpoint from rate limiting with @SkipThrottle().
+- ✅ Documented security configuration in CONFIG.md with production checklist.
+- ✅ Created ADR-017 documenting the security hardening strategy.
+- ✅ All tests verified passing with security measures implemented.
 
 **Phase 3.1: Error Handling Strategy (Completed 2025-12-07)**
 

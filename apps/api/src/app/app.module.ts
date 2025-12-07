@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -20,6 +21,13 @@ import { EventsModule } from '../events/events.module';
         abortEarly: false,
       },
     }),
+    // Rate limiting: 100 requests per 15 minutes per IP
+    ThrottlerModule.forRoot([
+      {
+        ttl: 900000, // 15 minutes in milliseconds
+        limit: 100, // Maximum 100 requests per ttl window
+      },
+    ]),
     DatabaseModule,
     AuthModule,
     EventsModule,
