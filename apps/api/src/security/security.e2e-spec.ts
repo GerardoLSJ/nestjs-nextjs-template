@@ -2,24 +2,64 @@
 
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import helmet from 'helmet';
 import request from 'supertest';
 
 import { AppModule } from '../app/app.module';
+import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
 
-// Helper function to setup test application
+// Helper function to setup test application with security middleware
 async function setupTestApp() {
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
   }).compile();
 
   const app = moduleFixture.createNestApplication();
+
+  // Apply security middleware (Helmet) - same as main.ts
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          scriptSrc: ["'self'"],
+          imgSrc: ["'self'", 'data:', 'https:'],
+        },
+      },
+      hsts: {
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: true,
+      },
+      noSniff: true,
+      hidePoweredBy: true,
+      xssFilter: true,
+      frameguard: {
+        action: 'deny',
+      },
+    })
+  );
+
+  // Enable CORS
+  app.enableCors({
+    origin: process.env.ALLOWED_ORIGINS || 'http://localhost:3000',
+    credentials: true,
+  });
+
   app.setGlobalPrefix('api');
+
+  // Apply global exception filter for standardized error responses
+  app.useGlobalFilters(new HttpExceptionFilter());
+
+  // Apply global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       transform: true,
     })
   );
+
   await app.init();
   return app;
 }
