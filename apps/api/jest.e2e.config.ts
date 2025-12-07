@@ -19,6 +19,8 @@ export default {
       },
     ],
   },
+  // Transform uuid package which uses ESM exports
+  transformIgnorePatterns: ['node_modules/(?!uuid)'],
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/apps/api-e2e',
   testMatch: ['**/*.e2e-spec.ts'],
