@@ -9,7 +9,7 @@ var __TEARDOWN_MESSAGE__: string;
 
 module.exports = async function () {
   // Load environment variables from .env file
-  config({ path: resolve(process.cwd(), '.env') });
+  config({ path: resolve(process.cwd(), 'apps/api/.env.test') });
 
   // Start the API service required for E2E tests
   console.log('\nSetting up API Server...\n');
