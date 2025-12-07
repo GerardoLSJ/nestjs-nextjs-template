@@ -2,8 +2,74 @@
 
 ## Current Session
 
-**Session Number**: 7
+**Session Number**: 8
 **Date**: 2025-12-06
+**Status**: ✅ COMPLETE
+**Focus**: Event Planner Database Migration (localStorage → PostgreSQL)
+
+### Session Objectives
+
+- [x] Create database schema with Event model
+- [x] Implement backend Events API with full CRUD
+- [x] Write comprehensive tests (unit + E2E)
+- [x] Migrate frontend from localStorage to API integration
+- [x] Update MSW handlers for event endpoints
+- [x] Fix all test failures and lint errors
+- [x] Update ARCHITECTURE.md documentation
+- [x] Create SESSION.md documenting the work
+
+### Session Notes
+
+- **Database Schema** ✅:
+  - Added Event model to Prisma schema with User relationship
+  - Foreign key with cascade delete: `onDelete: Cascade`
+  - Indexes on `userId` and `datetime` for query optimization
+  - Created migration: `20251207002047_add_event_model`
+- **Backend API** ✅:
+  - Created Events module ([`events.module.ts`](../apps/api/src/events/events.module.ts))
+  - Implemented EventsService with ownership validation ([`events.service.ts`](../apps/api/src/events/events.service.ts))
+  - Built EventsController with JWT authentication ([`events.controller.ts`](../apps/api/src/events/events.controller.ts))
+  - Created DTOs: CreateEventDto, UpdateEventDto
+  - 14 unit tests + 15 E2E tests (all passing)
+- **Frontend Integration** ✅:
+  - Updated Event types (renamed `dateTime` → `datetime`)
+  - Migrated [`useEvents.ts`](../apps/web/src/hooks/useEvents.ts) from localStorage to fetch API
+  - Added JWT authentication to all API calls
+  - Implemented datetime format conversion (YYYY-MM-DDTHH:MM → ISO 8601)
+  - Updated all components: EventForm, EventList, page.tsx
+- **MSW Integration** ✅:
+  - Added event endpoints to [`handlers.ts`](../apps/web/src/test/mocks/handlers.ts)
+  - Created in-memory mock store with `resetMockEvents()` helper
+  - Implemented GET, POST, DELETE handlers with authentication checks
+- **Testing & Quality** ✅:
+  - Completely rewrote useEvents.spec.ts for API integration (194 lines)
+  - Fixed EventForm test mock variable naming
+  - Fixed E2E global-setup.ts path and environment loading
+  - Fixed import order violations across multiple files
+  - All 153 tests passing (129 unit + 24 E2E)
+- **Bug Fixes** ✅:
+  - Fixed "Failed to create event" error with datetime conversion
+  - Fixed smart quotes in E2E test descriptions
+  - Fixed missing import separator in update-event.dto.ts
+  - Fixed field name consistency (dateTime → datetime)
+  - Fixed E2E test configuration (build path, env variables)
+- **Documentation** ✅:
+  - Updated [`ARCHITECTURE.md`](../ARCHITECTURE.md) with Events module
+  - Created [`SESSION.md`](../SESSION.md) at project root documenting complete migration
+
+### Key Learnings
+
+1. **Datetime Format Handling**: Browser datetime-local inputs use `YYYY-MM-DDTHH:MM` format, but APIs expect ISO 8601 - add automatic conversion in the hook
+2. **Test Rewrite Strategy**: When underlying implementation changes drastically (localStorage → API), complete test rewrite is often cleaner than patching
+3. **Ownership Validation**: Implement at service layer for better HTTP status code control (403 Forbidden vs 404 Not Found)
+4. **E2E Configuration**: Build output paths must match Nx configuration - always verify with `ls dist/`
+5. **Import Order Rules**: Node.js built-ins → external packages → internal imports (with blank lines between groups)
+6. **MSW In-Memory Store**: Useful pattern for stateful mock APIs - allows testing full CRUD flows without backend
+
+---
+
+## Session 7 - 2025-12-06
+
 **Status**: ✅ COMPLETE
 **Focus**: Calendar Picker Component + Home Page Integration
 
