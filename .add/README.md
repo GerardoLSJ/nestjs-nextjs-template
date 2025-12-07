@@ -1,349 +1,282 @@
-# auth-tutorial
+# ADD Framework 2.0 - Memory System
 
-An Nx monorepo featuring a NestJS backend API and Next.js frontend web application with comprehensive testing setup.
+> **Version**: 2.0.0 | **Structure**: Hierarchical | **Target**: Haiku/Sonnet/Opus
+
+This is the ADD (Agent-Driven Development) Framework 2.0 memory system for structured, context-aware development.
+
+## 🚀 Quick Start
+
+### For Any Development Task
+
+Use the ADD Framework bootloader to load the right context automatically:
+
+```bash
+@entry-point <command> <args>
+```
+
+**Available Commands:**
+
+- `@entry-point develop-feature <name>` - Create/continue feature development
+- `@entry-point fix-bug <issue>` - Debug and fix an issue
+- `@entry-point continue` - Resume your last active session
+- `@entry-point status` - Quick overview of current state
+
+### Example
+
+```bash
+@entry-point develop-feature event-filtering
+```
+
+What happens:
+
+1. Loads core context (~1.4K tokens)
+2. Matches "event" → loads `memory/modules/events.md`
+3. Matches "filtering" → loads `memory/modules/database.md`
+4. Creates session: `.add/sessions/active/event-filtering.md`
+5. Ready to start with right context loaded!
 
 ---
 
-## 📊 Current Sprint
+## 📁 Structure
 
-**Sprint Goal**: Phase 3: Polish & Production Readiness
+```
+.add/
+├── BOOTLOADER.md              # Entry point (start here!)
+├── README.md                  # This file
+├── manifest.json              # Context routing & triggers
+│
+├── core/                       # Always-loaded context (~1.4K tokens)
+│   ├── project.md            # Tech stack & conventions
+│   └── agents.md             # Model protocols & roles
+│
+├── memory/
+│   ├── modules/              # Domain-specific knowledge
+│   │   ├── auth.md           # Authentication patterns
+│   │   ├── database.md       # Prisma & database
+│   │   ├── api.md            # NestJS & REST patterns
+│   │   ├── frontend.md       # React & Next.js
+│   │   ├── testing.md        # Jest, E2E, MSW patterns
+│   │   ├── events.md         # Event planner feature
+│   │   ├── security.md       # Helmet, rate limiting, CORS
+│   │   └── error-handling.md # Error patterns & filters
+│   │
+│   └── decisions/            # Architecture Decision Records
+│       └── DECISIONS.md
+│
+├── sessions/                  # Task tracking
+│   ├── active/               # Currently active session
+│   └── archive/              # Completed sessions
+│
+├── prompts/                   # Entry point templates
+│   └── entry-points/         # Command-specific prompts
+│
+└── handoffs/                  # Cross-model delegation (future)
+```
 
-**Active Task**: 3.4: Documentation & Deployment Prep
-**Current Phase**: Phase 3: Polish & Production
-**Status**: ⏳ IN PROGRESS
+---
 
-### Quick Stats
+## 🧠 How It Works
 
-- **Tests**: 126/127 passing (99% pass rate) - Full Health Check PASSED (2025-12-07)
-- **Build**: ✅ All projects building
-- **Linting**: ✅ All passing
-- **Last Session**: Session 11 - Phase 3.1 Error Handling Complete (2025-12-07)
+### Context Budget Strategy
 
-### Current Sprint Objectives
+Your token budget depends on the model:
 
-- [x] 3.1: Error Handling Strategy ✅ COMPLETE
-  - Global exception filter with standardized error responses
-  - React Error Boundary component with fallback UI
-  - User-friendly ErrorMessage component
-  - Correlation IDs for request tracking
-  - Documented in ADR-016
+| Model      | Budget | Response Reserve | Recommended       |
+| ---------- | ------ | ---------------- | ----------------- |
+| Haiku 4.5  | 200K   | 8K               | 8-12K for memory  |
+| Sonnet 4.5 | 200K   | 16K              | 16-24K for memory |
+| Opus 4.5   | 200K   | 32K              | 32-48K for memory |
 
-- [x] 3.2: Security Hardening ✅ COMPLETE
-  - HTTP security headers (Helmet.js) with CSP, HSTS, XSS protection
-  - Rate limiting with @nestjs/throttler (100 requests per 15 minutes)
-  - Environment-driven CORS configuration
-  - Documented in ADR-017 and CONFIG.md
+### Loading Priority
 
-- [x] 3.3: Comprehensive Test Suite ✅ COMPLETE
-  - Security E2E tests for all Phase 3.2 features
-  - Fixed ThrottlerGuard dependency injection bug
-  - All security features have comprehensive test coverage
+1. **Critical** (always): `BOOTLOADER.md`, `manifest.json`, `core/project.md` (~1.4K)
+2. **Task-specific** (by command/triggers): relevant modules + session (~3-4K)
+3. **On-demand** (if referenced): additional docs, decisions (~1-2K)
 
-- [ ] 3.4: Documentation & Deployment Prep (Deployment guide, environment documentation)
+### Trigger Matching
 
-### Recent Accomplishments
+When you use `@entry-point develop-feature user-auth`, the bootloader:
 
-**Phase 3.3: Comprehensive Test Suite (Completed 2025-12-07)**
+1. Parses keywords: "user", "auth"
+2. Checks `manifest.json` for triggers
+3. Matches against: `auth.md` (triggers: "auth", "user", "login", etc.)
+4. Loads that module + core context
+5. Total context: ~4.1K tokens ✅
 
-- ✅ Created comprehensive security E2E test suite (11 tests covering all security features).
-- ✅ Fixed critical ThrottlerGuard dependency injection bug preventing API from working.
-- ✅ Added tests for security headers: CSP, HSTS, X-Frame-Options, X-XSS-Protection, nosniff.
-- ✅ Added tests for rate limiting configuration and @SkipThrottle() decorator functionality.
-- ✅ Added tests for CORS configuration with credentials support.
-- ✅ Added tests for standardized error responses with correlation ID validation.
-- ✅ Fixed Jest E2E configuration to transform uuid ESM package (transformIgnorePatterns).
-- ✅ Documented intentionally skipped test (clearAllEvents no-op after API migration).
-- ✅ All security features from Phase 3.2 now have comprehensive test coverage (35 E2E tests passing).
+---
 
-**Phase 3.2: Security Hardening (Completed 2025-12-07)**
+## 📖 Documentation by Domain
 
-- ✅ Implemented Helmet.js for HTTP security headers (CSP, HSTS, XSS protection, clickjacking protection).
-- ✅ Added rate limiting with @nestjs/throttler (100 requests per 15 minutes per IP).
-- ✅ Configured environment-driven CORS for flexible deployment scenarios.
-- ✅ Exempted health check endpoint from rate limiting with @SkipThrottle().
-- ✅ Documented security configuration in CONFIG.md with production checklist.
-- ✅ Created ADR-017 documenting the security hardening strategy.
-- ✅ All tests verified passing with security measures implemented.
+### For Authentication/Authorization Work
 
-**Phase 3.1: Error Handling Strategy (Completed 2025-12-07)**
+→ Read: [memory/modules/auth.md](memory/modules/auth.md)
 
-- ✅ Implemented global HTTP exception filter with standardized error responses.
-- ✅ Created React Error Boundary to catch and handle component errors gracefully.
-- ✅ Built user-friendly error UI components (ErrorBoundary, ErrorFallback, ErrorMessage).
-- ✅ Added correlation IDs for request tracking and debugging.
-- ✅ Structured error logging with dev/prod modes.
-- ✅ 126/127 tests passing, full health check verified.
-- ✅ ADR-016 documented comprehensive error handling strategy.
+**Topics**: JWT, Passport.js, guards, token refresh, user management
 
-**Phase 2: Contract Generation & Integration (Completed 2025-12-07)**
+### For Database/ORM Work
 
-- ✅ Implemented OpenAPI contract-first development using Orval.
-- ✅ Frontend fully migrated to type-safe generated API client.
-- ✅ All web/e2e tests verified and passing (Full Health Check PASSED).
-- ✅ ADR-015 documented the success of Phase 2.
+→ Read: [memory/modules/database.md](memory/modules/database.md)
 
-**Session 8 (2025-12-06)**: Event Planner Backend API - Migrate from localStorage to Database
+**Topics**: Prisma, PostgreSQL, migrations, schema design, relationships
 
-- ✅ Full database persistence for events implemented (Prisma/PostgreSQL).
-- ✅ JWT-authenticated REST API for Events with ownership validation.
-- ✅ All tests passing (153/153 total tests passing post-localStorage test skips).
+### For API/REST Endpoints
 
-**Session 7 (2025-12-06)**: Calendar Picker + Home Integration
+→ Read: [memory/modules/api.md](memory/modules/api.md)
 
-- ✅ Custom CalendarPicker component implemented without external dependencies.
-- ✅ Integrated CalendarPicker into EventForm flow.
+**Topics**: NestJS controllers, DTOs, validation, OpenAPI/Swagger
 
-### Blockers
+### For Frontend/React/Next.js
 
-- **None** - All systems operational
+→ Read: [memory/modules/frontend.md](memory/modules/frontend.md)
+
+**Topics**: React components, hooks, Next.js App Router, CSS Modules
+
+### For Testing
+
+→ Read: [memory/modules/testing.md](memory/modules/testing.md)
+
+**Topics**: Jest, Supertest, Playwright, MSW mocking, test fixtures
+
+### For Event Planner Feature
+
+→ Read: [memory/modules/events.md](memory/modules/events.md)
+
+**Topics**: Event CRUD, calendar picker, ownership validation
+
+### For Security
+
+→ Read: [memory/modules/security.md](memory/modules/security.md)
+
+**Topics**: Helmet.js, rate limiting, CORS, security headers
+
+### For Error Handling
+
+→ Read: [memory/modules/error-handling.md](memory/modules/error-handling.md)
+
+**Topics**: Global filters, error boundaries, correlation IDs, logging
+
+---
+
+## 🎯 Project Status
+
+### Current Phase
+
+**Phase 3.4: Documentation & Deployment Prep** (IN PROGRESS)
+
+**Tests**: 126/127 passing (99% pass rate)
+
+### Completed Phases
+
+- ✅ **3.1** - Error Handling Strategy
+- ✅ **3.2** - Security Hardening
+- ✅ **3.3** - Comprehensive Test Suite
+- ✅ **Phase 2** - Contract Generation (OpenAPI/Orval)
+- ✅ **Phase 1** - Core Architecture
 
 ### Next Up
 
-1. **Phase 3: Polish & Production** (Error Handling, Security Hardening, Deployment Prep).
-2. **Phase 4: Feature Expansion** (Event Editing/Filtering).
-3. **Tech Debt**: Resolve 2 remaining skipped unit tests.
-
-### Quick Links
-
-- 📝 [Session Log](.add/SESSION.md) - Detailed session history
-- 🏗️ [Architecture](ARCHITECTURE.md) - System design documentation
-- ✅ [Active Tasks](.add/TASKS.md) - Current sprint task breakdown
-- 🧠 [Project Memory](.add/MEMORY.md) - Persistent learnings and patterns
-- 🚧 [Blockers](.add/BLOCKERS.md) - Current obstacles (none!)
-- 🏥 [Health Checks](.add/HEALTH_CHECKS.md) - Quality gates and validation
+- **Phase 4** - Feature Expansion (Event editing, filtering)
 
 ---
 
-## Project Overview
+## 🔗 Quick Navigation
 
-This project is an Nx workspace containing:
+| Need                 | File                                                                       | Purpose                          |
+| -------------------- | -------------------------------------------------------------------------- | -------------------------------- |
+| **Tech Stack**       | [core/project.md](core/project.md)                                         | Always-loaded project context    |
+| **Model Protocols**  | [core/agents.md](core/agents.md)                                           | How different models collaborate |
+| **Context Triggers** | [manifest.json](manifest.json)                                             | How commands route to context    |
+| **Boot Sequence**    | [BOOTLOADER.md](BOOTLOADER.md)                                             | How @entry-point works           |
+| **Decisions**        | [memory/decisions/DECISIONS.md](memory/decisions/DECISIONS.md)             | Architecture decision records    |
+| **Sessions**         | [sessions/active/](sessions/active/)                                       | Your current work                |
+| **History**          | [sessions/archive/SESSION_HISTORY.md](sessions/archive/SESSION_HISTORY.md) | Past session learnings           |
 
-- **NestJS API** - Backend REST API server
-- **Next.js Web App** - Frontend React application
-- **Shared Types Library** - TypeScript types shared between API and Web
-- **E2E Testing** - End-to-end tests for both API and Web applications
+---
 
-## Project Structure
+## 💡 Best Practices
 
-```
-auth-tutorial/
-├── apps/
-│   ├── api/              # NestJS backend API
-│   ├── api-e2e/          # API end-to-end tests (Jest)
-│   ├── web/              # Next.js frontend
-│   └── web-e2e/          # Web end-to-end tests (Playwright)
-├── libs/
-│   └── shared-types/     # Shared TypeScript types library
-└── packages/             # Additional packages (if needed)
-```
+1. **Always use @entry-point** - Ensures correct context loading automatically
+2. **Keep sessions updated** - Update `.add/sessions/active/*.md` during work
+3. **Document patterns** - Add learnings to relevant module files
+4. **Create ADRs** - For architectural decisions: `memory/decisions/DECISIONS.md`
+5. **Test context loading** - Verify `@entry-point status` works after changes
 
-## Quick Start
+---
 
-### Prerequisites
+## 🛠️ Manual Context Loading (Alternative)
 
-- Node.js (v18 or higher recommended)
-- npm (comes with Node.js)
+If not using `@entry-point`, follow this sequence:
 
-### Installation
+### Step 1: Always Load
 
-```bash
-npm install
-```
-
-### Start Development Servers
-
-```bash
-npm run dev:all
+```markdown
+1. .add/BOOTLOADER.md - Understand the boot protocol
+2. .add/manifest.json - See available context segments
+3. .add/core/project.md - Get tech stack & conventions
 ```
 
-This starts both the API server (http://localhost:3333/api) and Web server (http://localhost:3000) concurrently using the `concurrently` package. The API will display colored logs in blue, and the Web app in green.
+### Step 2: Load by Domain
 
-## Available Commands
+Pick relevant modules for your task:
 
-### Workspace-Level Commands
-
-| Command                | Description                                                          | Definition                                                                                                         |
-| ---------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `npm run dev:all`      | Starts both API (port 3333) and Web (port 3000) servers concurrently | Defined in [`package.json`](package.json) - uses `concurrently` to run `nx serve api` and `nx dev web` in parallel |
-| `npm run lint:all`     | Runs ESLint on all projects                                          | Defined in [`package.json`](package.json) - uses Nx `run-many --target=lint`                                       |
-| `npm run test:all`     | Runs Jest unit tests on all projects                                 | Defined in [`package.json`](package.json) - uses Nx `run-many --target=test`                                       |
-| `npm run e2e:all`      | Runs all E2E tests (Jest for API, Playwright for Web)                | Defined in [`package.json`](package.json) - uses Nx `run-many --target=e2e`                                        |
-| `npm run health-check` | Runs lint, test, and e2e sequentially - full system verification     | Defined in [`package.json`](package.json) - chains `lint:all`, `test:all`, `e2e:all`                               |
-
-## Individual Project Commands
-
-These Nx commands allow you to run tasks on specific projects:
-
-| Command                    | Description            | Where Target is Defined                                                        |
-| -------------------------- | ---------------------- | ------------------------------------------------------------------------------ |
-| `npx nx serve api`         | Start API server only  | [`apps/api/project.json`](apps/api/project.json) serve target                  |
-| `npx nx dev web`           | Start Web server only  | [`apps/web/project.json`](apps/web/project.json) dev target                    |
-| `npx nx test api`          | Run API unit tests     | [`apps/api/project.json`](apps/api/project.json) test target                   |
-| `npx nx test web`          | Run Web unit tests     | [`apps/web/project.json`](apps/web/project.json) test target                   |
-| `npx nx test shared-types` | Run shared-types tests | [`libs/shared-types/project.json`](libs/shared-types/project.json) test target |
-| `npx nx lint api`          | Lint API project       | [`apps/api/project.json`](apps/api/project.json) lint target                   |
-| `npx nx lint web`          | Lint Web project       | [`apps/web/project.json`](apps/web/project.json) lint target                   |
-| `npx nx e2e api-e2e`       | Run API E2E tests      | [`apps/api-e2e/project.json`](apps/api-e2e/project.json) e2e target            |
-| `npx nx e2e web-e2e`       | Run Web E2E tests      | [`apps/web-e2e/project.json`](apps/web-e2e/project.json) e2e target            |
-
-### Additional Nx Commands
-
-```bash
-# View project dependency graph
-npx nx graph
-
-# Run a specific target on all projects
-npx nx run-many --target=<target> --all
-
-# Clear Nx cache
-npx nx reset
+```markdown
+- Authentication → memory/modules/auth.md
+- Database/Prisma → memory/modules/database.md
+- API/REST/NestJS → memory/modules/api.md
+- Frontend/React → memory/modules/frontend.md
+- Testing → memory/modules/testing.md
+- Events Feature → memory/modules/events.md
+- Security → memory/modules/security.md
+- Error Handling → memory/modules/error-handling.md
 ```
 
-## For LLM Agents
+### Step 3: Check History
 
-### Health Check
-
-To verify the entire system is working correctly:
-
-```bash
-npm run health-check
+```markdown
+- Decisions → memory/decisions/DECISIONS.md
+- Past Sessions → sessions/archive/SESSION_HISTORY.md
+- Active Session → sessions/active/\*.md
 ```
 
-**Expected Outcome:** Exit code 0 indicates all linting, unit tests, and E2E tests passed successfully.
+---
 
-### Quick Start
+## 🚨 Troubleshooting
 
-```bash
-npm install
-npm run dev:all
-```
+### `@entry-point` not working?
 
-The API will be available at http://localhost:3333/api, with interactive API documentation at http://localhost:3333/api/docs (Swagger UI). The Web app will be available at http://localhost:3000.
+1. Check [BOOTLOADER.md](BOOTLOADER.md) for boot sequence
+2. Verify [manifest.json](manifest.json) has your triggers
+3. Make sure session files exist in `sessions/active/`
 
-## Server URLs
+### Missing context?
 
-- **API Server:** http://localhost:3333/api
-- **API Documentation:** http://localhost:3333/api/docs (Swagger UI)
-- **Web Application:** http://localhost:3000
+1. Check [manifest.json](manifest.json) for segment triggers
+2. Verify module files exist in `memory/modules/`
+3. Review `core/project.md` for always-loaded content
 
-## Configuration Files
+### Context not matching?
 
-Key configuration files in this workspace:
+1. Review trigger keywords in [manifest.json](manifest.json)
+2. Check module files for relevant patterns
+3. See [sessions/archive/SESSION_HISTORY.md](sessions/archive/SESSION_HISTORY.md) for examples
 
-- [`nx.json`](nx.json) - Nx workspace configuration
-- [`package.json`](package.json) - npm scripts and dependencies
-- [`tsconfig.base.json`](tsconfig.base.json) - Base TypeScript configuration
-- [`eslint.config.mjs`](eslint.config.mjs) - ESLint configuration
-- [`jest.preset.js`](jest.preset.js) - Jest preset configuration
+---
 
-### Project-Specific Configurations
+## 📚 Resources
 
-- **API:** [`apps/api/project.json`](apps/api/project.json)
-- **Web:** [`apps/web/project.json`](apps/web/project.json), [`apps/web/next.config.js`](apps/web/next.config.js)
-- **API E2E:** [`apps/api-e2e/jest.config.ts`](apps/api-e2e/jest.config.ts)
-- **Web E2E:** [`apps/web-e2e/playwright.config.ts`](apps/web-e2e/playwright.config.ts)
-- **Shared Types:** [`libs/shared-types/project.json`](libs/shared-types/project.json)
+- **Bootloader Guide**: [BOOTLOADER.md](BOOTLOADER.md)
+- **Manifest Reference**: [manifest.json](manifest.json)
+- **Project Tech Stack**: [core/project.md](core/project.md)
+- **Agent Protocols**: [core/agents.md](core/agents.md)
 
-## Testing
+---
 
-### Unit Tests
+## 📝 Version History
 
-```bash
-# Run all unit tests
-npm run test:all
+| Version | Date       | Changes                                  |
+| ------- | ---------- | ---------------------------------------- |
+| 2.0.0   | 2025-12-07 | Initial ADD Framework 2.0 implementation |
 
-# Run tests for specific project
-npx nx test api
-npx nx test web
-npx nx test shared-types
-```
+---
 
-### E2E Tests
-
-```bash
-# Run all E2E tests
-npm run e2e:all
-
-# Run specific E2E tests
-npx nx e2e api-e2e
-npx nx e2e web-e2e
-```
-
-## Linting
-
-```bash
-# Lint all projects
-npm run lint:all
-
-# Lint specific project
-npx nx lint api
-npx nx lint web
-```
-
-## Troubleshooting
-
-### Common Issues and Solutions
-
-#### Missing `reflect-metadata` Import
-
-**Issue:** NestJS decorators not working properly or reflection errors.
-
-**Solution:** Ensure `reflect-metadata` is imported at the very top of [`apps/api/src/main.ts`](apps/api/src/main.ts):
-
-```typescript
-import 'reflect-metadata';
-```
-
-#### Webpack Output Path Configuration
-
-**Issue:** Build artifacts not generated in the correct location for NX monorepos.
-
-**Solution:** Configure the output path in [`apps/api/webpack.config.js`](apps/api/webpack.config.js):
-
-```javascript
-output: {
-  path: path.join(__dirname, '../../dist/apps/api'),
-}
-```
-
-#### Incorrect Executor for Node.js Apps
-
-**Issue:** Using `@nx/webpack:dev-server` instead of the correct Node.js executor.
-
-**Solution:** Use `@nx/js:node` executor in [`apps/api/project.json`](apps/api/project.json) for Node.js applications:
-
-```json
-"serve": {
-  "executor": "@nx/js:node",
-  "options": {
-    "buildTarget": "api:build",
-    "watch": true
-  }
-}
-```
-
-#### Windows Compatibility for Parallel Scripts
-
-**Issue:** Using `&` or `&&` for running parallel commands doesn't work reliably on Windows.
-
-**Solution:** Use the `concurrently` package instead:
-
-```json
-"dev:all": "concurrently --names \"API,WEB\" -c \"bgBlue.bold,bgGreen.bold\" \"npx nx run api:serve\" \"npx nx run web:dev\""
-```
-
-## Learn More
-
-- [Nx Documentation](https://nx.dev)
-- [NestJS Documentation](https://docs.nestjs.com)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Playwright Documentation](https://playwright.dev)
-
-## Community
-
-Join the Nx community:
-
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog)
+_ADD Framework 2.0 - Hierarchical Memory System for Agent-Driven Development_
