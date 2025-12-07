@@ -2,311 +2,45 @@
 
 An Nx monorepo featuring a NestJS backend API and Next.js frontend web application with comprehensive testing setup.
 
----
+## Quick Start
 
-## 📊 Current Sprint
+```bash
+npm install
+npm run dev:all
+```
 
-**Sprint Goal**: ADD Framework Integration + Event Planner Feature Complete
+**API**: http://localhost:3333/api | **Web**: http://localhost:3000 | **Docs**: http://localhost:3333/api/docs
 
-**Active Task**: Calendar Picker Complete - Ready for Next Feature
-**Current Phase**: Phase 1 Complete - Feature Enhancements
-**Status**: ✅ COMPLETE
+## Documentation
 
-### Quick Stats
+Choose based on your role:
 
-- **Tests**: 122/124 passing (98% pass rate, 2 skipped in useEvents)
-- **Build**: ✅ All projects building
-- **Linting**: ✅ All passing
-- **Last Session**: Session 7 - Calendar Picker + Home Integration (2025-12-06)
+- **👤 For Humans**: Read [HUMAN-README.md](HUMAN-README.md) for a concise overview, quick commands, and project status
+- **🤖 For Agents**: Read [.add/README.md](.add/README.md) for detailed sprint info, architecture, and co-dev guidance
 
-### Current Sprint Objectives
+## Key Commands
 
-- [x] Implement event planner feature (Session 5)
-- [x] Integrate ADD Framework (Session 6)
-- [x] Create CalendarPicker component (Session 7)
-- [x] Integrate CalendarPicker into Home page (Session 7)
-- [ ] Ready for Phase 2 (Contract Generation)
-
-### Recent Accomplishments
-
-**Session 7 (2025-12-06)**: Calendar Picker + Integration
-
-- ✅ Custom CalendarPicker component (month nav, date selection, min/max dates)
-- ✅ Integrated into Home page with EventForm
-- ✅ Refactored EventForm to controlled date/time pattern
-- ✅ 9 new calendar tests, all passing
-- ✅ Zero external dependencies
-
-**Session 6 (2025-12-06)**: ADD Framework Integration
-
-- ✅ Full framework setup (.add/ directory)
-- ✅ Documentation restructuring
-- ✅ useEvents hook with localStorage persistence
-- ✅ EventForm component (Title, Members, Date/Time)
-- ✅ EventList component with cards and delete functionality
-- ✅ 58 new tests added (96/98 passing)
-
-**Session 4 (2025-12-06)**: Protected Routes & Polish
-
-- ✅ useAuth hook for authentication state
-- ✅ ProtectedRoute component for route protection
-- ✅ Refactored all pages (40-50% code reduction)
-- ✅ Phase 1: Core Authentication COMPLETE
-
-### Blockers
-
-- **None** - All systems operational
-
-### Next Up
-
-Awaiting user direction. Options:
-
-1. **Phase 2**: Contract Generation with Orval (OpenAPI → TypeScript)
-2. **Phase 3**: Polish & Production (Error handling, Security, Deployment)
-3. **Enhancement**: Event planner backend API (migrate from localStorage)
-4. **Other**: User-specified feature or improvement
-
-### Quick Links
-
-- 📝 [Session Log](.add/SESSION.md) - Detailed session history
-- 🏗️ [Architecture](ARCHITECTURE.md) - System design documentation
-- ✅ [Active Tasks](.add/TASKS.md) - Current sprint task breakdown
-- 🧠 [Project Memory](.add/MEMORY.md) - Persistent learnings and patterns
-- 🚧 [Blockers](.add/BLOCKERS.md) - Current obstacles (none!)
-- 🏥 [Health Checks](.add/HEALTH_CHECKS.md) - Quality gates and validation
-
----
-
-## Project Overview
-
-This project is an Nx workspace containing:
-
-- **NestJS API** - Backend REST API server
-- **Next.js Web App** - Frontend React application
-- **Shared Types Library** - TypeScript types shared between API and Web
-- **E2E Testing** - End-to-end tests for both API and Web applications
+```bash
+npm run dev:all        # Start API & Web
+npm run health-check   # Verify all systems (lint + test + e2e)
+npm run test:all       # Run all tests
+npm run lint:all       # Lint all projects
+```
 
 ## Project Structure
 
 ```
-auth-tutorial/
-├── apps/
-│   ├── api/              # NestJS backend API
-│   ├── api-e2e/          # API end-to-end tests (Jest)
-│   ├── web/              # Next.js frontend
-│   └── web-e2e/          # Web end-to-end tests (Playwright)
-├── libs/
-│   └── shared-types/     # Shared TypeScript types library
-└── packages/             # Additional packages (if needed)
+├── apps/api/          # NestJS API
+├── apps/web/          # Next.js frontend
+├── apps/api-e2e/      # API E2E tests
+├── apps/web-e2e/      # Web E2E tests
+├── libs/shared-types/ # Shared types
+└── .add/              # Agent documentation
 ```
 
-## Quick Start
-
-### Prerequisites
-
-- Node.js (v18 or higher recommended)
-- npm (comes with Node.js)
-
-### Installation
-
-```bash
-npm install
-```
-
-### Start Development Servers
-
-```bash
-npm run dev:all
-```
-
-This starts both the API server (http://localhost:3333/api) and Web server (http://localhost:3000) concurrently using the `concurrently` package. The API will display colored logs in blue, and the Web app in green.
-
-## Available Commands
-
-### Workspace-Level Commands
-
-| Command                | Description                                                          | Definition                                                                                                         |
-| ---------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `npm run dev:all`      | Starts both API (port 3333) and Web (port 3000) servers concurrently | Defined in [`package.json`](package.json) - uses `concurrently` to run `nx serve api` and `nx dev web` in parallel |
-| `npm run lint:all`     | Runs ESLint on all projects                                          | Defined in [`package.json`](package.json) - uses Nx `run-many --target=lint`                                       |
-| `npm run test:all`     | Runs Jest unit tests on all projects                                 | Defined in [`package.json`](package.json) - uses Nx `run-many --target=test`                                       |
-| `npm run e2e:all`      | Runs all E2E tests (Jest for API, Playwright for Web)                | Defined in [`package.json`](package.json) - uses Nx `run-many --target=e2e`                                        |
-| `npm run health-check` | Runs lint, test, and e2e sequentially - full system verification     | Defined in [`package.json`](package.json) - chains `lint:all`, `test:all`, `e2e:all`                               |
-
-## Individual Project Commands
-
-These Nx commands allow you to run tasks on specific projects:
-
-| Command                    | Description            | Where Target is Defined                                                        |
-| -------------------------- | ---------------------- | ------------------------------------------------------------------------------ |
-| `npx nx serve api`         | Start API server only  | [`apps/api/project.json`](apps/api/project.json) serve target                  |
-| `npx nx dev web`           | Start Web server only  | [`apps/web/project.json`](apps/web/project.json) dev target                    |
-| `npx nx test api`          | Run API unit tests     | [`apps/api/project.json`](apps/api/project.json) test target                   |
-| `npx nx test web`          | Run Web unit tests     | [`apps/web/project.json`](apps/web/project.json) test target                   |
-| `npx nx test shared-types` | Run shared-types tests | [`libs/shared-types/project.json`](libs/shared-types/project.json) test target |
-| `npx nx lint api`          | Lint API project       | [`apps/api/project.json`](apps/api/project.json) lint target                   |
-| `npx nx lint web`          | Lint Web project       | [`apps/web/project.json`](apps/web/project.json) lint target                   |
-| `npx nx e2e api-e2e`       | Run API E2E tests      | [`apps/api-e2e/project.json`](apps/api-e2e/project.json) e2e target            |
-| `npx nx e2e web-e2e`       | Run Web E2E tests      | [`apps/web-e2e/project.json`](apps/web-e2e/project.json) e2e target            |
-
-### Additional Nx Commands
-
-```bash
-# View project dependency graph
-npx nx graph
-
-# Run a specific target on all projects
-npx nx run-many --target=<target> --all
-
-# Clear Nx cache
-npx nx reset
-```
-
-## For LLM Agents
-
-### Health Check
-
-To verify the entire system is working correctly:
-
-```bash
-npm run health-check
-```
-
-**Expected Outcome:** Exit code 0 indicates all linting, unit tests, and E2E tests passed successfully.
-
-### Quick Start
-
-```bash
-npm install
-npm run dev:all
-```
-
-The API will be available at http://localhost:3333/api, with interactive API documentation at http://localhost:3333/api/docs (Swagger UI). The Web app will be available at http://localhost:3000.
-
-## Server URLs
-
-- **API Server:** http://localhost:3333/api
-- **API Documentation:** http://localhost:3333/api/docs (Swagger UI)
-- **Web Application:** http://localhost:3000
-
-## Configuration Files
-
-Key configuration files in this workspace:
-
-- [`nx.json`](nx.json) - Nx workspace configuration
-- [`package.json`](package.json) - npm scripts and dependencies
-- [`tsconfig.base.json`](tsconfig.base.json) - Base TypeScript configuration
-- [`eslint.config.mjs`](eslint.config.mjs) - ESLint configuration
-- [`jest.preset.js`](jest.preset.js) - Jest preset configuration
-
-### Project-Specific Configurations
-
-- **API:** [`apps/api/project.json`](apps/api/project.json)
-- **Web:** [`apps/web/project.json`](apps/web/project.json), [`apps/web/next.config.js`](apps/web/next.config.js)
-- **API E2E:** [`apps/api-e2e/jest.config.ts`](apps/api-e2e/jest.config.ts)
-- **Web E2E:** [`apps/web-e2e/playwright.config.ts`](apps/web-e2e/playwright.config.ts)
-- **Shared Types:** [`libs/shared-types/project.json`](libs/shared-types/project.json)
-
-## Testing
-
-### Unit Tests
-
-```bash
-# Run all unit tests
-npm run test:all
-
-# Run tests for specific project
-npx nx test api
-npx nx test web
-npx nx test shared-types
-```
-
-### E2E Tests
-
-```bash
-# Run all E2E tests
-npm run e2e:all
-
-# Run specific E2E tests
-npx nx e2e api-e2e
-npx nx e2e web-e2e
-```
-
-## Linting
-
-```bash
-# Lint all projects
-npm run lint:all
-
-# Lint specific project
-npx nx lint api
-npx nx lint web
-```
-
-## Troubleshooting
-
-### Common Issues and Solutions
-
-#### Missing `reflect-metadata` Import
-
-**Issue:** NestJS decorators not working properly or reflection errors.
-
-**Solution:** Ensure `reflect-metadata` is imported at the very top of [`apps/api/src/main.ts`](apps/api/src/main.ts):
-
-```typescript
-import 'reflect-metadata';
-```
-
-#### Webpack Output Path Configuration
-
-**Issue:** Build artifacts not generated in the correct location for NX monorepos.
-
-**Solution:** Configure the output path in [`apps/api/webpack.config.js`](apps/api/webpack.config.js):
-
-```javascript
-output: {
-  path: path.join(__dirname, '../../dist/apps/api'),
-}
-```
-
-#### Incorrect Executor for Node.js Apps
-
-**Issue:** Using `@nx/webpack:dev-server` instead of the correct Node.js executor.
-
-**Solution:** Use `@nx/js:node` executor in [`apps/api/project.json`](apps/api/project.json) for Node.js applications:
-
-```json
-"serve": {
-  "executor": "@nx/js:node",
-  "options": {
-    "buildTarget": "api:build",
-    "watch": true
-  }
-}
-```
-
-#### Windows Compatibility for Parallel Scripts
-
-**Issue:** Using `&` or `&&` for running parallel commands doesn't work reliably on Windows.
-
-**Solution:** Use the `concurrently` package instead:
-
-```json
-"dev:all": "concurrently --names \"API,WEB\" -c \"bgBlue.bold,bgGreen.bold\" \"npx nx run api:serve\" \"npx nx run web:dev\""
-```
-
-## Learn More
-
-- [Nx Documentation](https://nx.dev)
-- [NestJS Documentation](https://docs.nestjs.com)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Playwright Documentation](https://playwright.dev)
-
-## Community
-
-Join the Nx community:
-
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog)
+## System Status
+
+- **Tests**: 126/127 passing (99%)
+- **Build**: ✅ All passing
+- **Linting**: ✅ All passing
+- **Phase**: 3 (Polish & Production)
