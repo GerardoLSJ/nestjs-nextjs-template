@@ -402,6 +402,34 @@
 388 | npx nx serve api  # API only (port 3333)
 389 | npx nx dev web    # Web only (port 3000)
 390 | `
+### macOS Command Execution (Bash)
+
+When running commands on macOS via Bash, always source the zsh config first to ensure environment variables and aliases are properly loaded. This is critical for running API E2E tests and other shell-dependent commands:
+
+```bash
+source ~/.zshrc && <your command>
+```
+
+**Examples:**
+
+```bash
+# Running API E2E tests
+source ~/.zshrc && npx nx e2e api-e2e
+
+# Running health checks
+source ~/.zshrc && npm run health-check
+
+# Running tests
+source ~/.zshrc && npm run test:all
+```
+
+**Why This Matters**:
+
+- zsh config includes PATH modifications, aliases, and environment variables
+- Without sourcing, commands may not find executables or use correct configurations
+- Ensures consistency between interactive shell and command execution
+- Particularly important for monorepo tools (nx) and node version managers
+
 391 |
 392 | ### Testing Workflow
 393 |
