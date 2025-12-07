@@ -8,7 +8,6 @@ import 'reflect-metadata';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ThrottlerGuard } from '@nestjs/throttler';
 import helmet from 'helmet';
 
 import { AppModule } from './app/app.module';
@@ -86,9 +85,8 @@ async function bootstrap() {
   // Global exception filter for standardized error responses
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  // Global rate limiting guard
-  // Limits requests to 100 per 15 minutes per IP address
-  app.useGlobalGuards(new ThrottlerGuard());
+  // Note: ThrottlerGuard is applied globally via APP_GUARD provider in app.module.ts
+  // This ensures proper dependency injection and rate limiting configuration
 
   // Global validation pipe for DTO validation
   app.useGlobalPipes(
