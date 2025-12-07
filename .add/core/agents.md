@@ -1,0 +1,96 @@
+# Agent Roles & Protocols
+
+> **Always Loaded** | ~400 tokens
+
+## Model Hierarchy
+
+```
+┌─────────────────────────────────────────────────┐
+│  OPUS 4.5 - Orchestrator                        │
+│  • Architecture decisions                       │
+│  • Complex planning                             │
+│  • Context compression for handoff              │
+│  • Quality gates & review                       │
+└─────────────────────────────────────────────────┘
+                      │
+                      ▼ delegates
+┌─────────────────────────────────────────────────┐
+│  SONNET 4.5 - Builder                           │
+│  • Feature implementation                       │
+│  • Debugging & refactoring                      │
+│  • Integration work                             │
+│  • Can delegate simple sub-tasks                │
+└─────────────────────────────────────────────────┘
+                      │
+                      ▼ delegates
+┌─────────────────────────────────────────────────┐
+│  HAIKU 4.5 - Executor                           │
+│  • Simple code generation                       │
+│  • Unit tests                                   │
+│  • Documentation                                │
+│  • Single-file changes                          │
+└─────────────────────────────────────────────────┘
+```
+
+## Handoff Protocol
+
+### From Opus/Sonnet → Haiku
+
+Create `.add/handoffs/<task-id>.md`:
+
+```markdown
+# Handoff: <task-id>
+
+## Context (compressed)
+[Relevant context, max 2K tokens]
+
+## Task
+[Specific, atomic task description]
+
+## Success Criteria
+- [ ] Criterion 1
+- [ ] Criterion 2
+
+## Constraints
+- Do not modify: [files]
+- Must use: [patterns]
+
+## Return Protocol
+Update session file when complete.
+```
+
+### Haiku Response Pattern
+
+```markdown
+## Completed: <task-id>
+
+### Changes Made
+- file1.ts: [description]
+- file2.ts: [description]
+
+### Tests Added/Updated
+- [test files]
+
+### Notes for Orchestrator
+[Any issues, questions, or observations]
+```
+
+## Escalation Rules
+
+Haiku MUST escalate to Sonnet/Opus when:
+- Task requires multi-file coordination
+- Architectural decisions needed
+- Unclear requirements
+- Test failures it cannot resolve
+
+## Session Continuity
+
+All models MUST:
+1. Read session state before starting
+2. Update session state after changes
+3. Log decisions to `DECISIONS.md`
+4. Persist learnings to `MEMORY.md`
+
+---
+
+*Protocols ensure smooth multi-model collaboration*
