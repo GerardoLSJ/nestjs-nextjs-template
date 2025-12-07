@@ -38,8 +38,9 @@
   - ✅ Tests for CORS configuration and credentials support
   - ✅ Tests for standardized error responses with correlation IDs
   - ✅ Fixed ThrottlerGuard dependency injection bug
+  - ✅ Fixed Jest E2E configuration to handle uuid ESM exports
   - ✅ Documented intentionally skipped test (clearAllEvents no-op)
-  - ✅ All security features have test coverage
+  - ✅ All security features have test coverage (35 E2E tests passing)
 
 - [ ] 3.4: Documentation & Deployment Prep (Deployment guide, environment documentation)
 
