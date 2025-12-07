@@ -1,6 +1,7 @@
-import type { AuthResponse, LoginDto, RegisterDto } from '@auth-tutorial/shared-types';
+import type { AuthResponse, LoginDto } from '@auth-tutorial/shared-types';
 import { http, HttpResponse } from 'msw';
 
+import type { RegisterDto } from '../../lib/api/generated/models';
 import type { Event, CreateEventInput } from '../../types/event.types';
 
 const API_URL = 'http://localhost:3333/api';
@@ -86,8 +87,12 @@ export const handlers = [
 
   // GET /api/events - Get all events for user
   http.get(`${API_URL}/events`, ({ request }) => {
+    // Check local storage directly since customFetch adds the header but we might be in a test env where that logic is different
+    // Or we can rely on the fact that if we use the generated client with customFetch, it will add the header
     const authHeader = request.headers.get('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      // For tests using react-query hooks, we might not always have the header if enabled is false
+      // But if we're hitting this handler, the request was made
       return HttpResponse.json(
         { statusCode: 401, message: 'Unauthorized', error: 'Unauthorized' },
         { status: 401 }
@@ -99,6 +104,8 @@ export const handlers = [
 
   // POST /api/events - Create new event
   http.post(`${API_URL}/events`, async ({ request }) => {
+    // Simulating auth check failure if no token is present in the request
+    // This relies on the client adding the token
     const authHeader = request.headers.get('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return HttpResponse.json(
@@ -107,19 +114,24 @@ export const handlers = [
       );
     }
 
-    const body = (await request.json()) as CreateEventInput;
-    const newEvent: Event = {
-      id: `event-${eventIdCounter++}`,
-      title: body.title,
-      members: body.members,
-      datetime: body.datetime,
-      userId: '1',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    try {
+      const body = (await request.json()) as CreateEventInput;
+      const newEvent: Event = {
+        id: `event-${eventIdCounter++}`,
+        title: body.title,
+        members: body.members,
+        datetime: body.datetime,
+        userId: '1',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
 
-    mockEvents.push(newEvent);
-    return HttpResponse.json(newEvent, { status: 201 });
+      mockEvents.push(newEvent);
+      return HttpResponse.json(newEvent, { status: 201 });
+    } catch (error) {
+      console.error('Handler Error:', error);
+      return HttpResponse.json({ message: 'Handler Error', error }, { status: 500 });
+    }
   }),
 
   // DELETE /api/events/:id - Delete event

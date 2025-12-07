@@ -67,11 +67,29 @@ async function bootstrap() {
       'API documentation for the auth-tutorial project. This is a comprehensive REST API built with NestJS.'
     )
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'JWT-auth'
+    )
+    .addTag('auth', 'Authentication endpoints')
+    .addTag('events', 'Event management endpoints')
     .addTag('app', 'Application endpoints')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(`${globalPrefix}/docs`, app, document);
+
+  // Expose OpenAPI JSON for code generation
+  app.getHttpAdapter().get(`/${globalPrefix}/docs-json`, (_req, res) => {
+    res.json(document);
+  });
 
   const port = process.env.PORT || 3333;
   console.log('[DEBUG] About to listen on port:', port);

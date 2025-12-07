@@ -1,11 +1,43 @@
-import { render } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 
 import Page from './page';
+import { renderWithQueryClient } from '../test/utils';
 
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
+  // Mock window.location.href assignment for tests
+  redirect: jest.fn(),
+}));
+
+// Mock useAuth return value for this page's smoke test.
+jest.mock('../hooks/useAuth', () => ({
+  useAuth: () => ({
+    user: {
+      id: '1',
+      email: 'test@example.com',
+      name: 'Test User',
+    },
+    token: 'mock-token',
+    isLoading: false,
+    isAuthenticated: true,
+    login: jest.fn(),
+    logout: jest.fn(),
+  }),
+}));
+
+// Mock useEvents to prevent loading state
+jest.mock('../hooks/useEvents', () => ({
+  useEvents: () => ({
+    events: [],
+    isLoading: false,
+    error: null,
+    createEvent: jest.fn(),
+    deleteEvent: jest.fn(),
+    clearAllEvents: jest.fn(),
+    refetch: jest.fn(),
+  }),
 }));
 
 describe('Page', () => {
@@ -16,8 +48,7 @@ describe('Page', () => {
     (useRouter as jest.Mock).mockReturnValue({
       push: mockPush,
     });
-
-    // Mock localStorage
+    // Explicitly mock localStorage
     Object.defineProperty(window, 'localStorage', {
       value: {
         getItem: jest.fn((key: string) => {
@@ -34,6 +65,7 @@ describe('Page', () => {
         removeItem: jest.fn(),
       },
       writable: true,
+      configurable: true,
     });
   });
 
@@ -42,7 +74,8 @@ describe('Page', () => {
   });
 
   it('should render successfully when user is authenticated', () => {
-    const { baseElement } = render(<Page />);
+    const { baseElement } = renderWithQueryClient(<Page />);
     expect(baseElement).toBeTruthy();
+    expect(screen.getByRole('heading', { name: /welcome, test user/i })).toBeInTheDocument();
   });
 });

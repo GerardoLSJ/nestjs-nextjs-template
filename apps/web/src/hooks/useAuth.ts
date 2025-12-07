@@ -76,6 +76,7 @@ export function useAuth(): UseAuthReturn {
       isLoading: false,
       isAuthenticated: true,
     });
+    // Force a reload or invalidate queries if needed, but for now state update is enough
   };
 
   const logout = () => {

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, RenderOptions } from '@testing-library/react';
+import { render, RenderOptions, RenderResult } from '@testing-library/react';
 import { ReactElement, ReactNode } from 'react';
 
 /**
@@ -19,13 +19,6 @@ export function createTestQueryClient(): QueryClient {
         // Disable retries for mutations as well
         retry: false,
       },
-    },
-    // Suppress error logs during tests to keep console clean
-    logger: {
-      log: console.log,
-      warn: console.warn,
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      error: () => {}, // Suppress error logs in tests
     },
   });
 }
@@ -47,7 +40,10 @@ export function createTestQueryClient(): QueryClient {
  * });
  * ```
  */
-export function renderWithQueryClient(ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) {
+export function renderWithQueryClient(
+  ui: ReactElement,
+  options?: Omit<RenderOptions, 'wrapper'>
+): RenderResult & { queryClient: QueryClient } {
   const testQueryClient = createTestQueryClient();
 
   function Wrapper({ children }: { children: ReactNode }) {
@@ -86,4 +82,12 @@ export function createQueryClientWrapper() {
   return function QueryClientWrapper({ children }: { children: ReactNode }) {
     return <QueryClientProvider client={testQueryClient}>{children}</QueryClientProvider>;
   };
+}
+
+/**
+ * Standard wrapper for testing-library hooks that need QueryClient
+ */
+export function wrapper({ children }: { children: ReactNode }) {
+  const testQueryClient = createTestQueryClient();
+  return <QueryClientProvider client={testQueryClient}>{children}</QueryClientProvider>;
 }

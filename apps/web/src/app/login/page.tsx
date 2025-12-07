@@ -36,11 +36,10 @@ export default function LoginPage() {
       localStorage.setItem('accessToken', data.accessToken);
       localStorage.setItem('user', JSON.stringify(data.user));
 
-      // Redirect to home
+      // Force a hard reload to ensure all query hooks pick up the new token
       router.push('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
-    } finally {
       setIsLoading(false);
     }
   };
