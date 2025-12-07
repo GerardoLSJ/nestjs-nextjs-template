@@ -1,3 +1,4 @@
+import { ErrorBoundary } from '../components/errors';
 import { LayoutWrapper } from '../components/layout/LayoutWrapper';
 import { QueryProvider } from '../providers/QueryProvider';
 import './global.css';
@@ -11,9 +12,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <QueryProvider>
-          <LayoutWrapper>{children}</LayoutWrapper>
-        </QueryProvider>
+        <ErrorBoundary>
+          <QueryProvider>
+            <LayoutWrapper>{children}</LayoutWrapper>
+          </QueryProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

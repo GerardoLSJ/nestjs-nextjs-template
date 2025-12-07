@@ -713,3 +713,81 @@
 712 | - Include context, rationale, and alternatives
 713 | - Update status if decision is deprecated/superseded
 714 | - Link to related ADRs when applicable
+
+### ADR-016: Comprehensive Error Handling Strategy (2025-12-07)
+
+**Status**: ✅ ACCEPTED
+
+**Context**:
+
+- Application lacked standardized error handling across API and frontend
+- No consistent error response format from API endpoints
+- No user-friendly error display in frontend
+- No error logging with correlation IDs for debugging
+- React errors could crash the entire app without recovery
+
+**Decision**: Implement comprehensive error handling strategy with:
+
+1. **API Layer**: Global exception filter with standardized error responses
+2. **Frontend Layer**: React Error Boundary with user-friendly fallback UI
+3. **Error UI Components**: Reusable error display components (ErrorMessage, ErrorFallback)
+4. **Logging**: Structured error logging with correlation IDs
+
+**Rationale**:
+
+- **Standardized Errors**: Consistent error format improves API consumption and debugging
+- **Better UX**: Users see friendly error messages instead of crashes or blank screens
+- **Debuggability**: Correlation IDs allow tracking errors through system logs
+- **Resilience**: Error boundaries prevent entire app crashes from component errors
+- **Production Ready**: Proper error handling is critical for production deployments
+
+**Alternatives Considered**:
+
+- Basic error handling only (rejected: insufficient for production)
+- Third-party error service (e.g., Sentry) (deferred: add later for monitoring)
+- Custom error classes for each error type (rejected: NestJS provides sufficient built-ins)
+
+**Implementation**:
+
+**API (NestJS)**:
+
+- Created `ErrorResponse` interface with standardized fields
+- Implemented `HttpExceptionFilter` with correlation ID generation
+- Added structured logging with appropriate levels (error/warn)
+- Registered global filter in `main.ts`
+
+**Frontend (React)**:
+
+- Created `ErrorBoundary` class component to catch React errors
+- Implemented `ErrorFallback` component with user-friendly UI
+- Added `ErrorMessage` component for inline error display
+- Wrapped application in ErrorBoundary at root layout
+
+**Impact**:
+
+- ✅ All API errors now return consistent format
+- ✅ Frontend displays user-friendly error messages
+- ✅ React errors caught by Error Boundary (no app crashes)
+- ✅ Correlation IDs enable error tracking across requests
+- ✅ Development mode shows stack traces for debugging
+- ✅ Production mode hides sensitive error details
+- ✅ Structured logging for monitoring and alerting
+- ✅ Full health check passed (125/126 tests passing)
+
+**Files Created**:
+
+- apps/api/src/common/interfaces/error-response.interface.ts
+- apps/api/src/common/filters/http-exception.filter.ts
+- apps/web/src/components/errors/ErrorBoundary.tsx
+- apps/web/src/components/errors/ErrorFallback.tsx
+- apps/web/src/components/errors/ErrorFallback.module.css
+- apps/web/src/components/errors/ErrorMessage.tsx
+- apps/web/src/components/errors/ErrorMessage.module.css
+- apps/web/src/components/errors/index.ts
+
+**Dependencies Added**:
+
+- uuid (for correlation IDs)
+- @types/uuid (TypeScript definitions)
+
+---

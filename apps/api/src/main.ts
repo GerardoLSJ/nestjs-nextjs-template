@@ -10,6 +10,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app/app.module';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   console.log('[DEBUG] ----------------------------------------------------------------');
@@ -47,6 +48,9 @@ async function bootstrap() {
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
   console.log('[DEBUG] Global prefix set to:', globalPrefix);
+
+  // Global exception filter for standardized error responses
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   // Global validation pipe for DTO validation
   app.useGlobalPipes(
