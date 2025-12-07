@@ -5,13 +5,13 @@ import { EventForm } from './EventForm';
 
 describe('EventForm', () => {
   const mockOnSubmit = jest.fn();
-  const mockOnDateTimeChange = jest.fn();
+  const mockOnDatetimeChange = jest.fn();
   const TEST_DATE_TIME_BASE = '2025-12-10T';
 
   const defaultProps = {
     onSubmit: mockOnSubmit,
     datetime: `${TEST_DATE_TIME_BASE}14:00`,
-    onDateTimeChange: mockOnDateTimeChange,
+    onDatetimeChange: mockOnDatetimeChange,
   };
 
   beforeEach(() => {
@@ -182,7 +182,7 @@ describe('EventForm', () => {
       expect(membersInput.value).toBe('Alice, Bob');
     });
 
-    it('should call onDateTimeChange when time input value changes', () => {
+    it('should call onDatetimeChange when time input value changes', () => {
       // Initial state is 2025-12-10T14:00
       render(<EventForm {...defaultProps} />);
 
@@ -191,7 +191,7 @@ describe('EventForm', () => {
       // Simulate user changing time to 18:30 using fireEvent for deterministic testing
       fireEvent.change(timeInput, { target: { value: '18:30' } });
 
-      expect(mockOnDateTimeChange).toHaveBeenCalledWith('2025-12-10T18:30');
+      expect(mockOnDatetimeChange).toHaveBeenCalledWith('2025-12-10T18:30');
     });
 
     it('should allow clearing and re-entering title/members values', async () => {

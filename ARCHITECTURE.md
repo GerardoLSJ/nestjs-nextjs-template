@@ -86,6 +86,15 @@ auth-tutorial/
 │   │   │   │   ├── auth.service.spec.ts     # ✅ Unit tests (mocked DB)
 │   │   │   │   ├── auth.e2e-spec.ts         # ✅ E2E tests (real DB)
 │   │   │   │   └── auth.module.ts
+│   │   │   ├── events/        # ✅ Events feature module
+│   │   │   │   ├── dto/       # ✅ Data Transfer Objects
+│   │   │   │   │   ├── create-event.dto.ts
+│   │   │   │   │   └── update-event.dto.ts
+│   │   │   │   ├── events.controller.ts     # ✅ REST endpoints
+│   │   │   │   ├── events.service.ts        # ✅ Business logic
+│   │   │   │   ├── events.service.spec.ts   # ✅ 14 unit tests (mocked DB)
+│   │   │   │   ├── events.e2e-spec.ts       # ✅ 15 E2E tests (real DB)
+│   │   │   │   └── events.module.ts         # ✅ Module definition
 │   │   │   ├── database/      # Database module (Prisma)
 │   │   │   │   ├── prisma.service.ts
 │   │   │   │   └── database.module.ts
@@ -143,13 +152,17 @@ auth-tutorial/
 │   │   │   │   ├── auth/      # ✅ Authentication components
 │   │   │   │   │   ├── ProtectedRoute.tsx        # ✅ Route protection wrapper
 │   │   │   │   │   └── ProtectedRoute.spec.tsx   # ✅ 7 tests passing
-│   │   │   │   ├── events/     # ✅ Event planner components
+│   │   │   │   ├── events/     # ✅ Event planner components (API-integrated)
 │   │   │   │   │   ├── EventForm.tsx             # ✅ Event creation form
 │   │   │   │   │   ├── EventForm.spec.tsx        # ✅ 21 tests passing
 │   │   │   │   │   ├── EventForm.module.css
-│   │   │   │   │   ├── EventList.tsx             # ✅ Event list display
+│   │   │   │   │   ├── EventList.tsx             # ✅ Event list display with delete
 │   │   │   │   │   ├── EventList.spec.tsx        # ✅ 29 tests passing
 │   │   │   │   │   └── EventList.module.css
+│   │   │   │   ├── calendar/   # ✅ Calendar components
+│   │   │   │   │   ├── CalendarPicker.tsx        # ✅ Date selection component
+│   │   │   │   │   ├── CalendarPicker.spec.tsx   # ✅ 15 tests passing
+│   │   │   │   │   └── CalendarPicker.module.css
 │   │   │   │   └── layout/    # Mobile layout components (see above)
 │   │   │   ├── lib/           # Utilities & API client
 │   │   │   │   ├── queryClient.ts
@@ -158,13 +171,13 @@ auth-tutorial/
 │   │   │   ├── hooks/         # ✅ Custom React hooks
 │   │   │   │   ├── useAuth.ts         # ✅ Authentication state management
 │   │   │   │   ├── useAuth.spec.ts    # ✅ 8 tests passing
-│   │   │   │   ├── useEvents.ts       # ✅ Event management (localStorage-based)
-│   │   │   │   └── useEvents.spec.ts  # ✅ 8 tests passing (2 skipped)
+│   │   │   │   ├── useEvents.ts       # ✅ Event management (API-integrated with database)
+│   │   │   │   └── useEvents.spec.ts  # ✅ 8 tests passing
 │   │   │   ├── types/          # ✅ TypeScript type definitions
 │   │   │   │   └── event.types.ts     # ✅ Event data model (Event, CreateEventInput)
 │   │   │   └── test/          # ✅ Test utilities & mocks
 │   │   │       ├── mocks/
-│   │   │       │   ├── handlers.ts    # ✅ MSW request handlers (login, register)
+│   │   │       │   ├── handlers.ts    # ✅ MSW request handlers (auth + events)
 │   │   │       │   └── server.ts      # ✅ MSW server setup (Node.js)
 │   │   │       ├── polyfills.ts       # ✅ Essential polyfills (fetch, TextEncoder, etc)
 │   │   │       ├── utils.tsx          # ✅ Test helpers (renderWithQueryClient, etc.)
@@ -369,9 +382,10 @@ npm run health-check:clean
 
 Expected results:
 
-- ✅ Linting: All projects pass (minor warnings acceptable)
-- ✅ Unit tests: 117/117 tests pass
-- ⚠️ E2E tests: 6/6 API tests pass, 3 example web tests may fail (expected - these are placeholder tests)
+- ✅ Linting: All projects pass (only warnings, no errors)
+- ✅ Unit tests: 129/129 tests pass (24 API + 105 Web)
+- ✅ E2E tests: 24/24 API tests pass
+- ⚠️ Web E2E placeholder tests may fail (expected - not yet implemented)
 
 #### 10. Start Development Servers
 
@@ -526,12 +540,19 @@ This project uses a **layered testing strategy** to balance speed, confidence, a
 - Error handling and edge cases
 - Validation logic
 
-**Example**: [apps/api/src/auth/auth.service.spec.ts](apps/api/src/auth/auth.service.spec.ts)
+**Examples**:
 
-- ✅ 10/10 tests passing
-- ✅ Tests registration logic, login logic, validation
-- ✅ All dependencies mocked (PrismaService, JwtService, bcrypt)
-- ✅ Fast execution (~2s for all tests)
+- [apps/api/src/auth/auth.service.spec.ts](apps/api/src/auth/auth.service.spec.ts)
+  - ✅ 10/10 tests passing
+  - ✅ Tests registration logic, login logic, validation
+  - ✅ All dependencies mocked (PrismaService, JwtService, bcrypt)
+
+- [apps/api/src/events/events.service.spec.ts](apps/api/src/events/events.service.spec.ts)
+  - ✅ 14/14 tests passing
+  - ✅ Tests CRUD operations, ownership validation, error handling
+  - ✅ All dependencies mocked (PrismaService)
+
+- ✅ Fast execution (~0.3s for all 24 backend unit tests)
 
 **Command**: `npx nx test api`
 
@@ -551,12 +572,21 @@ This project uses a **layered testing strategy** to balance speed, confidence, a
 - API contract compliance (status codes, response shapes)
 - Real validation behavior
 
-**Example**: [apps/api/src/auth/auth.e2e-spec.ts](apps/api/src/auth/auth.e2e-spec.ts)
+**Examples**:
 
-- ✅ 6/6 tests passing
-- ✅ Tests registration, login, validation errors
-- ✅ Uses real database (requires `docker-compose up -d`)
-- ✅ Creates unique users per test run to avoid conflicts
+- [apps/api/src/auth/auth.e2e-spec.ts](apps/api/src/auth/auth.e2e-spec.ts)
+  - ✅ 9/9 tests passing
+  - ✅ Tests registration, login, validation errors
+  - ✅ Uses real database (requires `docker-compose up -d`)
+  - ✅ Creates unique users per test run to avoid conflicts
+
+- [apps/api/src/events/events.e2e-spec.ts](apps/api/src/events/events.e2e-spec.ts)
+  - ✅ 15/15 tests passing
+  - ✅ Tests CRUD operations, authentication, ownership validation
+  - ✅ Tests 401 (unauthorized), 403 (forbidden), 404 (not found)
+  - ✅ Uses real database with JWT authentication
+
+- ✅ Total: 24/24 E2E tests passing (~0.9s execution)
 
 **Setup Required**:
 
@@ -630,10 +660,14 @@ npx nx run api:e2e                # Run E2E tests
 - ✅ [apps/web/src/hooks/useAuth.spec.ts](apps/web/src/hooks/useAuth.spec.ts) - 8 comprehensive tests
 - ✅ [apps/web/src/components/auth/ProtectedRoute.spec.tsx](apps/web/src/components/auth/ProtectedRoute.spec.tsx) - 7 comprehensive tests
 - ⚠️ [apps/web/src/app/page.spec.tsx](apps/web/src/app/page.spec.tsx:44-48) - Basic smoke test only
+- ✅ 8/8 useEvents hook tests passing (API integration, CRUD operations)
 
-**Test Coverage**:
+- ✅ 21/21 EventForm component tests passing (form submission, validation, time management)
+- ✅ 29/29 EventList component tests passing (display, delete, empty states)
+- ✅ 15/15 CalendarPicker component tests passing (date selection, navigation)
+  **Test Coverage**:
 
-- ✅ 52/52 total web tests passing (~7.2s execution)
+- ✅ 105/105 total web tests passing (~3.1s execution)
 - ✅ 11/11 login page tests passing
 - ✅ 26/26 layout component tests passing (Header, BottomNav, MobileLayout)
 - ✅ 8/8 useAuth hook tests passing (state management, login, logout)
@@ -642,6 +676,8 @@ npx nx run api:e2e                # Run E2E tests
 - ✅ User interactions (typing, clicking)
 - ✅ Successful login flow (authentication, redirect, localStorage)
 - ✅ Failed login scenarios (invalid credentials, server errors)
+- ✅ Event CRUD operations with API mocking (MSW)
+- ✅ Calendar date selection and navigation
 - ✅ Loading state management
 - ✅ Error handling and display
 - ✅ Mobile layout components (Header, BottomNavigation, MobileLayout)

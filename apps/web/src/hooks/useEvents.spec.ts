@@ -1,15 +1,41 @@
 import { renderHook, waitFor } from '@testing-library/react';
 
 import { useEvents } from './useEvents';
+import { resetMockEvents } from '../test/mocks/handlers';
+
+// Mock localStorage
+const mockLocalStorage = (() => {
+  let store: Record<string, string> = {};
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => {
+      store[key] = value;
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
+  };
+})();
+
+Object.defineProperty(window, 'localStorage', {
+  value: mockLocalStorage,
+  writable: true,
+});
 
 describe('useEvents', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    localStorage.clear();
+    mockLocalStorage.clear();
+    resetMockEvents();
+    // Set a mock token for authenticated requests
+    mockLocalStorage.setItem('accessToken', 'mock-jwt-token-12345');
   });
 
   afterEach(() => {
-    localStorage.clear();
+    mockLocalStorage.clear();
   });
 
   it('should return empty events array when no events exist', async () => {
@@ -20,20 +46,22 @@ describe('useEvents', () => {
     });
 
     expect(result.current.events).toEqual([]);
+    expect(result.current.error).toBeNull();
   });
 
-  it('should load events from localStorage on mount', async () => {
-    const mockEvents = [
-      {
-        id: 'event-1',
-        title: 'Test Event',
-        members: 'John, Jane',
-        datetime: '2025-12-10T14:00',
-        createdAt: '2025-12-06T10:00:00.000Z',
-      },
-    ];
+  it('should fetch events from API on mount', async () => {
+    const { result } = renderHook(() => useEvents());
 
-    localStorage.setItem('events', JSON.stringify(mockEvents));
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    // Initially empty since we haven't created any events
+    expect(result.current.events).toEqual([]);
+  });
+
+  it('should handle unauthenticated state', async () => {
+    mockLocalStorage.removeItem('accessToken');
 
     const { result } = renderHook(() => useEvents());
 
@@ -41,39 +69,12 @@ describe('useEvents', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(result.current.events).toEqual(mockEvents);
+    expect(result.current.error).toBe('Not authenticated');
+    expect(result.current.events).toEqual([]);
   });
 
-  it('should handle invalid data in localStorage', async () => {
-    localStorage.setItem('events', 'invalid-json');
-
+  it('should create a new event via API', async () => {
     const { result } = renderHook(() => useEvents());
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    expect(result.current.events).toEqual([]);
-    expect(localStorage.getItem('events')).toBeNull();
-  });
-
-  it.skip('should handle non-array data in localStorage', async () => {
-    localStorage.clear();
-    localStorage.setItem('events', JSON.stringify({ invalid: 'data' }));
-
-    const { result, unmount } = renderHook(() => useEvents());
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    expect(result.current.events).toEqual([]);
-
-    unmount();
-  });
-
-  it('should create a new event and persist to localStorage', async () => {
-    const { result, unmount } = renderHook(() => useEvents());
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -82,173 +83,111 @@ describe('useEvents', () => {
     const newEventInput = {
       title: 'New Event',
       members: 'Alice, Bob',
-      datetime: '2025-12-15T16:00',
+      datetime: '2025-12-15T16:00:00Z',
     };
 
-    const createdEvent = result.current.createEvent(newEventInput);
+    let createdEvent;
+    await waitFor(async () => {
+      createdEvent = await result.current.createEvent(newEventInput);
+    });
 
-    expect(createdEvent.title).toBe(newEventInput.title);
-    expect(createdEvent.members).toBe(newEventInput.members);
-    expect(createdEvent.datetime).toBe(newEventInput.datetime);
-    expect(createdEvent.id).toMatch(/^event-/);
-    expect(createdEvent.createdAt).toBeDefined();
+    expect(createdEvent).toBeDefined();
+    expect(createdEvent!.title).toBe(newEventInput.title);
+    expect(createdEvent!.members).toBe(newEventInput.members);
+    expect(createdEvent!.id).toMatch(/^event-/);
 
     await waitFor(() => {
       expect(result.current.events).toHaveLength(1);
     });
-
-    const storedEvents = JSON.parse(localStorage.getItem('events') || '[]');
-    expect(storedEvents).toHaveLength(1);
-    expect(storedEvents[0].title).toBe('New Event');
-
-    unmount();
   });
 
-  it('should delete an event and update localStorage', async () => {
-    const mockEvents = [
-      {
-        id: 'event-1',
-        title: 'Event 1',
-        members: 'John',
-        datetime: '2025-12-10T14:00',
-        createdAt: '2025-12-06T10:00:00.000Z',
-      },
-      {
-        id: 'event-2',
-        title: 'Event 2',
-        members: 'Jane',
-        datetime: '2025-12-11T15:00',
-        createdAt: '2025-12-06T11:00:00.000Z',
-      },
-    ];
-
-    localStorage.setItem('events', JSON.stringify(mockEvents));
-
+  it('should delete an event via API', async () => {
     const { result } = renderHook(() => useEvents());
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(result.current.events).toHaveLength(2);
-
-    result.current.deleteEvent('event-1');
+    // Create an event first
+    await waitFor(async () => {
+      await result.current.createEvent({
+        title: 'Event to Delete',
+        members: 'John',
+        datetime: '2025-12-10T14:00:00Z',
+      });
+    });
 
     await waitFor(() => {
       expect(result.current.events).toHaveLength(1);
     });
 
-    expect(result.current.events[0].id).toBe('event-2');
+    const eventId = result.current.events[0].id;
 
-    const storedEvents = JSON.parse(localStorage.getItem('events') || '[]');
-    expect(storedEvents).toHaveLength(1);
-    expect(storedEvents[0].id).toBe('event-2');
+    // Delete the event
+    await waitFor(async () => {
+      await result.current.deleteEvent(eventId);
+    });
+
+    await waitFor(() => {
+      expect(result.current.events).toHaveLength(0);
+    });
   });
 
-  it('should clear all events and update localStorage', async () => {
-    const mockEvents = [
-      {
-        id: 'event-1',
-        title: 'Event 1',
-        members: 'John',
-        datetime: '2025-12-10T14:00',
-        createdAt: '2025-12-06T10:00:00.000Z',
-      },
-      {
-        id: 'event-2',
-        title: 'Event 2',
-        members: 'Jane',
-        datetime: '2025-12-11T15:00',
-        createdAt: '2025-12-06T11:00:00.000Z',
-      },
-    ];
-
-    localStorage.setItem('events', JSON.stringify(mockEvents));
-
+  it('should clear all events from state', async () => {
     const { result } = renderHook(() => useEvents());
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(result.current.events).toHaveLength(2);
+    // Create an event
+    await waitFor(async () => {
+      await result.current.createEvent({
+        title: 'Event 1',
+        members: 'Alice',
+        datetime: '2025-12-10T10:00:00Z',
+      });
+    });
 
+    await waitFor(() => {
+      expect(result.current.events).toHaveLength(1);
+    });
+
+    // Clear all events
     result.current.clearAllEvents();
 
     await waitFor(() => {
       expect(result.current.events).toEqual([]);
     });
-
-    const storedEvents = localStorage.getItem('events');
-    expect(storedEvents).toBeNull();
   });
 
-  it('should complete loading and set events', async () => {
+  it('should handle API errors when creating events', async () => {
+    mockLocalStorage.removeItem('accessToken');
+
     const { result } = renderHook(() => useEvents());
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(result.current.events).toEqual([]);
+    await expect(
+      result.current.createEvent({
+        title: 'Test Event',
+        members: 'John',
+        datetime: '2025-12-10T10:00:00Z',
+      })
+    ).rejects.toThrow('Not authenticated');
   });
 
-  it.skip('should add multiple events and maintain state', async () => {
-    localStorage.clear();
-    const { result, unmount } = renderHook(() => useEvents());
+  it('should handle API errors when deleting events', async () => {
+    mockLocalStorage.removeItem('accessToken');
 
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    expect(result.current.events).toEqual([]);
-
-    result.current.createEvent({
-      title: 'Event 1',
-      members: 'Alice',
-      datetime: '2025-12-10T10:00',
-    });
-
-    result.current.createEvent({
-      title: 'Event 2',
-      members: 'Bob',
-      datetime: '2025-12-11T11:00',
-    });
-
-    await waitFor(() => {
-      expect(result.current.events).toHaveLength(2);
-    });
-
-    expect(result.current.events[0].title).toBe('Event 1');
-    expect(result.current.events[1].title).toBe('Event 2');
-
-    const storedEvents = JSON.parse(localStorage.getItem('events') || '[]');
-    expect(storedEvents).toHaveLength(2);
-
-    unmount();
-  });
-
-  it('should generate unique IDs for each event', async () => {
     const { result } = renderHook(() => useEvents());
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    const event1 = result.current.createEvent({
-      title: 'Event 1',
-      members: 'Alice',
-      datetime: '2025-12-10T10:00',
-    });
-
-    const event2 = result.current.createEvent({
-      title: 'Event 2',
-      members: 'Bob',
-      datetime: '2025-12-11T11:00',
-    });
-
-    expect(event1.id).not.toBe(event2.id);
-    expect(event1.id).toMatch(/^event-/);
-    expect(event2.id).toMatch(/^event-/);
+    await expect(result.current.deleteEvent('event-1')).rejects.toThrow('Not authenticated');
   });
 });

@@ -1,10 +1,16 @@
+import { resolve } from 'path';
+
 import { waitForPortOpen } from '@nx/node/utils';
+import { config } from 'dotenv';
 import { execa } from 'execa';
 
 /* eslint-disable */
 var __TEARDOWN_MESSAGE__: string;
 
 module.exports = async function () {
+  // Load environment variables from .env file
+  config({ path: resolve(process.cwd(), '.env') });
+
   // Start the API service required for E2E tests
   console.log('\nSetting up API Server...\n');
 
@@ -16,7 +22,7 @@ module.exports = async function () {
 
   // Run the built API directly with node instead of using nx serve
   // This avoids the debugger port conflict that occurs with nx serve
-  globalThis.apiProcess = execa('node', ['apps/api/dist/main.js'], {
+  globalThis.apiProcess = execa('node', ['dist/apps/api/main.js'], {
     cwd: process.cwd(),
     stdio: 'pipe',
     detached: true,
