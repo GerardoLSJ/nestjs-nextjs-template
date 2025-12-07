@@ -7,6 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import configuration from '../config/configuration';
 import { validationSchema } from '../config/validation';
 import { DatabaseModule } from '../database/database.module';
+import { EventsModule } from '../events/events.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { DatabaseModule } from '../database/database.module';
     }),
     DatabaseModule,
     AuthModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

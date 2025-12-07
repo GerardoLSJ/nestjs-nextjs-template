@@ -1,7 +1,13 @@
 import type { AuthResponse, LoginDto, RegisterDto } from '@auth-tutorial/shared-types';
 import { http, HttpResponse } from 'msw';
 
+import type { Event, CreateEventInput } from '../../types/event.types';
+
 const API_URL = 'http://localhost:3333/api';
+
+// In-memory event store for testing
+let mockEvents: Event[] = [];
+let eventIdCounter = 1;
 
 /**
  * MSW Request Handlers for API Mocking
@@ -77,4 +83,72 @@ export const handlers = [
     };
     return HttpResponse.json(response, { status: 201 });
   }),
+
+  // GET /api/events - Get all events for user
+  http.get(`${API_URL}/events`, ({ request }) => {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { statusCode: 401, message: 'Unauthorized', error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    return HttpResponse.json(mockEvents, { status: 200 });
+  }),
+
+  // POST /api/events - Create new event
+  http.post(`${API_URL}/events`, async ({ request }) => {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { statusCode: 401, message: 'Unauthorized', error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const body = (await request.json()) as CreateEventInput;
+    const newEvent: Event = {
+      id: `event-${eventIdCounter++}`,
+      title: body.title,
+      members: body.members,
+      datetime: body.datetime,
+      userId: '1',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    mockEvents.push(newEvent);
+    return HttpResponse.json(newEvent, { status: 201 });
+  }),
+
+  // DELETE /api/events/:id - Delete event
+  http.delete(`${API_URL}/events/:id`, ({ request, params }) => {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json(
+        { statusCode: 401, message: 'Unauthorized', error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { id } = params;
+    const eventIndex = mockEvents.findIndex((e) => e.id === id);
+
+    if (eventIndex === -1) {
+      return HttpResponse.json(
+        { statusCode: 404, message: 'Event not found', error: 'Not Found' },
+        { status: 404 }
+      );
+    }
+
+    mockEvents.splice(eventIndex, 1);
+    return HttpResponse.json({ message: 'Event successfully deleted' }, { status: 200 });
+  }),
 ];
+
+// Helper function to reset mock data (useful for tests)
+export const resetMockEvents = () => {
+  mockEvents = [];
+  eventIdCounter = 1;
+};

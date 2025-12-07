@@ -59,7 +59,7 @@ export function EventList({ events, onDelete }: EventListProps) {
             <div className={styles.cardBody}>
               <div className={styles.detail}>
                 <span className={styles.icon}>📅</span>
-                <span className={styles.detailText}>{formatDateTime(event.dateTime)}</span>
+                <span className={styles.detailText}>{formatDateTime(event.datetime)}</span>
               </div>
 
               {event.members && (

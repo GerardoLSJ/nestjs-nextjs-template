@@ -28,7 +28,7 @@ describe('useEvents', () => {
         id: 'event-1',
         title: 'Test Event',
         members: 'John, Jane',
-        dateTime: '2025-12-10T14:00',
+        datetime: '2025-12-10T14:00',
         createdAt: '2025-12-06T10:00:00.000Z',
       },
     ];
@@ -82,14 +82,14 @@ describe('useEvents', () => {
     const newEventInput = {
       title: 'New Event',
       members: 'Alice, Bob',
-      dateTime: '2025-12-15T16:00',
+      datetime: '2025-12-15T16:00',
     };
 
     const createdEvent = result.current.createEvent(newEventInput);
 
     expect(createdEvent.title).toBe(newEventInput.title);
     expect(createdEvent.members).toBe(newEventInput.members);
-    expect(createdEvent.dateTime).toBe(newEventInput.dateTime);
+    expect(createdEvent.datetime).toBe(newEventInput.datetime);
     expect(createdEvent.id).toMatch(/^event-/);
     expect(createdEvent.createdAt).toBeDefined();
 
@@ -110,14 +110,14 @@ describe('useEvents', () => {
         id: 'event-1',
         title: 'Event 1',
         members: 'John',
-        dateTime: '2025-12-10T14:00',
+        datetime: '2025-12-10T14:00',
         createdAt: '2025-12-06T10:00:00.000Z',
       },
       {
         id: 'event-2',
         title: 'Event 2',
         members: 'Jane',
-        dateTime: '2025-12-11T15:00',
+        datetime: '2025-12-11T15:00',
         createdAt: '2025-12-06T11:00:00.000Z',
       },
     ];
@@ -151,14 +151,14 @@ describe('useEvents', () => {
         id: 'event-1',
         title: 'Event 1',
         members: 'John',
-        dateTime: '2025-12-10T14:00',
+        datetime: '2025-12-10T14:00',
         createdAt: '2025-12-06T10:00:00.000Z',
       },
       {
         id: 'event-2',
         title: 'Event 2',
         members: 'Jane',
-        dateTime: '2025-12-11T15:00',
+        datetime: '2025-12-11T15:00',
         createdAt: '2025-12-06T11:00:00.000Z',
       },
     ];
@@ -206,13 +206,13 @@ describe('useEvents', () => {
     result.current.createEvent({
       title: 'Event 1',
       members: 'Alice',
-      dateTime: '2025-12-10T10:00',
+      datetime: '2025-12-10T10:00',
     });
 
     result.current.createEvent({
       title: 'Event 2',
       members: 'Bob',
-      dateTime: '2025-12-11T11:00',
+      datetime: '2025-12-11T11:00',
     });
 
     await waitFor(() => {
@@ -238,13 +238,13 @@ describe('useEvents', () => {
     const event1 = result.current.createEvent({
       title: 'Event 1',
       members: 'Alice',
-      dateTime: '2025-12-10T10:00',
+      datetime: '2025-12-10T10:00',
     });
 
     const event2 = result.current.createEvent({
       title: 'Event 2',
       members: 'Bob',
-      dateTime: '2025-12-11T11:00',
+      datetime: '2025-12-11T11:00',
     });
 
     expect(event1.id).not.toBe(event2.id);

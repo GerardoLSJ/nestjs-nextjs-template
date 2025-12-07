@@ -7,14 +7,14 @@ import type { CreateEventInput } from '../../types/event.types';
 
 interface EventFormProps {
   onSubmit: (input: CreateEventInput) => void;
-  dateTime: string; // Controlled by container (page.tsx)
-  onDateTimeChange: (value: string) => void; // Used for standard input fallback/time input
+  datetime: string; // Controlled by container (page.tsx)
+  onDatetimeChange: (value: string) => void; // Used for standard input fallback/time input
 }
 
-export function EventForm({ onSubmit, dateTime, onDateTimeChange }: EventFormProps) {
+export function EventForm({ onSubmit, datetime, onDatetimeChange }: EventFormProps) {
   const [title, setTitle] = useState('');
   const [members, setMembers] = useState('');
-  // dateTime state is now controlled by props
+  // datetime state is now controlled by props
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,13 +22,13 @@ export function EventForm({ onSubmit, dateTime, onDateTimeChange }: EventFormPro
     onSubmit({
       title,
       members,
-      dateTime,
+      datetime,
     });
 
     // Reset form fields controlled by EventForm
     setTitle('');
     setMembers('');
-    // Note: dateTime reset is now handled by the container/caller of onDateTimeChange
+    // Note: datetime reset is now handled by the container/caller of onDatetimeChange
   };
 
   return (
@@ -66,18 +66,18 @@ export function EventForm({ onSubmit, dateTime, onDateTimeChange }: EventFormPro
 
       {/* Keep the input for time selection, or fallback if calendar picker is not used */}
       <div className={styles.field}>
-        <label htmlFor="dateTime" className={styles.label}>
+        <label htmlFor="datetime" className={styles.label}>
           Time
         </label>
         <input
           type="time"
-          id="dateTime"
+          id="datetime"
           className={styles.input}
           // We only use time input here, date is selected via CalendarPicker in page.tsx
-          value={dateTime.split('T')[1] || ''}
+          value={datetime.split('T')[1] || ''}
           onChange={(e) => {
-            const datePart = dateTime.split('T')[0] || '';
-            onDateTimeChange(`${datePart}T${e.target.value}`);
+            const datePart = datetime.split('T')[0] || '';
+            onDatetimeChange(`${datePart}T${e.target.value}`);
           }}
           required
         />

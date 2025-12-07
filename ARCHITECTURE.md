@@ -189,23 +189,19 @@ auth-tutorial/
 #### API Layer (NestJS)
 
 1. **Module-Based Architecture**
-
    - Each feature is encapsulated in a module
    - Modules declare their dependencies explicitly
    - Clear separation of concerns: Controller → Service → Repository
 
 2. **Dependency Injection**
-
    - Constructor-based injection for all dependencies
    - Promotes testability and loose coupling
 
 3. **DTO Pattern**
-
    - Use DTOs for request validation and response serialization
    - Separate internal models from API contracts
 
 4. **Controller-Service Pattern**
-
    - Controllers handle HTTP concerns (routing, validation)
    - Services contain business logic
    - Services are reusable across controllers
@@ -217,18 +213,15 @@ auth-tutorial/
 #### Frontend Layer (Next.js)
 
 1. **App Router Architecture**
-
    - Server Components by default for better performance
    - Client Components only when needed (interactivity)
 
 2. **Component Composition**
-
    - Small, focused, reusable components
    - Props drilling minimized through proper component hierarchy
    - Layout components for consistent mobile UX
 
 3. **Mobile-First Layout Pattern**
-
    - MobileLayout orchestrator with conditional rendering
    - Authentication-aware routing (no layout on /login, /register)
    - Fixed header (60px) and bottom navigation (70px)
@@ -265,11 +258,221 @@ import { ExampleDto } from '@auth-tutorial/shared-types';
 
 ## Development Workflow
 
+### First-Run Setup (Mac/Linux)
+
+When setting up this project on a new machine (especially when transferring from Windows to Mac), follow these steps:
+
+#### 1. Install Node.js
+
+This project requires Node.js 18+ (tested with Node.js 22.x). Use nvm to manage Node.js versions:
+
+```bash
+# Install nvm if not already installed
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+# Install Node.js LTS
+nvm install --lts
+nvm use --lts
+
+# Verify installation
+node --version  # Should show v22.x or v20.x
+npm --version   # Should show 10.x or higher
+```
+
+#### 2. Configure Claude Code (First Time Only)
+
+This project is configured to work with Claude Code. The `.claude/settings.local.json` file has been pre-configured with:
+
+- Sandbox disabled for system access
+- Full bash command permissions
+- This allows Claude Code to run npm commands and other development tools
+
+The settings are already saved in the repository at [.claude/settings.local.json](.claude/settings.local.json).
+
+#### 3. Install Dependencies
+
+```bash
+npm install
+```
+
+This installs all dependencies for the monorepo (~2000 packages).
+
+#### 4. Configure Environment Variables
+
+The `.env` file in `apps/api/` contains the database connection string and other configuration:
+
+```bash
+# The .env file is already configured with default development values:
+# - PORT=3333
+# - DATABASE_URL=postgresql://postgres:dev123@localhost:5432/authdb
+# - JWT_SECRET=super-secret-jwt-key-change-in-production
+# - ALLOWED_ORIGINS=http://localhost:3000
+
+# View the current configuration
+cat apps/api/.env
+```
+
+**Important**: Change `JWT_SECRET` for production deployments!
+
+#### 5. Start Database
+
+Start the PostgreSQL database using Docker:
+
+```bash
+npm run db:up
+```
+
+This starts a PostgreSQL 16 container with:
+
+- Port: 5432
+- User: postgres
+- Password: dev123
+- Database: authdb
+
+#### 6. Run Database Migrations
+
+Apply Prisma migrations to create database tables:
+
+```bash
+cd apps/api && npx prisma migrate deploy
+```
+
+This creates the User table and any other tables defined in the schema.
+
+#### 7. Generate Prisma Client
+
+Generate the Prisma client for type-safe database access:
+
+```bash
+npm run db:generate
+```
+
+This generates TypeScript types in `apps/api/src/generated/prisma/`.
+
+#### 8. Install Playwright Browsers (For E2E Tests)
+
+Install Playwright browsers for E2E testing:
+
+```bash
+npx playwright install
+```
+
+This downloads Chromium, Firefox, and WebKit browsers (~400MB total).
+
+#### 9. Verify Installation
+
+Run the health check to ensure everything is working:
+
+```bash
+npm run health-check:clean
+```
+
+Expected results:
+
+- ✅ Linting: All projects pass (minor warnings acceptable)
+- ✅ Unit tests: 117/117 tests pass
+- ⚠️ E2E tests: 6/6 API tests pass, 3 example web tests may fail (expected - these are placeholder tests)
+
+#### 10. Start Development Servers
+
+```bash
+npm run dev:clean
+```
+
+This starts:
+
+- API: http://localhost:3333/api
+- API Docs: http://localhost:3333/api/docs (Swagger UI)
+- Web: http://localhost:3000
+
+### Troubleshooting First-Run Issues
+
+#### Node.js Not Found
+
+If you get "command not found: npm" errors:
+
+```bash
+# Source your shell configuration
+source ~/.zshrc  # for zsh
+source ~/.bashrc # for bash
+
+# Verify nvm is loaded
+nvm --version
+
+# Install Node.js
+nvm install --lts
+```
+
+#### Database Connection Errors
+
+If Prisma can't connect to the database:
+
+```bash
+# Check if database is running
+npm run db:up
+
+# View database logs
+npm run db:logs
+
+# Restart database
+npm run db:down
+npm run db:up
+```
+
+#### Port Conflicts
+
+If ports 3000 or 3333 are already in use:
+
+```bash
+# Kill processes on those ports
+npm run kill-ports
+
+# Or manually
+lsof -ti:3000 | xargs kill -9
+lsof -ti:3333 | xargs kill -9
+```
+
+#### Playwright Installation Fails
+
+If Playwright browser installation fails:
+
+```bash
+# Install with verbose output
+npx playwright install --with-deps
+
+# Or install specific browser
+npx playwright install chromium
+```
+
+#### Prisma Client Errors
+
+If you see errors like "Must call super constructor" or "relation does not exist":
+
+```bash
+# 1. Stop the development servers (Ctrl+C)
+
+# 2. Clean and regenerate Prisma client
+rm -rf apps/api/src/generated/prisma
+npm run db:generate
+
+# 3. Apply migrations to create database tables
+cd apps/api && npx prisma migrate deploy
+cd ../..
+
+# 4. Restart development servers
+npm run dev:all
+```
+
+Common Prisma errors:
+
+- **"relation 'public.User' does not exist"**: Migrations not applied - run `prisma migrate deploy`
+- **"Must call super constructor"**: Corrupted generated client - delete and regenerate
+- **"Cannot connect to database"**: Check DATABASE_URL in `apps/api/.env` and ensure database is running
+
 ### Local Development
 
 1. **Install dependencies**: `npm install`
 2. **Start all services**: `npm run dev:all`
-
    - API: http://localhost:3333/api
    - API Docs: http://localhost:3333/api/docs
    - Web: http://localhost:3000
@@ -960,19 +1163,16 @@ GET /health/live         # Liveness probe (K8s)
 ### Future Scaling Options
 
 1. **Horizontal Scaling**
-
    - Deploy multiple API instances behind load balancer
    - Use stateless authentication (JWT)
    - Add Redis for shared session state if needed
 
 2. **Database Scaling**
-
    - Read replicas for read-heavy workloads
    - Connection pooling
    - Query optimization
 
 3. **Microservices (if needed)**
-
    - Split API into domain-specific services
    - Use Nx to manage multiple backend services
    - Implement API gateway
@@ -987,19 +1187,16 @@ GET /health/live         # Liveness probe (K8s)
 When implementing recommended features:
 
 1. **Start with Foundation** (Priority 1)
-
    - Environment configuration (#3)
    - Database integration (#2)
    - Error handling (#4)
 
 2. **Add Security** (Priority 2)
-
    - Authentication & authorization (#1)
    - Security middleware (#9)
    - CORS configuration (#8)
 
 3. **Improve Observability** (Priority 3)
-
    - Logging & monitoring (#5)
    - Health checks (#5)
 

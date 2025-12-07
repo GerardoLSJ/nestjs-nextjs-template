@@ -32,14 +32,14 @@ describe('EventList', () => {
         id: 'event-1',
         title: 'Team Meeting',
         members: 'Alice, Bob',
-        dateTime: '2025-12-10T14:00',
+        datetime: '2025-12-10T14:00',
         createdAt: '2025-12-06T10:00:00.000Z',
       },
       {
         id: 'event-2',
         title: 'Project Review',
         members: 'Charlie, David',
-        dateTime: '2025-12-15T16:30',
+        datetime: '2025-12-15T16:30',
         createdAt: '2025-12-06T11:00:00.000Z',
       },
     ];
@@ -85,7 +85,7 @@ describe('EventList', () => {
           id: 'event-1',
           title: 'Solo Event',
           members: 'Just Me',
-          dateTime: '2025-12-20T10:00',
+          datetime: '2025-12-20T10:00',
           createdAt: '2025-12-06T10:00:00.000Z',
         },
       ];
@@ -104,7 +104,7 @@ describe('EventList', () => {
           id: 'event-1',
           title: 'Team Event',
           members: 'Alice, Bob',
-          dateTime: '2025-12-10T14:00',
+          datetime: '2025-12-10T14:00',
           createdAt: '2025-12-06T10:00:00.000Z',
         },
       ];
@@ -120,7 +120,7 @@ describe('EventList', () => {
           id: 'event-1',
           title: 'Solo Event',
           members: '',
-          dateTime: '2025-12-10T14:00',
+          datetime: '2025-12-10T14:00',
           createdAt: '2025-12-06T10:00:00.000Z',
         },
       ];
@@ -142,14 +142,14 @@ describe('EventList', () => {
         id: 'event-1',
         title: 'Event to Delete',
         members: 'Alice',
-        dateTime: '2025-12-10T14:00',
+        datetime: '2025-12-10T14:00',
         createdAt: '2025-12-06T10:00:00.000Z',
       },
       {
         id: 'event-2',
         title: 'Event to Keep',
         members: 'Bob',
-        dateTime: '2025-12-11T15:00',
+        datetime: '2025-12-11T15:00',
         createdAt: '2025-12-06T11:00:00.000Z',
       },
     ];
@@ -205,7 +205,7 @@ describe('EventList', () => {
           id: 'event-1',
           title: 'Valid Date Event',
           members: 'Alice',
-          dateTime: '2025-12-10T14:00',
+          datetime: '2025-12-10T14:00',
           createdAt: '2025-12-06T10:00:00.000Z',
         },
       ];
@@ -224,7 +224,7 @@ describe('EventList', () => {
           id: 'event-1',
           title: 'No Date Event',
           members: 'Alice',
-          dateTime: '',
+          datetime: '',
           createdAt: '2025-12-06T10:00:00.000Z',
         },
       ];
@@ -241,7 +241,7 @@ describe('EventList', () => {
           id: 'event-1',
           title: 'Invalid Date Event',
           members: 'Alice',
-          dateTime: 'invalid-date',
+          datetime: 'invalid-date',
           createdAt: '2025-12-06T10:00:00.000Z',
         },
       ];
@@ -260,7 +260,7 @@ describe('EventList', () => {
         id: 'event-1',
         title: 'Event with Icons',
         members: 'Alice',
-        dateTime: '2025-12-10T14:00',
+        datetime: '2025-12-10T14:00',
         createdAt: '2025-12-06T10:00:00.000Z',
       },
     ];
@@ -284,7 +284,7 @@ describe('EventList', () => {
         id: 'event-1',
         title: 'Accessible Event',
         members: 'Alice',
-        dateTime: '2025-12-10T14:00',
+        datetime: '2025-12-10T14:00',
         createdAt: '2025-12-06T10:00:00.000Z',
       },
     ];

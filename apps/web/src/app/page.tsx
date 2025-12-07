@@ -29,20 +29,20 @@ export default function Index() {
   initialDate.setHours(12, 0, 0, 0);
   const [selectedDate, setSelectedDate] = useState<Date>(initialDate);
 
-  const [dateTime, setDateTime] = useState<string>(formatDateTimeLocal(initialDate));
+  const [datetime, setDatetime] = useState<string>(formatDateTimeLocal(initialDate));
 
   const handleDateChange = (date: Date) => {
     setSelectedDate(date);
     // Preserve existing time part when selecting a new date
-    const timePart = dateTime.split('T')[1] || '12:00';
+    const timePart = datetime.split('T')[1] || '12:00';
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const day = date.getDate().toString().padStart(2, '0');
-    setDateTime(`${year}-${month}-${day}T${timePart}`);
+    setDatetime(`${year}-${month}-${day}T${timePart}`);
   };
 
-  const handleDateTimeChange = (value: string) => {
-    setDateTime(value);
+  const handleDatetimeChange = (value: string) => {
+    setDatetime(value);
 
     // Update selectedDate if date part changes (optional, but keeps state synced)
     const datePart = value.split('T')[0];
@@ -64,14 +64,19 @@ export default function Index() {
     );
   }
 
-  const handleCreateEvent = (input: Parameters<typeof createEvent>[0]) => {
-    createEvent(input);
+  const handleCreateEvent = async (input: Parameters<typeof createEvent>[0]) => {
+    try {
+      await createEvent(input);
 
-    // Reset date/time to today at 12:00 after submission (UX improvement)
-    const resetDate = new Date();
-    resetDate.setHours(12, 0, 0, 0);
-    setDateTime(formatDateTimeLocal(resetDate));
-    setSelectedDate(resetDate);
+      // Reset date/time to today at 12:00 after submission (UX improvement)
+      const resetDate = new Date();
+      resetDate.setHours(12, 0, 0, 0);
+      setDatetime(formatDateTimeLocal(resetDate));
+      setSelectedDate(resetDate);
+    } catch (error) {
+      console.error('Failed to create event:', error);
+      // TODO: Show user-friendly error message
+    }
   };
 
   return (
@@ -86,8 +91,8 @@ export default function Index() {
           <CalendarPicker value={selectedDate} onChange={handleDateChange} />
           <EventForm
             onSubmit={handleCreateEvent}
-            dateTime={dateTime}
-            onDateTimeChange={handleDateTimeChange}
+            datetime={datetime}
+            onDatetimeChange={handleDatetimeChange}
           />
         </div>
 

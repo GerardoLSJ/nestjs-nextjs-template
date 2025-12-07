@@ -10,7 +10,7 @@ describe('EventForm', () => {
 
   const defaultProps = {
     onSubmit: mockOnSubmit,
-    dateTime: `${TEST_DATE_TIME_BASE}14:00`,
+    datetime: `${TEST_DATE_TIME_BASE}14:00`,
     onDateTimeChange: mockOnDateTimeChange,
   };
 
@@ -74,7 +74,7 @@ describe('EventForm', () => {
         expect(mockOnSubmit).toHaveBeenCalledWith({
           title: 'Team Meeting',
           members: 'Alice, Bob, Charlie',
-          dateTime: `${TEST_DATE_TIME_BASE}14:00`,
+          datetime: `${TEST_DATE_TIME_BASE}14:00`,
         });
       });
     });
@@ -93,7 +93,7 @@ describe('EventForm', () => {
         expect(mockOnSubmit).toHaveBeenCalledWith({
           title: 'Solo Task',
           members: '',
-          dateTime: `${TEST_DATE_TIME_BASE}14:00`,
+          datetime: `${TEST_DATE_TIME_BASE}14:00`,
         });
       });
     });
@@ -232,17 +232,17 @@ describe('EventForm', () => {
         expect(mockOnSubmit).toHaveBeenCalledTimes(2);
       });
 
-      // Both submissions should use the same default dateTime prop value
+      // Both submissions should use the same default datetime prop value
       expect(mockOnSubmit).toHaveBeenNthCalledWith(1, {
         title: 'Event 1',
         members: '',
-        dateTime: `${TEST_DATE_TIME_BASE}14:00`,
+        datetime: `${TEST_DATE_TIME_BASE}14:00`,
       });
 
       expect(mockOnSubmit).toHaveBeenNthCalledWith(2, {
         title: 'Event 2',
         members: '',
-        dateTime: `${TEST_DATE_TIME_BASE}14:00`,
+        datetime: `${TEST_DATE_TIME_BASE}14:00`,
       });
     });
   });
