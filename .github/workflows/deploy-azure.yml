@@ -46,18 +46,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker-container
-          install: true
-
       - name: Login to Azure Container Registry
-        uses: azure/docker-login@v1
+        uses: docker/login-action@v3
         with:
-          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          registry: ${{ secrets.ACR_LOGIN_SERVER }}
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Build and push API image
         uses: docker/build-push-action@v5
@@ -68,8 +65,8 @@ jobs:
           tags: |
             ${{ secrets.ACR_LOGIN_SERVER }}/api:${{ env.IMAGE_TAG }}
             ${{ secrets.ACR_LOGIN_SERVER }}/api:latest
-          cache-from: type=registry,ref=${{ secrets.ACR_LOGIN_SERVER }}/api:cache
-          cache-to: type=registry,ref=${{ secrets.ACR_LOGIN_SERVER }}/api:cache,mode=max
+          cache-from: type=registry,ref=${{ secrets.ACR_LOGIN_SERVER }}/api:latest
+          cache-to: type=inline
 
   # ---------------------------------------------------------------------------
   # Build and Push Web Container
@@ -82,18 +79,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker-container
-          install: true
-
       - name: Login to Azure Container Registry
-        uses: azure/docker-login@v1
+        uses: docker/login-action@v3
         with:
-          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          registry: ${{ secrets.ACR_LOGIN_SERVER }}
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Build and push Web image
         uses: docker/build-push-action@v5
@@ -106,8 +100,8 @@ jobs:
             ${{ secrets.ACR_LOGIN_SERVER }}/web:latest
           build-args: |
             NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
-          cache-from: type=registry,ref=${{ secrets.ACR_LOGIN_SERVER }}/web:cache
-          cache-to: type=registry,ref=${{ secrets.ACR_LOGIN_SERVER }}/web:cache,mode=max
+          cache-from: type=registry,ref=${{ secrets.ACR_LOGIN_SERVER }}/web:latest
+          cache-to: type=inline
 
   # ---------------------------------------------------------------------------
   # Deploy API to Azure Container Apps
