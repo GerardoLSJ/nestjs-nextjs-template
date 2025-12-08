@@ -64,7 +64,6 @@ async function setupTestApp() {
   return app;
 }
 
-/* eslint-disable max-lines-per-function */
 describe('Security E2E Tests', () => {
   let app: INestApplication;
 
@@ -156,12 +155,26 @@ describe('Security E2E Tests', () => {
       // Make multiple requests to verify it's not rate limited
 
       for (let i = 0; i < 5; i++) {
-        const response = await request(app.getHttpServer()).get('/api').expect(200);
+        const response = await request(app.getHttpServer()).get('/api/health').expect(200);
 
-        expect(response.body).toHaveProperty('message');
+        expect(response.body).toHaveProperty('status', 'ok');
+        expect(response.body).toHaveProperty('timestamp');
       }
 
       // All requests should succeed without rate limiting
+    });
+
+    it('should return proper health check response', async () => {
+      const response = await request(app.getHttpServer()).get('/api/health').expect(200);
+
+      expect(response.body).toEqual({
+        status: 'ok',
+        timestamp: expect.any(String),
+      });
+
+      // Verify timestamp is valid ISO 8601 format
+      const timestamp = new Date(response.body.timestamp);
+      expect(timestamp.toISOString()).toBe(response.body.timestamp);
     });
   });
 
@@ -196,4 +209,3 @@ describe('Security E2E Tests', () => {
     });
   });
 });
-/* eslint-enable max-lines-per-function */
