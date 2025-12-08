@@ -402,6 +402,7 @@
 388 | npx nx serve api  # API only (port 3333)
 389 | npx nx dev web    # Web only (port 3000)
 390 | `
+
 ### macOS Command Execution (Bash)
 
 When running commands on macOS via Bash, always source the zsh config first to ensure environment variables and aliases are properly loaded. This is critical for running API E2E tests and other shell-dependent commands:
@@ -639,10 +640,99 @@ source ~/.zshrc && npm run test:all
 598 |
 599 | ---
 600 |
-601 | ## Notes
+601 | ## Azure Deployment
 602 |
-603 | - Decisions are immutable once made (create new ADR to change)
-604 | - All significant architectural choices should be documented
-605 | - Include context, rationale, and alternatives
-606 | - Update status if decision is deprecated/superseded
-607 | - Link to related ADRs when applicable
+603 | ### Infrastructure Overview
+604 |
+605 | **Resource Group**: `rg-authapp-dev-westus3`
+606 | **Region**: West US 3
+607 |
+608 | **Components**:
+609 | - **Container Registry**: `authappdevwus3acr.azurecr.io`
+610 | - **Container Environment**: `authapp-dev-env`
+611 | - **API Container App**: `authapp-dev-api`
+612 | - **Web Container App**: `authapp-dev-web`
+613 | - **PostgreSQL Flexible Server**: `authapp-dev-postgres`
+614 |
+615 | **URLs**:
+616 | - API: https://authapp-dev-api.lemonrock-c989340f.westus3.azurecontainerapps.io
+617 | - Web: https://authapp-dev-web.lemonrock-c989340f.westus3.azurecontainerapps.io
+618 |
+619 | ### Credentials & Secrets Location
+620 |
+621 | **GitHub Secrets** (https://github.com/GerardoLSJ/nestjs-nextjs-template/settings/secrets/actions):
+622 |
+623 | | Secret | How to Retrieve |
+624 | |--------|-----------------|
+625 | | `AZURE_CREDENTIALS` | `az ad sp create-for-rbac --name "github-actions-authapp-dev" --role Contributor --scopes /subscriptions/$(az account show --query id -o tsv)/resourceGroups/rg-authapp-dev-westus3 --sdk-auth` |
+626 | | `ACR_LOGIN_SERVER` | `az acr show --name authappdevwus3acr --query loginServer -o tsv` |
+627 | | `ACR_USERNAME` | `az acr credential show --name authappdevwus3acr --query username -o tsv` |
+628 | | `ACR_PASSWORD` | `az acr credential show --name authappdevwus3acr --query passwords[0].value -o tsv` |
+629 | | `AZURE_RESOURCE_GROUP` | `rg-authapp-dev-westus3` |
+630 | | `AZURE_CONTAINER_APP_API` | `authapp-dev-api` |
+631 | | `AZURE_CONTAINER_APP_WEB` | `authapp-dev-web` |
+632 |
+633 | **Database Credentials** (stored in Container App environment):
+634 | - Host: `authapp-dev-postgres.postgres.database.azure.com`
+635 | - User: `adminuser`
+636 | - Password: Stored in Container App secrets (DATABASE_URL)
+637 | - Database: `authdb`
+638 | - SSL: Required (`sslmode=require`)
+639 |
+640 | ### Security Best Practices
+641 |
+642 | 1. **Never commit secrets to git** - Use GitHub Secrets or Azure Key Vault
+643 | 2. **Rotate ACR passwords periodically** - `az acr credential renew --name authappdevwus3acr`
+644 | 3. **Use managed identities** for production (avoid password-based auth)
+645 | 4. **Limit service principal scope** to specific resource groups
+646 |
+647 | ### Common Azure CLI Commands
+648 |
+649 | `bash
+650 | # View Container App logs
+651 | az containerapp logs show --name authapp-dev-api --resource-group rg-authapp-dev-westus3 --tail 50
+652 |
+653 | # View system logs (startup issues)
+654 | az containerapp logs show --name authapp-dev-api --resource-group rg-authapp-dev-westus3 --type system --tail 30
+655 |
+656 | # Check revision status
+657 | az containerapp revision list --name authapp-dev-api --resource-group rg-authapp-dev-westus3 -o table
+658 |
+659 | # Update container image manually
+660 | az containerapp update --name authapp-dev-api --resource-group rg-authapp-dev-westus3 --image authappdevwus3acr.azurecr.io/api:latest
+661 | `
+662 |
+663 | ### Pending Tasks (Next Session)
+664 |
+665 | 1. **Run Prisma Migrations** (CRITICAL):
+666 | `bash
+667 |    DATABASE_URL="<connection-string-from-container-app>" npx prisma migrate deploy
+668 |    `
+669 |
+670 | 2. **Verify Health Endpoints** after deployment:
+671 | - API: https://authapp-dev-api.lemonrock-c989340f.westus3.azurecontainerapps.io/api/health
+672 | - Web: https://authapp-dev-web.lemonrock-c989340f.westus3.azurecontainerapps.io
+673 |
+674 | ### Deployment Gotchas
+675 |
+676 | **Problem**: `Cannot find module 'uuid'` at runtime
+677 | **Solution**: Ensure `uuid` is in `dependencies` not `devDependencies`
+678 |
+679 | **Problem**: Container Apps can't pull images from ACR
+680 | **Solution**: Configure registry credentials with `az containerapp registry set`
+681 |
+682 | **Problem**: Health check returns 404
+683 | **Solution**: Ensure `/api/health` endpoint exists in app.controller.ts
+684 |
+685 | **Problem**: Buildx cache export fails
+686 | **Solution**: Use `cache-to: type=inline` instead of `cache-to: type=registry`
+687 |
+688 | ---
+689 |
+690 | ## Notes
+691 |
+692 | - Decisions are immutable once made (create new ADR to change)
+693 | - All significant architectural choices should be documented
+694 | - Include context, rationale, and alternatives
+695 | - Update status if decision is deprecated/superseded
+696 | - Link to related ADRs when applicable
