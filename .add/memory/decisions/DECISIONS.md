@@ -5,7 +5,19 @@
 4 |
 5 | ## Decision Log
 6 |
-7 | ### ADR-013: ADD Framework Integration (2025-12-06)
+7 | ### ADR-019: Deployment Architecture (2025-12-08)
+8 |
+9 | **Status**: ✅ ACCEPTED
+10 |
+11 | **Context**: Need production deployment for NestJS/Next.js monorepo
+12 |
+13 | **Decision**: Azure Container Apps + Azure PostgreSQL Flexible Server
+14 |
+15 | **See**: [ADR-019-deployment-architecture.md](ADR-019-deployment-architecture.md)
+16 |
+17 | ---
+18 |
+19 | ### ADR-013: ADD Framework Integration (2025-12-06)
 8 |
 9 | **Status**: ✅ ACCEPTED
 10 |
@@ -881,13 +893,13 @@ ALLOWED_ORIGINS=http://localhost:3000
 
 **Security Headers Added**:
 
-| Header | Value | Purpose |
-|--------|-------|---------|
-| Content-Security-Policy | Restricts resource origins | XSS Prevention |
-| Strict-Transport-Security | max-age=31536000; includeSubDomains | HTTPS Enforcement |
-| X-Content-Type-Options | nosniff | MIME Sniffing Prevention |
-| X-Frame-Options | DENY | Clickjacking Prevention |
-| X-XSS-Protection | 1; mode=block | Browser XSS Protection |
+| Header                    | Value                               | Purpose                  |
+| ------------------------- | ----------------------------------- | ------------------------ |
+| Content-Security-Policy   | Restricts resource origins          | XSS Prevention           |
+| Strict-Transport-Security | max-age=31536000; includeSubDomains | HTTPS Enforcement        |
+| X-Content-Type-Options    | nosniff                             | MIME Sniffing Prevention |
+| X-Frame-Options           | DENY                                | Clickjacking Prevention  |
+| X-XSS-Protection          | 1; mode=block                       | Browser XSS Protection   |
 
 **Rate Limiting Details**:
 

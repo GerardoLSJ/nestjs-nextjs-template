@@ -39,28 +39,68 @@
       "path": "memory/modules/auth.md",
       "tokens": 1500,
       "priority": "normal",
-      "triggers": ["auth", "login", "logout", "jwt", "token", "session", "guard", "passport", "register", "user"],
+      "triggers": [
+        "auth",
+        "login",
+        "logout",
+        "jwt",
+        "token",
+        "session",
+        "guard",
+        "passport",
+        "register",
+        "user"
+      ],
       "description": "Authentication module: JWT, Passport, guards, user management"
     },
     "memory/modules/database": {
       "path": "memory/modules/database.md",
       "tokens": 1200,
       "priority": "normal",
-      "triggers": ["database", "prisma", "postgres", "postgresql", "entity", "migration", "schema", "model"],
+      "triggers": [
+        "database",
+        "prisma",
+        "postgres",
+        "postgresql",
+        "entity",
+        "migration",
+        "schema",
+        "model"
+      ],
       "description": "Database patterns: Prisma, migrations, schema management"
     },
     "memory/modules/api": {
       "path": "memory/modules/api.md",
       "tokens": 1300,
       "priority": "normal",
-      "triggers": ["api", "rest", "endpoint", "controller", "dto", "validation", "nestjs", "swagger", "openapi"],
+      "triggers": [
+        "api",
+        "rest",
+        "endpoint",
+        "controller",
+        "dto",
+        "validation",
+        "nestjs",
+        "swagger",
+        "openapi"
+      ],
       "description": "API design: Controllers, DTOs, validation, OpenAPI/Swagger"
     },
     "memory/modules/frontend": {
       "path": "memory/modules/frontend.md",
       "tokens": 1400,
       "priority": "normal",
-      "triggers": ["frontend", "react", "nextjs", "component", "hook", "ui", "styling", "css", "layout"],
+      "triggers": [
+        "frontend",
+        "react",
+        "nextjs",
+        "component",
+        "hook",
+        "ui",
+        "styling",
+        "css",
+        "layout"
+      ],
       "description": "Frontend patterns: React, Next.js, components, hooks, CSS Modules"
     },
     "memory/modules/testing": {
@@ -81,7 +121,16 @@
       "path": "memory/modules/security.md",
       "tokens": 800,
       "priority": "normal",
-      "triggers": ["security", "helmet", "cors", "rate-limit", "throttle", "headers", "csp", "hsts"],
+      "triggers": [
+        "security",
+        "helmet",
+        "cors",
+        "rate-limit",
+        "throttle",
+        "headers",
+        "csp",
+        "hsts"
+      ],
       "description": "Security: Helmet headers, rate limiting, CORS configuration"
     },
     "memory/modules/error-handling": {
@@ -90,6 +139,25 @@
       "priority": "normal",
       "triggers": ["error", "exception", "filter", "boundary", "correlation", "logging"],
       "description": "Error handling: Global filters, error boundaries, correlation IDs"
+    },
+    "memory/modules/deployment": {
+      "path": "memory/modules/deployment.md",
+      "tokens": 1200,
+      "priority": "normal",
+      "triggers": [
+        "deploy",
+        "deployment",
+        "azure",
+        "docker",
+        "container",
+        "ci/cd",
+        "infrastructure",
+        "production",
+        "staging",
+        "acr",
+        "devops"
+      ],
+      "description": "Deployment: Azure Container Apps, Docker, CI/CD, environment config"
     },
     "memory/decisions": {
       "path": "memory/decisions/",

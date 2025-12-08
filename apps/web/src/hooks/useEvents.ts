@@ -6,10 +6,11 @@ import {
   useEventsControllerRemove,
 } from '../lib/api/generated/events/events';
 import type { CreateEventDto } from '../lib/api/generated/models';
+import type { Event } from '../types/event.types';
 
 export function useEvents() {
   const {
-    data: events,
+    data: rawEvents,
     isLoading,
     error,
     refetch,
@@ -18,6 +19,9 @@ export function useEvents() {
       enabled: typeof window !== 'undefined' && !!localStorage.getItem('accessToken'),
     },
   });
+
+  // Cast the response to Event[] - Orval generates incorrect void type
+  const events = (Array.isArray(rawEvents) ? rawEvents : []) as Event[];
 
   const { mutateAsync: createMutation } = useEventsControllerCreate();
   const { mutateAsync: deleteMutation } = useEventsControllerRemove();
@@ -47,7 +51,7 @@ export function useEvents() {
   };
 
   return {
-    events: events || [],
+    events,
     isLoading,
     error: error ? (error as Error).message : null,
     createEvent,

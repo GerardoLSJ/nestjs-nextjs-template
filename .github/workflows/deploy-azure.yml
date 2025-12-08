@@ -1,0 +1,213 @@
+# =============================================================================
+# Azure Container Apps Deployment Workflow
+# Builds and deploys API and Web containers to Azure Container Apps
+# =============================================================================
+
+name: Deploy to Azure
+
+on:
+  # Deploy after successful CI on main branch
+  push:
+    branches: [main]
+  # Manual deployment trigger
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+# Prevent concurrent deployments
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  # Azure Container Registry
+  ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+  # Container image tags
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Build and Push API Container
+  # ---------------------------------------------------------------------------
+  build-api:
+    name: Build API
+    runs-on: ubuntu-latest
+    # Only run after CI passes (if triggered by push)
+    needs: []
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/api/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.ACR_LOGIN_SERVER }}/api:${{ env.IMAGE_TAG }}
+            ${{ secrets.ACR_LOGIN_SERVER }}/api:latest
+          cache-from: type=registry,ref=${{ secrets.ACR_LOGIN_SERVER }}/api:cache
+          cache-to: type=registry,ref=${{ secrets.ACR_LOGIN_SERVER }}/api:cache,mode=max
+
+  # ---------------------------------------------------------------------------
+  # Build and Push Web Container
+  # ---------------------------------------------------------------------------
+  build-web:
+    name: Build Web
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build and push Web image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/web/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.ACR_LOGIN_SERVER }}/web:${{ env.IMAGE_TAG }}
+            ${{ secrets.ACR_LOGIN_SERVER }}/web:latest
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+          cache-from: type=registry,ref=${{ secrets.ACR_LOGIN_SERVER }}/web:cache
+          cache-to: type=registry,ref=${{ secrets.ACR_LOGIN_SERVER }}/web:cache,mode=max
+
+  # ---------------------------------------------------------------------------
+  # Deploy API to Azure Container Apps
+  # ---------------------------------------------------------------------------
+  deploy-api:
+    name: Deploy API
+    runs-on: ubuntu-latest
+    needs: [build-api]
+    environment: production
+
+    steps:
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy API to Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          resourceGroup: ${{ secrets.AZURE_RESOURCE_GROUP }}
+          containerAppName: ${{ secrets.AZURE_CONTAINER_APP_API }}
+          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/api:${{ env.IMAGE_TAG }}
+
+  # ---------------------------------------------------------------------------
+  # Deploy Web to Azure Container Apps
+  # ---------------------------------------------------------------------------
+  deploy-web:
+    name: Deploy Web
+    runs-on: ubuntu-latest
+    needs: [build-web, deploy-api] # Deploy web after API is ready
+    environment: production
+
+    steps:
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy Web to Container Apps
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          resourceGroup: ${{ secrets.AZURE_RESOURCE_GROUP }}
+          containerAppName: ${{ secrets.AZURE_CONTAINER_APP_WEB }}
+          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/web:${{ env.IMAGE_TAG }}
+
+  # ---------------------------------------------------------------------------
+  # Post-Deployment Verification
+  # ---------------------------------------------------------------------------
+  verify:
+    name: Verify Deployment
+    runs-on: ubuntu-latest
+    needs: [deploy-api, deploy-web]
+
+    steps:
+      - name: Wait for services to start
+        run: sleep 30
+
+      - name: Health check API
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.API_HEALTH_URL }} || echo "000")
+          if [ "$response" != "200" ]; then
+            echo "API health check failed with status: $response"
+            exit 1
+          fi
+          echo "API health check passed"
+
+      - name: Health check Web
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.WEB_HEALTH_URL }} || echo "000")
+          if [ "$response" != "200" ]; then
+            echo "Web health check failed with status: $response"
+            exit 1
+          fi
+          echo "Web health check passed"
+
+      - name: Deployment summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Component | Image | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| API | \`${{ secrets.ACR_LOGIN_SERVER }}/api:${{ env.IMAGE_TAG }}\` | ✅ Deployed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Web | \`${{ secrets.ACR_LOGIN_SERVER }}/web:${{ env.IMAGE_TAG }}\` | ✅ Deployed |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+
+# =============================================================================
+# Required GitHub Secrets:
+# =============================================================================
+# AZURE_CREDENTIALS        - Service principal JSON for Azure login
+# ACR_LOGIN_SERVER         - Azure Container Registry URL (e.g., myapp.azurecr.io)
+# ACR_USERNAME             - ACR admin username
+# ACR_PASSWORD             - ACR admin password
+# AZURE_RESOURCE_GROUP     - Resource group containing Container Apps
+# AZURE_CONTAINER_APP_API  - Name of API Container App
+# AZURE_CONTAINER_APP_WEB  - Name of Web Container App
+# NEXT_PUBLIC_API_URL      - Public URL for API (e.g., https://api.myapp.com/api)
+# API_HEALTH_URL           - API health check URL
+# WEB_HEALTH_URL           - Web health check URL
+# =============================================================================
+#
+# Azure Infrastructure Required:
+# =============================================================================
+# 1. Resource Group
+# 2. Azure Container Registry (ACR)
+# 3. Container Apps Environment
+# 4. Container App: API (NestJS) - min replicas: 0, max: 10
+# 5. Container App: Web (Next.js) - min replicas: 1, max: 5
+# 6. Neon Serverless Postgres (Azure Marketplace) - RECOMMENDED
+#    - Scale-to-zero aligned with Container Apps
+#    - Database branching for PR preview environments
+#    - Built-in connection pooling for serverless
+#    - https://neon.tech/docs/guides/azure
+# 7. Azure Key Vault (for secrets management)
+# =============================================================================

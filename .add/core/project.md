@@ -57,6 +57,7 @@ nestjs-nextjs-template/
 ### Backend (NestJS)
 
 **Service Pattern**:
+
 ```typescript
 @Injectable()
 export class UserService {
@@ -69,6 +70,7 @@ export class UserService {
 ```
 
 **Controller Pattern**:
+
 ```typescript
 @Controller('users')
 @UseGuards(JwtAuthGuard)
@@ -87,6 +89,7 @@ export class UserController {
 ### Frontend (Next.js)
 
 **Server Component** (default):
+
 ```typescript
 export default async function Page({ params }: Props) {
   const data = await fetchData(params.id);
@@ -95,6 +98,7 @@ export default async function Page({ params }: Props) {
 ```
 
 **Client Component** (interactive):
+
 ```typescript
 'use client';
 export function InteractiveComponent() {
@@ -104,6 +108,7 @@ export function InteractiveComponent() {
 ```
 
 **Custom Hook Pattern**:
+
 ```typescript
 export function useCustomHook() {
   const [data, setData] = useState(null);
@@ -120,6 +125,7 @@ export function useCustomHook() {
 ## Quick Commands
 
 ### Development
+
 ```bash
 npm run dev:clean       # Clean start (kills ports, removes locks)
 npm run dev:all         # Start API + Web concurrently
@@ -127,6 +133,7 @@ npm run kill-ports      # Kill processes on 3000 and 3333
 ```
 
 ### Database
+
 ```bash
 npm run db:up           # Start PostgreSQL (Docker)
 npm run db:down         # Stop PostgreSQL
@@ -136,6 +143,7 @@ npm run db:generate     # Generate Prisma client
 ```
 
 ### Testing
+
 ```bash
 npm run test:all        # All unit tests
 npm run e2e:all         # All E2E tests
@@ -144,11 +152,13 @@ npm run health-check    # Full verification (lint + test + e2e)
 ```
 
 ### Contract Generation
+
 ```bash
 npm run api:generate    # Generate OpenAPI client with Orval
 ```
 
 ### Individual Projects
+
 ```bash
 npx nx serve api        # Start API only
 npx nx dev web          # Start Web only
@@ -158,20 +168,31 @@ npx nx e2e <project>    # Run E2E for specific project
 
 ## Current Project State
 
-### Phase 3: Polish & Production (IN PROGRESS)
+### Phase 3: Polish & Production ✅ COMPLETE
 
 **Completed**:
+
 - ✅ 3.1: Error Handling Strategy (Global filters, error boundaries, correlation IDs)
 - ✅ 3.2: Security Hardening (Helmet.js, rate limiting, CORS)
 - ✅ 3.3: Comprehensive Test Suite (Security E2E tests)
+- ✅ 3.4: Documentation & Deployment Prep
 
-**Current**:
-- 🏃 3.4: Documentation & Deployment Prep
+### Deployment Infrastructure (Provisioned)
+
+| Resource           | Value                                                              |
+| ------------------ | ------------------------------------------------------------------ |
+| Resource Group     | `rg-authapp-dev-westus3`                                           |
+| Container Registry | `authappdevwus3acr.azurecr.io`                                     |
+| API App            | `authapp-dev-api.lemonrock-c989340f.westus3.azurecontainerapps.io` |
+| Web App            | `authapp-dev-web.lemonrock-c989340f.westus3.azurecontainerapps.io` |
+| Database           | `authapp-dev-postgres.postgres.database.azure.com`                 |
 
 **Next**:
+
 - Phase 4: Feature Expansion (Event editing, filtering)
 
 ### Test Status
+
 - **Total**: 126/127 tests passing (99% pass rate)
 - **Web Unit**: 103 tests
 - **API Unit**: 22 tests
@@ -180,6 +201,7 @@ npx nx e2e <project>    # Run E2E for specific project
 - **Health Check**: ✅ PASSING
 
 ### Key Features
+
 1. **Authentication**: JWT with Passport.js, bcrypt password hashing
 2. **Event Planner**: Full CRUD with PostgreSQL persistence, calendar picker
 3. **Contract-First API**: OpenAPI/Swagger with Orval generated client
@@ -189,4 +211,4 @@ npx nx e2e <project>    # Run E2E for specific project
 
 ---
 
-*Update this file when stack, conventions, or project state changes*
+_Update this file when stack, conventions, or project state changes_
