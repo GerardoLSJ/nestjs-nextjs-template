@@ -118,12 +118,21 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy API to Container Apps
-        uses: azure/container-apps-deploy-action@v1
-        with:
-          resourceGroup: ${{ secrets.AZURE_RESOURCE_GROUP }}
-          containerAppName: ${{ secrets.AZURE_CONTAINER_APP_API }}
-          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/api:${{ env.IMAGE_TAG }}
+      - name: Configure ACR credentials for API
+        run: |
+          az containerapp registry set \
+            --name ${{ secrets.AZURE_CONTAINER_APP_API }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --server ${{ secrets.ACR_LOGIN_SERVER }} \
+            --username ${{ secrets.ACR_USERNAME }} \
+            --password ${{ secrets.ACR_PASSWORD }}
+
+      - name: Deploy API Container App
+        run: |
+          az containerapp update \
+            --name ${{ secrets.AZURE_CONTAINER_APP_API }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --image ${{ secrets.ACR_LOGIN_SERVER }}/api:${{ env.IMAGE_TAG }}
 
   # ---------------------------------------------------------------------------
   # Deploy Web to Azure Container Apps
@@ -140,12 +149,21 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy Web to Container Apps
-        uses: azure/container-apps-deploy-action@v1
-        with:
-          resourceGroup: ${{ secrets.AZURE_RESOURCE_GROUP }}
-          containerAppName: ${{ secrets.AZURE_CONTAINER_APP_WEB }}
-          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/web:${{ env.IMAGE_TAG }}
+      - name: Configure ACR credentials for Web
+        run: |
+          az containerapp registry set \
+            --name ${{ secrets.AZURE_CONTAINER_APP_WEB }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --server ${{ secrets.ACR_LOGIN_SERVER }} \
+            --username ${{ secrets.ACR_USERNAME }} \
+            --password ${{ secrets.ACR_PASSWORD }}
+
+      - name: Deploy Web Container App
+        run: |
+          az containerapp update \
+            --name ${{ secrets.AZURE_CONTAINER_APP_WEB }} \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --image ${{ secrets.ACR_LOGIN_SERVER }}/web:${{ env.IMAGE_TAG }}
 
   # ---------------------------------------------------------------------------
   # Post-Deployment Verification
