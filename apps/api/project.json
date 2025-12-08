@@ -28,13 +28,7 @@
           "optimization": true,
           "extractLicenses": true,
           "sourceMap": false,
-          "namedChunks": false,
-          "fileReplacements": [
-            {
-              "replace": "apps/api/src/environments/environment.ts",
-              "with": "apps/api/src/environments/environment.prod.ts"
-            }
-          ]
+          "namedChunks": false
         }
       }
     },
