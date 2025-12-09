@@ -6,9 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export * from './appControllerGetData200';
-export * from './appControllerHealthCheck200';
-export * from './createEventDto';
-export * from './loginDto';
-export * from './registerDto';
-export * from './updateEventDto';
+export type AppControllerHealthCheck200 = {
+  status?: string;
+  timestamp?: string;
+};

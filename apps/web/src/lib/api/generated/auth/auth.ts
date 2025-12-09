@@ -17,6 +17,8 @@ import type { LoginDto, RegisterDto } from '.././models';
 
 import { customFetch } from '../../client';
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
 /**
  * @summary Register a new user
  */
@@ -67,6 +69,7 @@ export const getAuthControllerRegisterMutationOptions = <
     { data: RegisterDto },
     TContext
   >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof authControllerRegister>>,
   TError,
@@ -74,11 +77,11 @@ export const getAuthControllerRegisterMutationOptions = <
   TContext
 > => {
   const mutationKey = ['authControllerRegister'];
-  const { mutation: mutationOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof authControllerRegister>>,
@@ -86,7 +89,7 @@ export const getAuthControllerRegisterMutationOptions = <
   > = (props) => {
     const { data } = props ?? {};
 
-    return authControllerRegister(data);
+    return authControllerRegister(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -109,6 +112,7 @@ export const useAuthControllerRegister = <TError = void, TContext = unknown>(
       { data: RegisterDto },
       TContext
     >;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
@@ -168,6 +172,7 @@ export const getAuthControllerLoginMutationOptions = <TError = void, TContext = 
     { data: LoginDto },
     TContext
   >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof authControllerLogin>>,
   TError,
@@ -175,11 +180,11 @@ export const getAuthControllerLoginMutationOptions = <TError = void, TContext = 
   TContext
 > => {
   const mutationKey = ['authControllerLogin'];
-  const { mutation: mutationOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof authControllerLogin>>,
@@ -187,7 +192,7 @@ export const getAuthControllerLoginMutationOptions = <TError = void, TContext = 
   > = (props) => {
     const { data } = props ?? {};
 
-    return authControllerLogin(data);
+    return authControllerLogin(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -210,6 +215,7 @@ export const useAuthControllerLogin = <TError = void, TContext = unknown>(
       { data: LoginDto },
       TContext
     >;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<

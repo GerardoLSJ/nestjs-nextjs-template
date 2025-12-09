@@ -11,6 +11,8 @@ export interface UpdateEventDto {
   title?: string;
   /** Comma-separated list of event members */
   members?: string;
+  /** Event messages or description */
+  messages?: string;
   /** Event date and time in ISO 8601 format */
   datetime?: string;
 }

@@ -190,7 +190,7 @@ describe('useEvents (API Integration)', () => {
         members: 'John',
         datetime: '2025-12-10T10:00:00Z',
       })
-    ).rejects.toThrow('Unauthorized'); // customFetch uses the error message from the response
+    ).rejects.toThrow('Session expired. Please log in again.');
 
     // Re-add token to reset state for other tests that run after this one
     mockLocalStorage.setItem('accessToken', 'mock-jwt-token-12345');

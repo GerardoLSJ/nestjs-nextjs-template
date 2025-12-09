@@ -16,6 +16,14 @@ export class CreateEventDto {
   members: string;
 
   @ApiProperty({
+    example: 'Discuss project timeline and deliverables',
+    description: 'Event messages or description',
+  })
+  @IsString()
+  @IsNotEmpty()
+  messages: string;
+
+  @ApiProperty({
     example: '2025-12-20T10:00:00Z',
     description: 'Event date and time in ISO 8601 format',
   })

@@ -99,3 +99,21 @@
   color: #9ca3af;
   font-size: 1rem;
 }
+
+.timeZones {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.timeZoneRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.timeZoneLabel {
+  font-weight: 600;
+  color: #4b5563;
+  min-width: 2.5rem;
+}

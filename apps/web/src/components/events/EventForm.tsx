@@ -14,6 +14,7 @@ interface EventFormProps {
 export function EventForm({ onSubmit, datetime, onDatetimeChange }: EventFormProps) {
   const [title, setTitle] = useState('');
   const [members, setMembers] = useState('');
+  const [messages, setMessages] = useState('');
   // datetime state is now controlled by props
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -22,12 +23,14 @@ export function EventForm({ onSubmit, datetime, onDatetimeChange }: EventFormPro
     onSubmit({
       title,
       members,
+      messages,
       datetime,
     });
 
     // Reset form fields controlled by EventForm
     setTitle('');
     setMembers('');
+    setMessages('');
     // Note: datetime reset is now handled by the container/caller of onDatetimeChange
   };
 
@@ -61,6 +64,21 @@ export function EventForm({ onSubmit, datetime, onDatetimeChange }: EventFormPro
           placeholder="John, Sarah, Mike"
           value={members}
           onChange={(e) => setMembers(e.target.value)}
+        />
+      </div>
+
+      <div className={styles.field}>
+        <label htmlFor="messages" className={styles.label}>
+          Messages
+        </label>
+        <textarea
+          id="messages"
+          className={styles.textarea}
+          placeholder="Add event details, agenda, or notes..."
+          value={messages}
+          onChange={(e) => setMessages(e.target.value)}
+          required
+          rows={3}
         />
       </div>
 

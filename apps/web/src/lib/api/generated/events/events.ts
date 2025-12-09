@@ -25,6 +25,8 @@ import type { CreateEventDto, UpdateEventDto } from '.././models';
 
 import { customFetch } from '../../client';
 
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
 /**
  * @summary Create a new event
  */
@@ -75,6 +77,7 @@ export const getEventsControllerCreateMutationOptions = <
     { data: CreateEventDto },
     TContext
   >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof eventsControllerCreate>>,
   TError,
@@ -82,11 +85,11 @@ export const getEventsControllerCreateMutationOptions = <
   TContext
 > => {
   const mutationKey = ['eventsControllerCreate'];
-  const { mutation: mutationOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof eventsControllerCreate>>,
@@ -94,7 +97,7 @@ export const getEventsControllerCreateMutationOptions = <
   > = (props) => {
     const { data } = props ?? {};
 
-    return eventsControllerCreate(data);
+    return eventsControllerCreate(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -117,6 +120,7 @@ export const useEventsControllerCreate = <TError = void, TContext = unknown>(
       { data: CreateEventDto },
       TContext
     >;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
@@ -177,14 +181,15 @@ export const getEventsControllerFindAllQueryOptions = <
   query?: Partial<
     UseQueryOptions<Awaited<ReturnType<typeof eventsControllerFindAll>>, TError, TData>
   >;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getEventsControllerFindAllQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof eventsControllerFindAll>>> = ({
     signal,
-  }) => eventsControllerFindAll(signal);
+  }) => eventsControllerFindAll({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof eventsControllerFindAll>>,
@@ -214,6 +219,7 @@ export function useEventsControllerFindAll<
         >,
         'initialData'
       >;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -233,6 +239,7 @@ export function useEventsControllerFindAll<
         >,
         'initialData'
       >;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -244,6 +251,7 @@ export function useEventsControllerFindAll<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof eventsControllerFindAll>>, TError, TData>
     >;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -259,6 +267,7 @@ export function useEventsControllerFindAll<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof eventsControllerFindAll>>, TError, TData>
     >;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -338,15 +347,16 @@ export const getEventsControllerFindOneQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof eventsControllerFindOne>>, TError, TData>
     >;
+    request?: SecondParameter<typeof customFetch>;
   }
 ) => {
-  const { query: queryOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getEventsControllerFindOneQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof eventsControllerFindOne>>> = ({
     signal,
-  }) => eventsControllerFindOne(id, signal);
+  }) => eventsControllerFindOne(id, { signal, ...requestOptions });
 
   return { queryKey, queryFn, enabled: !!id, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof eventsControllerFindOne>>,
@@ -377,6 +387,7 @@ export function useEventsControllerFindOne<
         >,
         'initialData'
       >;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -397,6 +408,7 @@ export function useEventsControllerFindOne<
         >,
         'initialData'
       >;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -409,6 +421,7 @@ export function useEventsControllerFindOne<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof eventsControllerFindOne>>, TError, TData>
     >;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -425,6 +438,7 @@ export function useEventsControllerFindOne<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof eventsControllerFindOne>>, TError, TData>
     >;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -504,6 +518,7 @@ export const getEventsControllerUpdateMutationOptions = <
     { id: string; data: UpdateEventDto },
     TContext
   >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof eventsControllerUpdate>>,
   TError,
@@ -511,11 +526,11 @@ export const getEventsControllerUpdateMutationOptions = <
   TContext
 > => {
   const mutationKey = ['eventsControllerUpdate'];
-  const { mutation: mutationOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof eventsControllerUpdate>>,
@@ -523,7 +538,7 @@ export const getEventsControllerUpdateMutationOptions = <
   > = (props) => {
     const { id, data } = props ?? {};
 
-    return eventsControllerUpdate(id, data);
+    return eventsControllerUpdate(id, data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -546,6 +561,7 @@ export const useEventsControllerUpdate = <TError = void | void | void, TContext 
       { id: string; data: UpdateEventDto },
       TContext
     >;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
@@ -620,6 +636,7 @@ export const getEventsControllerRemoveMutationOptions = <
     { id: string },
     TContext
   >;
+  request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof eventsControllerRemove>>,
   TError,
@@ -627,11 +644,11 @@ export const getEventsControllerRemoveMutationOptions = <
   TContext
 > => {
   const mutationKey = ['eventsControllerRemove'];
-  const { mutation: mutationOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof eventsControllerRemove>>,
@@ -639,7 +656,7 @@ export const getEventsControllerRemoveMutationOptions = <
   > = (props) => {
     const { id } = props ?? {};
 
-    return eventsControllerRemove(id);
+    return eventsControllerRemove(id, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -662,6 +679,7 @@ export const useEventsControllerRemove = <TError = void | void | void, TContext 
       { id: string },
       TContext
     >;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<

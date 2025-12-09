@@ -18,9 +18,150 @@ import type {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import type { AppControllerGetData200 } from '.././models';
+import type { AppControllerGetData200, AppControllerHealthCheck200 } from '.././models';
 
 import { customFetch } from '../../client';
+
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
+/**
+ * Returns health status of the API
+ * @summary Health check endpoint
+ */
+export type appControllerHealthCheckResponse200 = {
+  data: AppControllerHealthCheck200;
+  status: 200;
+};
+
+export type appControllerHealthCheckResponseSuccess = appControllerHealthCheckResponse200 & {
+  headers: Headers;
+};
+export type appControllerHealthCheckResponse = appControllerHealthCheckResponseSuccess;
+
+export const getAppControllerHealthCheckUrl = () => {
+  return `/api/health`;
+};
+
+export const appControllerHealthCheck = async (
+  options?: RequestInit
+): Promise<appControllerHealthCheckResponse> => {
+  return customFetch<appControllerHealthCheckResponse>(getAppControllerHealthCheckUrl(), {
+    ...options,
+    method: 'GET',
+  });
+};
+
+export const getAppControllerHealthCheckQueryKey = () => {
+  return [`/api/health`] as const;
+};
+
+export const getAppControllerHealthCheckQueryOptions = <
+  TData = Awaited<ReturnType<typeof appControllerHealthCheck>>,
+  TError = unknown,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof appControllerHealthCheck>>, TError, TData>
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAppControllerHealthCheckQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof appControllerHealthCheck>>> = ({
+    signal,
+  }) => appControllerHealthCheck({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof appControllerHealthCheck>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AppControllerHealthCheckQueryResult = NonNullable<
+  Awaited<ReturnType<typeof appControllerHealthCheck>>
+>;
+export type AppControllerHealthCheckQueryError = unknown;
+
+export function useAppControllerHealthCheck<
+  TData = Awaited<ReturnType<typeof appControllerHealthCheck>>,
+  TError = unknown,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof appControllerHealthCheck>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appControllerHealthCheck>>,
+          TError,
+          Awaited<ReturnType<typeof appControllerHealthCheck>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAppControllerHealthCheck<
+  TData = Awaited<ReturnType<typeof appControllerHealthCheck>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof appControllerHealthCheck>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appControllerHealthCheck>>,
+          TError,
+          Awaited<ReturnType<typeof appControllerHealthCheck>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAppControllerHealthCheck<
+  TData = Awaited<ReturnType<typeof appControllerHealthCheck>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof appControllerHealthCheck>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Health check endpoint
+ */
+
+export function useAppControllerHealthCheck<
+  TData = Awaited<ReturnType<typeof appControllerHealthCheck>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof appControllerHealthCheck>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAppControllerHealthCheckQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 /**
  * Returns a welcome message from the API
@@ -58,13 +199,14 @@ export const getAppControllerGetDataQueryOptions = <
   TError = unknown,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof appControllerGetData>>, TError, TData>>;
+  request?: SecondParameter<typeof customFetch>;
 }) => {
-  const { query: queryOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getAppControllerGetDataQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof appControllerGetData>>> = ({ signal }) =>
-    appControllerGetData(signal);
+    appControllerGetData({ signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof appControllerGetData>>,
@@ -94,6 +236,7 @@ export function useAppControllerGetData<
         >,
         'initialData'
       >;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -113,6 +256,7 @@ export function useAppControllerGetData<
         >,
         'initialData'
       >;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -124,6 +268,7 @@ export function useAppControllerGetData<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof appControllerGetData>>, TError, TData>
     >;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -139,6 +284,7 @@ export function useAppControllerGetData<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof appControllerGetData>>, TError, TData>
     >;
+    request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {

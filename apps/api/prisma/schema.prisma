@@ -24,6 +24,7 @@ model Event {
   id        String   @id @default(cuid())
   title     String
   members   String
+  messages  String
   datetime  DateTime
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
