@@ -1,5 +1,9 @@
 # API Context
 
+<!-- @confidence: 0.85 -->
+<!-- @verified: 2024-12-09 -->
+<!-- @source: code-audit -->
+
 > **Tokens**: ~1300 | **Triggers**: api, rest, endpoint, controller, dto, validation, nestjs, swagger, openapi
 
 ## Overview
@@ -71,7 +75,7 @@ export class UserService {
   async findById(id: string): Promise<User> {
     return this.prisma.user.findUniqueOrThrow({
       where: { id },
-      select: { id: true, email: true, createdAt: true } // Exclude password
+      select: { id: true, email: true, createdAt: true }, // Exclude password
     });
   }
 
@@ -98,6 +102,7 @@ export class UserService {
 ### OpenAPI/Swagger Setup
 
 **Access Documentation**:
+
 - Local: http://localhost:3333/api/docs
 - Interactive UI for testing endpoints
 
@@ -185,6 +190,7 @@ export const customFetch = async <T>(url: string, options?: RequestInit): Promis
 ```
 
 **Key Learnings**:
+
 1. Generated clients need explicit base URL handling in test environments
 2. Update all test mocks when migrating to generated client
 3. Error expectations must match generated client format

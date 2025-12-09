@@ -1,0 +1,12 @@
+checkpoints:
+  hard_stop: 0.4
+  human_review: 0.5
+  verification_loop: 0.6
+  warning: 0.7
+  normal: 0.8
+
+tier_overrides:
+  tier_1:
+    hard_stop: 0.3
+  tier_3:
+    warning: 0.85

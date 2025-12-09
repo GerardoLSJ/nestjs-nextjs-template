@@ -1,5 +1,9 @@
 # Security Context
 
+<!-- @confidence: 0.85 -->
+<!-- @verified: 2024-12-09 -->
+<!-- @source: code-audit -->
+
 > **Tokens**: ~800 | **Triggers**: security, helmet, cors, rate-limit, throttle, headers, csp, hsts
 
 ## Overview
@@ -23,36 +27,38 @@ Multi-layered security with Helmet.js HTTP headers, rate limiting, and environme
 ```typescript
 import helmet from 'helmet';
 
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", 'data:', 'https:'],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+      },
     },
-  },
-  hsts: {
-    maxAge: 31536000,
-    includeSubDomains: true,
-    preload: true,
-  },
-  noSniff: true,
-  hidePoweredBy: true,
-  xssFilter: true,
-  frameguard: { action: 'deny' },
-}));
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true,
+    },
+    noSniff: true,
+    hidePoweredBy: true,
+    xssFilter: true,
+    frameguard: { action: 'deny' },
+  })
+);
 ```
 
 **Headers Added**:
 
-| Header                      | Value                                   | Purpose                    |
-| --------------------------- | --------------------------------------- | -------------------------- |
-| Content-Security-Policy     | Restricts resource origins              | XSS Prevention             |
-| Strict-Transport-Security   | max-age=31536000; includeSubDomains     | HTTPS Enforcement          |
-| X-Content-Type-Options      | nosniff                                 | MIME Sniffing Prevention   |
-| X-Frame-Options             | DENY                                    | Clickjacking Prevention    |
-| X-XSS-Protection            | 1; mode=block                           | Browser XSS Protection     |
+| Header                    | Value                               | Purpose                  |
+| ------------------------- | ----------------------------------- | ------------------------ |
+| Content-Security-Policy   | Restricts resource origins          | XSS Prevention           |
+| Strict-Transport-Security | max-age=31536000; includeSubDomains | HTTPS Enforcement        |
+| X-Content-Type-Options    | nosniff                             | MIME Sniffing Prevention |
+| X-Frame-Options           | DENY                                | Clickjacking Prevention  |
+| X-XSS-Protection          | 1; mode=block                       | Browser XSS Protection   |
 
 ### Rate Limiting
 
@@ -66,8 +72,8 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
     ThrottlerModule.forRoot([
       {
         name: 'default',
-        ttl: 900000,  // 15 minutes
-        limit: 100,   // 100 requests
+        ttl: 900000, // 15 minutes
+        limit: 100, // 100 requests
       },
     ]),
   ],
@@ -89,7 +95,7 @@ import { SkipThrottle } from '@nestjs/throttler';
 @Controller()
 export class AppController {
   @Get()
-  @SkipThrottle()  // Health check endpoint not rate limited
+  @SkipThrottle() // Health check endpoint not rate limited
   getData() {
     return { message: 'OK' };
   }
@@ -131,6 +137,7 @@ curl -I http://localhost:3333/api
 ```
 
 Look for:
+
 - `Strict-Transport-Security`
 - `Content-Security-Policy`
 - `X-Frame-Options`
@@ -138,6 +145,7 @@ Look for:
 - `X-XSS-Protection`
 
 **Using Browser DevTools**:
+
 1. Open DevTools (F12)
 2. Go to Network tab
 3. Make request to API
@@ -166,8 +174,8 @@ it('should apply rate limiting', async () => {
 ThrottlerModule.forRoot([
   {
     name: 'default',
-    ttl: 60000,   // 1 minute
-    limit: 10,    // 10 requests
+    ttl: 60000, // 1 minute
+    limit: 10, // 10 requests
   },
 ]);
 ```
@@ -179,11 +187,13 @@ ThrottlerModule.forRoot([
 **Problem**: Manual instantiation doesn't inject configuration
 
 **Incorrect**:
+
 ```typescript
 app.useGlobalGuards(new ThrottlerGuard());
 ```
 
 **Correct**:
+
 ```typescript
 @Module({
   providers: [
@@ -204,8 +214,9 @@ ALLOWED_ORIGINS=https://example.com,https://app.example.com
 ```
 
 **Parsing**:
+
 ```typescript
-origin: process.env.ALLOWED_ORIGINS?.split(',')
+origin: process.env.ALLOWED_ORIGINS?.split(',');
 ```
 
 ### CSP Strictness
@@ -252,6 +263,7 @@ npm run health-check
 ## Test Coverage
 
 **Security E2E Tests** (11 tests):
+
 - 6 tests for Helmet headers
 - 3 tests for rate limiting
 - 1 test for CORS

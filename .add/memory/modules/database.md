@@ -1,5 +1,9 @@
 # Database Context
 
+<!-- @confidence: 0.90 -->
+<!-- @verified: 2024-12-09 -->
+<!-- @source: code-audit -->
+
 > **Tokens**: ~1200 | **Triggers**: database, prisma, postgres, postgresql, entity, migration, schema, model
 
 ## Overview
@@ -86,11 +90,13 @@ npx prisma generate
 ### Running Migrations
 
 **Development**:
+
 ```bash
 npx prisma migrate dev --name descriptive_name
 ```
 
 **Production**:
+
 ```bash
 npx prisma migrate deploy
 ```
@@ -98,6 +104,7 @@ npx prisma migrate deploy
 ### Database GUI
 
 **Prisma Studio**:
+
 ```bash
 npx prisma studio
 ```
@@ -131,6 +138,7 @@ npx prisma generate
 **Problem**: Multiple developers creating migrations simultaneously
 
 **Solution**:
+
 1. Pull latest migrations from git
 2. Reset local database if needed: `npx prisma migrate reset`
 3. Create new migration with descriptive name
@@ -168,6 +176,7 @@ DATABASE_URL="postgresql://user:password@localhost:5432/dbname?schema=public"
 ```
 
 **Test Database**:
+
 ```env
 DATABASE_URL="postgresql://user:password@localhost:5432/test_db?schema=public"
 ```

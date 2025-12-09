@@ -1,5 +1,9 @@
 # Testing Context
 
+<!-- @confidence: 0.85 -->
+<!-- @verified: 2024-12-09 -->
+<!-- @source: code-audit -->
+
 > **Tokens**: ~1100 | **Triggers**: test, jest, e2e, unit, mock, msw, fixture, playwright
 
 ## Overview
@@ -9,17 +13,20 @@ Comprehensive testing with Jest (unit), Supertest (API E2E), Playwright (Web E2E
 ## Key Files
 
 **Unit Tests**:
+
 - `apps/api/src/**/*.spec.ts` - API unit tests
 - `apps/web/src/**/*.spec.tsx` - Web unit tests
 - `jest.config.ts` - Jest configuration
 
 **E2E Tests**:
+
 - `apps/api-e2e/src/**/*.e2e-spec.ts` - API E2E tests
 - `apps/web-e2e/src/**/*.spec.ts` - Web E2E tests
 - `apps/api-e2e/jest.config.ts` - API E2E config
 - `apps/web-e2e/playwright.config.ts` - Playwright config
 
 **Mocking**:
+
 - `apps/web/src/test/mocks/` - MSW handlers and setup
 - `apps/web/src/test/polyfills.ts` - Jest polyfills
 - `apps/web/src/test/utils.tsx` - Test utilities
@@ -268,6 +275,7 @@ source ~/.zshrc && npx nx e2e api-e2e
 ### Test Isolation
 
 **Best Practices**:
+
 - Clear mocks in beforeEach: `jest.clearAllMocks()`
 - Reset handlers after each test: `server.resetHandlers()`
 - Clean up localStorage: `localStorage.clear()`
@@ -285,6 +293,7 @@ npm run health-check   # Full verification
 ## Test Status
 
 **Current** (as of 2025-12-07):
+
 - Total: 126/127 tests passing (99%)
 - Web unit: 103 tests
 - API unit: 22 tests

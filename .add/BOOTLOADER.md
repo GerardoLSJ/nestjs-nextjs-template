@@ -1,6 +1,6 @@
 # ADD Framework Bootloader
 
-> **Version**: 2.0.0 | **Entry Point**: `@entry-point` | **Target**: Haiku 4.5 / Sonnet 4.5
+> **Version**: 3.1.0 | **Entry Point**: `@entry-point` | **Target**: Haiku 4.5 / Sonnet 4.5 / Opus 4.5
 
 ## Quick Command
 
@@ -17,23 +17,39 @@ When you see `@entry-point`, execute this sequence:
 ### Phase 0: Load Core (Always ~2K tokens)
 
 ```
-READ: .add/BOOTLOADER.md     ← You are here
-READ: .add/manifest.json     ← Context index
-READ: .add/core/project.md   ← Tech stack & conventions
+READ: .add/BOOTLOADER.md     <- You are here
+READ: .add/manifest.json     <- Context index
+READ: .add/core/project.md   <- Tech stack & conventions
+```
+
+### Phase 0.5: Uncertainty Assessment (v3.1)
+
+Before proceeding to context loading:
+
+1. Identify zones affected by task
+2. Check staleness of relevant memory files (see `.add/config/staleness.yaml`)
+3. Load zone-specific gotchas from `.add/gotchas/REGISTRY.md`
+4. Calculate initial confidence score
+5. If confidence < 0.7 -> Enter verification loop before Phase 1
+
+```
+CHECK: .add/zones/*.md       <- Zone maps for affected areas
+CHECK: .add/gotchas/REGISTRY.md <- Known pitfalls
+EVAL:  confidence >= 0.7     <- Proceed or verify first
 ```
 
 ### Phase 1: Determine Task Type
 
 Parse command and map to context requirements:
 
-| Command | Context Segments | Estimated Tokens |
-|---------|------------------|------------------|
-| `develop-feature <name>` | core + feature-template + relevant-modules | ~4-6K |
-| `fix-bug <issue>` | core + error-patterns + affected-modules | ~3-5K |
-| `refactor <target>` | core + architecture + target-module | ~4-6K |
-| `review <scope>` | core + standards + scope-files | ~3-4K |
-| `continue` | core + active-session | ~3-5K |
-| `status` | core + session-summary | ~2K |
+| Command                  | Context Segments                           | Estimated Tokens |
+| ------------------------ | ------------------------------------------ | ---------------- |
+| `develop-feature <name>` | core + feature-template + relevant-modules | ~4-6K            |
+| `fix-bug <issue>`        | core + error-patterns + affected-modules   | ~3-5K            |
+| `refactor <target>`      | core + architecture + target-module        | ~4-6K            |
+| `review <scope>`         | core + standards + scope-files             | ~3-4K            |
+| `continue`               | core + active-session                      | ~3-5K            |
+| `status`                 | core + session-summary                     | ~2K              |
 
 ### Phase 2: Load Selective Context
 
@@ -66,6 +82,7 @@ ELSE:
 Creates a new feature with full context loading.
 
 **Context Loaded**:
+
 - Core project context
 - Feature template
 - Related module documentation
@@ -80,7 +97,8 @@ Creates a new feature with full context loading.
 Resumes the most recent active session.
 
 **Context Loaded**:
-- Core project context  
+
+- Core project context
 - Active session file
 - Task progress state
 - Any blockers
@@ -100,6 +118,7 @@ Quick overview without full context load.
 Delegates a task to a smaller model with compressed context.
 
 **Process**:
+
 1. Opus/Sonnet compresses relevant context
 2. Creates handoff package in `.add/handoffs/<task-id>.md`
 3. Haiku receives: compressed context + specific task + success criteria
@@ -110,11 +129,11 @@ Delegates a task to a smaller model with compressed context.
 
 ### Token Budgets by Model
 
-| Model | Max Context | Reserved for Response | Available for Memory |
-|-------|-------------|----------------------|---------------------|
-| Haiku 4.5 | 200K | 8K | ~8-12K recommended |
-| Sonnet 4.5 | 200K | 16K | ~16-24K recommended |
-| Opus 4.5 | 200K | 32K | ~32-48K recommended |
+| Model      | Max Context | Reserved for Response | Available for Memory |
+| ---------- | ----------- | --------------------- | -------------------- |
+| Haiku 4.5  | 200K        | 8K                    | ~8-12K recommended   |
+| Sonnet 4.5 | 200K        | 16K                   | ~16-24K recommended  |
+| Opus 4.5   | 200K        | 32K                   | ~32-48K recommended  |
 
 ### Loading Priority
 
@@ -187,8 +206,9 @@ When you (the agent) receive `@entry-point`:
 **Context Budget**: 8K tokens (Haiku mode)
 
 ### Loading Context...
+
 - ✅ core/project.md (800 tokens)
-- ✅ core/agents.md (400 tokens)  
+- ✅ core/agents.md (400 tokens)
 - ✅ memory/modules/auth.md (1200 tokens)
 - ✅ sessions/active/ (checking for existing...)
 - ⏭️ Skipped: memory/modules/database.md (not relevant)
@@ -196,6 +216,7 @@ When you (the agent) receive `@entry-point`:
 **Total Loaded**: 2,400 tokens | **Budget Remaining**: 5,600 tokens
 
 ### Ready to Execute
+
 [Proceeds with feature development...]
 ```
 
@@ -239,6 +260,7 @@ For any development task, use the ADD Framework bootloader:
 @entry-point <command> <args>
 
 Before starting work, ALWAYS:
+
 1. Read `.add/BOOTLOADER.md`
 2. Follow the boot sequence
 3. Load appropriate context from manifest
@@ -255,4 +277,27 @@ Before starting work, ALWAYS:
 
 ---
 
-*Bootloader v2.0.0 | Hierarchical Context | Model-Aware Loading*
+---
+
+## Tier Self-Assessment
+
+Before proceeding, identify your tier:
+
+| Capability              | Tier 1 | Tier 2  | Tier 3 |
+| ----------------------- | ------ | ------- | ------ |
+| Long-horizon planning   | Yes    | Limited | No     |
+| Architectural decisions | Yes    | No      | No     |
+| Multi-file refactoring  | Yes    | Yes     | No     |
+| Atomic task execution   | Yes    | Yes     | Yes    |
+
+**Assess honestly. When uncertain, assume lower tier.**
+
+### Tier Constraints
+
+- **Tier 3**: Max 2 files per turn. No new dependencies. No directory creation.
+- **Tier 2**: Max 5 files per turn. Dependencies require justification.
+- **Tier 1**: Full access. Responsible for architectural governance.
+
+---
+
+_Bootloader v3.1.0 | Uncertainty-Aware | Tiered Intelligence | Model-Aware Loading_

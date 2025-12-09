@@ -1,5 +1,9 @@
 # Frontend Context
 
+<!-- @confidence: 0.85 -->
+<!-- @verified: 2024-12-09 -->
+<!-- @source: code-audit -->
+
 > **Tokens**: ~1400 | **Triggers**: frontend, react, nextjs, component, hook, ui, styling, css, layout
 
 ## Overview
@@ -47,6 +51,7 @@ export function useCustomHook() {
 ```
 
 **Key Points**:
+
 - Always include loading state for async operations
 - Use try-catch-finally for error handling
 - Return consistent interface (state + methods)
@@ -83,6 +88,7 @@ await waitFor(() => {
 ```
 
 **Key Points**:
+
 - Use React Testing Library (not Enzyme)
 - Test user behavior, not implementation details
 - Use semantic queries (getByRole, getByLabelText)
@@ -105,6 +111,7 @@ export function ComponentName() {
 ```
 
 **Key Points**:
+
 - Scoped styles prevent conflicts
 - Use camelCase for class names (styles.cardHeader)
 - Co-locate CSS file with component
@@ -132,6 +139,7 @@ return (
 ```
 
 **Key Points**:
+
 - Use HTML5 validation (required, type="email")
 - Reset form state after successful submission
 - Prevent default on form submit
@@ -155,6 +163,7 @@ try {
 ```
 
 **Key Points**:
+
 - Always wrap JSON.parse in try-catch
 - Validate parsed data type (Array.isArray, typeof)
 - Clean up invalid data (remove from localStorage)
@@ -192,6 +201,7 @@ import { useState } from 'react';
 ```
 
 **Key Points**:
+
 - Required for useState, useEffect, useRouter
 - Required for browser APIs (localStorage, window, etc.)
 - Not required for server components
@@ -202,6 +212,7 @@ import { useState } from 'react';
 **Problem**: localStorage state can bleed between tests
 
 **Solution**:
+
 1. Add `localStorage.clear()` in beforeEach and afterEach
 2. Call `unmount()` after tests that modify state
 3. If problems persist, pragmatically skip tests with `.skip()`

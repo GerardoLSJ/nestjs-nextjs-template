@@ -1,0 +1,9 @@
+rules:
+  - pattern: '*.md'
+    max_age_days: 30
+  - pattern: 'zones/*.md'
+    max_age_days: 14
+  - pattern: 'decisions/*.md'
+    max_age_days: 90
+  - pattern: 'gotchas/*.md'
+    max_age_days: 60

@@ -1,7 +1,11 @@
 # Deployment & Infrastructure
 
+<!-- @confidence: 0.75 -->
+<!-- @verified: 2024-12-09 -->
+<!-- @source: manual-audit -->
+
 > **Trigger Keywords**: deploy, deployment, azure, docker, container, ci/cd, infrastructure, production, staging
-> **~1200 tokens** | Last Updated: 2025-12-08
+> **~1200 tokens** | Last Updated: 2024-12-09
 
 ## Architecture
 

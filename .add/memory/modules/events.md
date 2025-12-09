@@ -1,5 +1,9 @@
 # Events Context
 
+<!-- @confidence: 0.80 -->
+<!-- @verified: 2024-12-09 -->
+<!-- @source: code-audit -->
+
 > **Tokens**: ~900 | **Triggers**: event, events, planner, calendar, useevents
 
 ## Overview
@@ -9,6 +13,7 @@ Event planner feature allowing users to create, view, and delete events. Full CR
 ## Key Files
 
 **Backend**:
+
 - `apps/api/src/events/` - Events module
 - `apps/api/src/events/events.controller.ts` - REST endpoints
 - `apps/api/src/events/events.service.ts` - Business logic
@@ -16,6 +21,7 @@ Event planner feature allowing users to create, view, and delete events. Full CR
 - `prisma/schema.prisma` - Event model definition
 
 **Frontend**:
+
 - `apps/web/src/hooks/useEvents.ts` - Events hook
 - `apps/web/src/components/EventForm.tsx` - Create event form
 - `apps/web/src/components/EventList.tsx` - Display events
@@ -124,17 +130,20 @@ export function useEvents() {
 ### Migration from localStorage to Database
 
 **Phase 1**: localStorage (POC)
+
 - Simple client-side storage
 - No authentication required
 - Fast prototyping
 
 **Phase 2**: PostgreSQL (Production)
+
 - Server-side persistence
 - JWT authentication required
 - Ownership validation
 - Sync across devices
 
 **Key Changes**:
+
 - Added `userId` foreign key
 - Implemented ownership checks
 - Updated frontend to handle auth
@@ -145,6 +154,7 @@ export function useEvents() {
 **Decision**: Custom component (no external library)
 
 **Features**:
+
 - Month/year navigation
 - Date selection
 - Native Date object usage

@@ -42,20 +42,25 @@ Create `.add/handoffs/<task-id>.md`:
 # Handoff: <task-id>
 
 ## Context (compressed)
+
 [Relevant context, max 2K tokens]
 
 ## Task
+
 [Specific, atomic task description]
 
 ## Success Criteria
+
 - [ ] Criterion 1
 - [ ] Criterion 2
 
 ## Constraints
+
 - Do not modify: [files]
 - Must use: [patterns]
 
 ## Return Protocol
+
 Update session file when complete.
 ```
 
@@ -65,19 +70,23 @@ Update session file when complete.
 ## Completed: <task-id>
 
 ### Changes Made
+
 - file1.ts: [description]
 - file2.ts: [description]
 
 ### Tests Added/Updated
+
 - [test files]
 
 ### Notes for Orchestrator
+
 [Any issues, questions, or observations]
 ```
 
 ## Escalation Rules
 
 Haiku MUST escalate to Sonnet/Opus when:
+
 - Task requires multi-file coordination
 - Architectural decisions needed
 - Unclear requirements
@@ -86,6 +95,7 @@ Haiku MUST escalate to Sonnet/Opus when:
 ## Session Continuity
 
 All models MUST:
+
 1. Read session state before starting
 2. Update session state after changes
 3. Log decisions to `DECISIONS.md`
@@ -93,4 +103,25 @@ All models MUST:
 
 ---
 
-*Protocols ensure smooth multi-model collaboration*
+## Emergency Signals
+
+When encountering issues, emit these signals:
+
+- `STUCK: [description]` - 3+ consecutive failures on same task
+- `ESCALATE: [reason]` - Task requires higher-tier capabilities
+- `MISSING: [information]` - Cannot proceed without clarification
+- `BLOCKED: [constraint]` - Action violates documented constraint
+
+**Upon emitting any signal**: Stop work, document state, await guidance.
+
+## Extended Signals (v3.1)
+
+- `UNCERTAIN: [description]` - Confidence below threshold, need verification
+- `CONTRADICTION: [file1] vs [file2]` - Memory files conflict, need resolution
+- `ZONE_BOUNDARY: [zone1] -> [zone2]` - Cross-zone task, confirm approach
+- `STALE: [file] last verified [date]` - Documentation exceeds age threshold
+- `NO_TEST_PATH: [zone]` - No automated verification available
+
+---
+
+_Protocols ensure smooth multi-model collaboration_

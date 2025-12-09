@@ -1,5 +1,9 @@
 # Authentication Context
 
+<!-- @confidence: 0.85 -->
+<!-- @verified: 2024-12-09 -->
+<!-- @source: code-audit -->
+
 > **Tokens**: ~1500 | **Triggers**: auth, login, logout, jwt, token, session, guard, passport, register, user
 
 ## Overview
@@ -9,12 +13,14 @@ JWT-based authentication using Passport.js on backend, localStorage-based sessio
 ## Key Files
 
 **Backend**:
+
 - `apps/api/src/auth/` - Authentication module
 - `apps/api/src/auth/guards/` - JWT auth guards
 - `apps/api/src/auth/strategies/` - Passport strategies
 - `apps/api/src/auth/decorators/` - Custom decorators (@CurrentUser)
 
 **Frontend**:
+
 - `apps/web/src/hooks/useAuth.ts` - Authentication hook
 - `apps/web/src/components/ProtectedRoute.tsx` - Route protection HOC
 
@@ -151,6 +157,7 @@ const isValid = await bcrypt.compare(password, hashedPassword);
 ```
 
 **Key Points**:
+
 - Industry standard (OWASP recommendation)
 - ~100ms per hash (acceptable for auth operations)
 - Protects against brute force attacks
@@ -158,6 +165,7 @@ const isValid = await bcrypt.compare(password, hashedPassword);
 ### JWT Token Expiration
 
 **Configuration**:
+
 - Secret stored in .env (never hardcode)
 - 1 day expiration (configurable)
 - HS256 algorithm (symmetric)
@@ -169,12 +177,14 @@ const token = this.jwtService.sign({ sub: user.id, email: user.email });
 ### localStorage Security Considerations
 
 **Trade-offs**:
+
 - ✅ Simple client-side storage
 - ✅ Persists across browser sessions
 - ⚠️ Vulnerable to XSS attacks (mitigated by CSP)
 - ⚠️ Not suitable for highly sensitive data
 
 **Best Practices**:
+
 - Store only necessary user data
 - Never store passwords
 - Implement token expiration

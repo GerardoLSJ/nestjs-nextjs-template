@@ -1,5 +1,9 @@
 # Error Handling Context
 
+<!-- @confidence: 0.80 -->
+<!-- @verified: 2024-12-09 -->
+<!-- @source: code-audit -->
+
 > **Tokens**: ~700 | **Triggers**: error, exception, filter, boundary, correlation, logging
 
 ## Overview
@@ -9,11 +13,13 @@ Comprehensive error handling with global exception filters, React Error Boundari
 ## Key Files
 
 **Backend**:
+
 - `apps/api/src/common/filters/http-exception.filter.ts` - Global filter
 - `apps/api/src/common/interfaces/error-response.interface.ts` - Error format
 - `apps/api/src/main.ts` - Filter registration
 
 **Frontend**:
+
 - `apps/web/src/components/errors/ErrorBoundary.tsx` - React Error Boundary
 - `apps/web/src/components/errors/ErrorFallback.tsx` - Error UI
 - `apps/web/src/components/errors/ErrorMessage.tsx` - Inline errors
@@ -55,9 +61,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const errorResponse: ErrorResponse = {
       statusCode: status,
-      message: typeof exceptionResponse === 'object'
-        ? (exceptionResponse as any).message
-        : exceptionResponse,
+      message:
+        typeof exceptionResponse === 'object'
+          ? (exceptionResponse as any).message
+          : exceptionResponse,
       error: exception.name,
       timestamp: new Date().toISOString(),
       path: request.url,
@@ -167,6 +174,7 @@ if (forbidden) {
 ### Handling Errors (Frontend)
 
 **With Error Boundary**:
+
 ```typescript
 // In layout.tsx
 export default function RootLayout({ children }) {
@@ -183,6 +191,7 @@ export default function RootLayout({ children }) {
 ```
 
 **With ErrorMessage Component**:
+
 ```typescript
 function Component() {
   const { error } = useQuery();

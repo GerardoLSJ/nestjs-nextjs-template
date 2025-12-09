@@ -1,9 +1,48 @@
 {
-  "version": "2.0.0",
+  "version": "3.1.0",
   "project": {
     "name": "nestjs-nextjs-template",
     "description": "NestJS + Next.js monorepo with JWT auth, event planner, and comprehensive testing",
     "stack": ["nestjs", "nextjs", "typescript", "nx", "prisma", "postgresql", "jest", "playwright"]
+  },
+  "tiers": {
+    "detection": "self-assess",
+    "fallback": 3
+  },
+  "zones": [
+    {
+      "id": "api",
+      "path": ".add/zones/api.md",
+      "languages": ["typescript"],
+      "testable": true,
+      "confidence": 0.85
+    },
+    {
+      "id": "web",
+      "path": ".add/zones/web.md",
+      "languages": ["typescript", "tsx"],
+      "testable": true,
+      "confidence": 0.85
+    },
+    {
+      "id": "database",
+      "path": ".add/zones/database.md",
+      "languages": ["prisma", "typescript"],
+      "testable": true,
+      "confidence": 0.9
+    }
+  ],
+  "gotchas": {
+    "registry": ".add/gotchas/REGISTRY.md",
+    "auto_check": true
+  },
+  "uncertainty": {
+    "staleness_config": ".add/config/staleness.yaml",
+    "thresholds": ".add/config/uncertainty-thresholds.yaml"
+  },
+  "context_budget": {
+    "config": ".add/config/context-budget.md",
+    "prompt_at_soft_limit": true
   },
   "models": {
     "haiku": {
@@ -22,20 +61,25 @@
       "suitable": ["complex-tasks", "architecture", "planning", "orchestration"]
     }
   },
-  "segments": {
-    "core/project": {
+  "segments": [
+    {
+      "name": "core/project",
       "path": "core/project.md",
       "tokens": 1000,
       "priority": "critical",
+      "triggers": ["*"],
       "description": "Tech stack, conventions, project structure, key commands"
     },
-    "core/agents": {
+    {
+      "name": "core/agents",
       "path": "core/agents.md",
       "tokens": 400,
       "priority": "critical",
+      "triggers": ["*"],
       "description": "Agent roles, handoff protocols, delegation rules"
     },
-    "memory/modules/auth": {
+    {
+      "name": "memory/modules/auth",
       "path": "memory/modules/auth.md",
       "tokens": 1500,
       "priority": "normal",
@@ -53,7 +97,8 @@
       ],
       "description": "Authentication module: JWT, Passport, guards, user management"
     },
-    "memory/modules/database": {
+    {
+      "name": "memory/modules/database",
       "path": "memory/modules/database.md",
       "tokens": 1200,
       "priority": "normal",
@@ -69,7 +114,8 @@
       ],
       "description": "Database patterns: Prisma, migrations, schema management"
     },
-    "memory/modules/api": {
+    {
+      "name": "memory/modules/api",
       "path": "memory/modules/api.md",
       "tokens": 1300,
       "priority": "normal",
@@ -86,7 +132,8 @@
       ],
       "description": "API design: Controllers, DTOs, validation, OpenAPI/Swagger"
     },
-    "memory/modules/frontend": {
+    {
+      "name": "memory/modules/frontend",
       "path": "memory/modules/frontend.md",
       "tokens": 1400,
       "priority": "normal",
@@ -103,21 +150,24 @@
       ],
       "description": "Frontend patterns: React, Next.js, components, hooks, CSS Modules"
     },
-    "memory/modules/testing": {
+    {
+      "name": "memory/modules/testing",
       "path": "memory/modules/testing.md",
       "tokens": 1100,
       "priority": "normal",
       "triggers": ["test", "jest", "e2e", "unit", "mock", "msw", "fixture", "playwright"],
       "description": "Testing strategies: Jest, E2E, MSW, test patterns"
     },
-    "memory/modules/events": {
+    {
+      "name": "memory/modules/events",
       "path": "memory/modules/events.md",
       "tokens": 900,
       "priority": "normal",
       "triggers": ["event", "events", "planner", "calendar", "useevents"],
       "description": "Event planner feature: CRUD operations, calendar picker"
     },
-    "memory/modules/security": {
+    {
+      "name": "memory/modules/security",
       "path": "memory/modules/security.md",
       "tokens": 800,
       "priority": "normal",
@@ -133,14 +183,16 @@
       ],
       "description": "Security: Helmet headers, rate limiting, CORS configuration"
     },
-    "memory/modules/error-handling": {
+    {
+      "name": "memory/modules/error-handling",
       "path": "memory/modules/error-handling.md",
       "tokens": 700,
       "priority": "normal",
       "triggers": ["error", "exception", "filter", "boundary", "correlation", "logging"],
       "description": "Error handling: Global filters, error boundaries, correlation IDs"
     },
-    "memory/modules/deployment": {
+    {
+      "name": "memory/modules/deployment",
       "path": "memory/modules/deployment.md",
       "tokens": 1200,
       "priority": "normal",
@@ -159,19 +211,23 @@
       ],
       "description": "Deployment: Azure Container Apps, Docker, CI/CD, environment config"
     },
-    "memory/decisions": {
+    {
+      "name": "memory/decisions",
       "path": "memory/decisions/",
       "tokens": 1000,
       "priority": "low",
+      "triggers": ["adr", "decision", "architecture"],
       "description": "Architecture decision records (ADRs)"
     },
-    "session/active": {
+    {
+      "name": "session/active",
       "path": "sessions/active/",
       "tokens": 1500,
       "priority": "high",
+      "triggers": ["continue", "resume", "session"],
       "description": "Currently active session state"
     }
-  },
+  ],
   "commands": {
     "develop-feature": {
       "description": "Create or continue developing a feature",
