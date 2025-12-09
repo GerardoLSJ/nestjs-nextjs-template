@@ -48,10 +48,19 @@ RUN addgroup -g 1001 -S nodejs && \
     adduser -S nestjs -u 1001 -G nodejs
 
 # Install production dependencies only
-# Skip husky and other prepare scripts in production
+# Note: We need to run postinstall scripts for bcrypt native compilation
+# HUSKY=0 prevents git hooks, but allows other necessary scripts
 COPY package*.json ./
 ENV HUSKY=0
-RUN npm ci --only=production --ignore-scripts && npm cache clean --force
+
+# Install build dependencies for native modules (bcrypt)
+RUN apk add --no-cache python3 make g++
+
+# Install production dependencies with --ignore-scripts to skip husky prepare script
+# Then rebuild bcrypt to compile native bindings
+RUN npm ci --only=production --ignore-scripts && \
+    npm rebuild bcrypt && \
+    npm cache clean --force
 
 # Copy Prisma schema and migrations for runtime
 COPY --from=builder /app/apps/api/prisma ./prisma
