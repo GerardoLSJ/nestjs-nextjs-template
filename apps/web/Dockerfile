@@ -35,7 +35,8 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Build argument for API URL (can be overridden at build time)
-ARG NEXT_PUBLIC_API_URL=http://localhost:3333/api
+# Note: Do not include /api suffix - the client code adds it
+ARG NEXT_PUBLIC_API_URL=http://localhost:3333
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 # Build the Next.js application
