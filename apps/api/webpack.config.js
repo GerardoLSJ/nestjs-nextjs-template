@@ -23,6 +23,9 @@ module.exports = {
       devtoolModuleFilenameTemplate: '[absolute-resource-path]',
     }),
   },
+  externals: {
+    bcryptjs: 'commonjs bcryptjs',
+  },
   watchOptions,
   plugins: [
     new NxAppWebpackPlugin({
