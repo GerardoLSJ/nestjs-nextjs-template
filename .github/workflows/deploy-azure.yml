@@ -104,12 +104,46 @@ jobs:
           cache-to: type=inline
 
   # ---------------------------------------------------------------------------
+  # Run Database Migrations
+  # ---------------------------------------------------------------------------
+  migrate-db:
+    name: Run Database Migrations
+    runs-on: ubuntu-latest
+    needs: [build-api]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Prisma CLI
+        run: npm install prisma --save-dev
+        working-directory: apps/api
+
+      - name: Run migrations
+        run: npx prisma migrate deploy --schema=prisma/schema.prisma
+        working-directory: apps/api
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Migration status
+        run: npx prisma migrate status --schema=prisma/schema.prisma
+        working-directory: apps/api
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+  # ---------------------------------------------------------------------------
   # Deploy API to Azure Container Apps
   # ---------------------------------------------------------------------------
   deploy-api:
     name: Deploy API
     runs-on: ubuntu-latest
-    needs: [build-api]
+    needs: [build-api, migrate-db]
     environment: production
 
     steps:
@@ -219,6 +253,7 @@ jobs:
 # NEXT_PUBLIC_API_URL      - Public URL for API (e.g., https://api.myapp.com/api)
 # API_HEALTH_URL           - API health check URL
 # WEB_HEALTH_URL           - Web health check URL
+# DATABASE_URL             - PostgreSQL connection string for migrations (with sslmode=require)
 # =============================================================================
 #
 # Azure Infrastructure Required:

@@ -100,36 +100,38 @@ async function bootstrap() {
     })
   );
 
-  // Swagger/OpenAPI documentation setup
-  const config = new DocumentBuilder()
-    .setTitle('Auth Tutorial API')
-    .setDescription(
-      'API documentation for the auth-tutorial project. This is a comprehensive REST API built with NestJS.'
-    )
-    .setVersion('1.0')
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        name: 'JWT',
-        description: 'Enter JWT token',
-        in: 'header',
-      },
-      'JWT-auth'
-    )
-    .addTag('auth', 'Authentication endpoints')
-    .addTag('events', 'Event management endpoints')
-    .addTag('app', 'Application endpoints')
-    .build();
+  // Swagger/OpenAPI documentation setup (disabled in production for security)
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('Auth Tutorial API')
+      .setDescription(
+        'API documentation for the auth-tutorial project. This is a comprehensive REST API built with NestJS.'
+      )
+      .setVersion('1.0')
+      .addBearerAuth(
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          name: 'JWT',
+          description: 'Enter JWT token',
+          in: 'header',
+        },
+        'JWT-auth'
+      )
+      .addTag('auth', 'Authentication endpoints')
+      .addTag('events', 'Event management endpoints')
+      .addTag('app', 'Application endpoints')
+      .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup(`${globalPrefix}/docs`, app, document);
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup(`${globalPrefix}/docs`, app, document);
 
-  // Expose OpenAPI JSON for code generation
-  app.getHttpAdapter().get(`/${globalPrefix}/docs-json`, (_req, res) => {
-    res.json(document);
-  });
+    // Expose OpenAPI JSON for code generation
+    app.getHttpAdapter().get(`/${globalPrefix}/docs-json`, (_req, res) => {
+      res.json(document);
+    });
+  }
 
   const port = process.env.PORT || 3333;
   console.log('[DEBUG] About to listen on port:', port);
@@ -138,7 +140,11 @@ async function bootstrap() {
     await app.listen(port);
     console.log('[DEBUG] Successfully listening on port:', port);
     Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
-    Logger.log(`📚 API Documentation available at: http://localhost:${port}/${globalPrefix}/docs`);
+    if (process.env.NODE_ENV !== 'production') {
+      Logger.log(
+        `📚 API Documentation available at: http://localhost:${port}/${globalPrefix}/docs`
+      );
+    }
   } catch (error) {
     console.error('[DEBUG] ERROR listening on port:', error);
     throw error;
