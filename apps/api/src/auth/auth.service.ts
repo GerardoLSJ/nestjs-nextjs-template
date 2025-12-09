@@ -1,7 +1,7 @@
 import { LoginDto, AuthResponse } from '@auth-tutorial/shared-types';
 import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 import { PrismaService } from '../database/prisma.service';
 
@@ -13,7 +13,10 @@ export interface RegisterDto {
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService, private jwtService: JwtService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService
+  ) {}
 
   async register(registerDto: RegisterDto): Promise<AuthResponse> {
     const { email, password, name } = registerDto;
