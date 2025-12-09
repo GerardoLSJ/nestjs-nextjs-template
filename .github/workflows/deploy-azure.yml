@@ -121,8 +121,8 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install Prisma CLI
-        run: npm install prisma --save-dev
+      - name: Install Prisma CLI and dependencies
+        run: npm install prisma dotenv --save-dev
         working-directory: apps/api
 
       - name: Run migrations
