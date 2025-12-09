@@ -35,7 +35,8 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Build argument for API URL (can be overridden at build time)
-# Note: Do not include /api suffix - the client code adds it
+# IMPORTANT: Do NOT include /api suffix - use base URL only (e.g., https://api.example.com)
+# The client code will append /api prefix to match NestJS global prefix
 ARG NEXT_PUBLIC_API_URL=http://localhost:3333
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 

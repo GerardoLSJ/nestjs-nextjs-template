@@ -17,10 +17,10 @@ export default function LoginPage() {
     setError('');
     setIsLoading(true);
 
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api';
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333';
 
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

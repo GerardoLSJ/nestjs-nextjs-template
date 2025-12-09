@@ -34,10 +34,10 @@ export default function RegisterPage() {
       return;
     }
 
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api';
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333';
 
     try {
-      const response = await fetch(`${API_URL}/auth/register`, {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
