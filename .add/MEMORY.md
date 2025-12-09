@@ -675,7 +675,7 @@ source ~/.zshrc && npm run test:all
 633 | **Database Credentials** (stored in Container App environment):
 634 | - Host: `authapp-dev-postgres.postgres.database.azure.com`
 635 | - User: `adminuser`
-636 | - Password: Stored in Container App secrets (DATABASE_URL)
+636 | - Password: Stored in Container App secrets (DATABASE*URL)
 637 | - Database: `authdb`
 638 | - SSL: Required (`sslmode=require`)
 639 |
@@ -727,7 +727,23 @@ source ~/.zshrc && npm run test:all
 685 | **Problem**: Buildx cache export fails
 686 | **Solution**: Use `cache-to: type=inline` instead of `cache-to: type=registry`
 687 |
-688 | ---
+688 | **Problem**: bcryptjs causing "Must call super constructor" runtime error in Azure
+689 | **Root Cause**: Webpack bundling bcryptjs into dist/main.js instead of externalizing it
+690 | **Solution**: Add bcryptjs to webpack externals in `apps/api/webpack.config.js`:
+691 | `javascript
+692 | externals: { bcryptjs: "commonjs bcryptjs" }
+693 | `
+694 | **Key Learning**: Check build output for `external "bcryptjs"` to verify externalization worked.
+695 |
+696 | **Problem**: Login page returns status 0 (network error) in production
+697 | **Root Cause**: Hardcoded `http://localhost:3333` URL instead of `NEXT_PUBLIC_API_URL`
+698 | **Solution**: Use environment variable in `apps/web/src/app/login/page.tsx`:
+699 | `typescript
+700 | const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api';
+701 | `
+702 | **Key Learning**: Status 0 = CORS block, mixed content (HTTPS→HTTP), or unreachable. Always use `NEXT_PUBLIC*\*` for API URLs.
+703 |
+704 | ---
 689 |
 690 | ## Notes
 691 |
