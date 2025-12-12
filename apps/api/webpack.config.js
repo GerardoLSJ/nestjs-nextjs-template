@@ -1,43 +1,41 @@
 const { join } = require('path');
 
-console.log('[Webpack Config] Loading webpack config...');
-console.log('[Webpack Config] NODE_ENV:', process.env.NODE_ENV);
-console.log('[Webpack Config] CWD:', process.cwd());
-
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 
 const outputPath = join(__dirname, '../../dist/apps/api');
-console.log('[Webpack Config] Output path:', outputPath);
-console.log('[Webpack Config] Resolved absolute path:', require('path').resolve(outputPath));
+const isProduction = process.env.NODE_ENV === 'production';
 
-const watchOptions = {
-  ignored: ['**/node_modules/**', '**/dist/**', '**/out-tsc/**'],
-};
-console.log('[Webpack Config] Watch options:', JSON.stringify(watchOptions, null, 2));
+console.log('[Webpack Config] Loading webpack config...');
+console.log('[Webpack Config] NODE_ENV:', process.env.NODE_ENV);
+console.log('[Webpack Config] isProduction:', isProduction);
+console.log('[Webpack Config] Output path:', outputPath);
 
 module.exports = {
   output: {
     path: outputPath,
-    clean: false,
-    ...(process.env.NODE_ENV !== 'production' && {
-      devtoolModuleFilenameTemplate: '[absolute-resource-path]',
-    }),
+    clean: true,
   },
   externals: {
+    // External packages - not bundled, loaded from node_modules at runtime
     bcryptjs: 'commonjs bcryptjs',
+    '@prisma/client': 'commonjs @prisma/client',
+    '@prisma/adapter-pg': 'commonjs @prisma/adapter-pg',
+    '@prisma/client-runtime-utils': 'commonjs @prisma/client-runtime-utils',
+    pg: 'commonjs pg',
   },
-  watchOptions,
+  watchOptions: {
+    ignored: ['**/node_modules/**', '**/dist/**', '**/out-tsc/**'],
+  },
   plugins: [
     new NxAppWebpackPlugin({
       target: 'node',
-      compiler: 'tsc',
+      compiler: 'swc',
       main: './src/main.ts',
       tsConfig: './tsconfig.app.json',
       assets: ['./src/assets'],
-      optimization: false,
-      outputHashing: 'none',
+      optimization: isProduction,
+      outputHashing: isProduction ? 'all' : 'none',
       generatePackageJson: false,
-      sourceMaps: true,
     }),
   ],
 };

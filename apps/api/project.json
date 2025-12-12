@@ -27,8 +27,7 @@
         "production": {
           "optimization": true,
           "extractLicenses": true,
-          "sourceMap": false,
-          "namedChunks": false
+          "sourceMap": false
         }
       }
     },
