@@ -23,6 +23,7 @@ RUN npm ci --ignore-scripts
 
 # -----------------------------------------------------------------------------
 # Stage 2: Builder
+# Cache bust: 2025-12-12-fix-missing-dist
 # -----------------------------------------------------------------------------
 FROM node:20-alpine AS builder
 WORKDIR /app
