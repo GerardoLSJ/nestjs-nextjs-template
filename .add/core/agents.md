@@ -15,7 +15,7 @@
                       │
                       ▼ delegates
 ┌─────────────────────────────────────────────────┐
-│  SONNET 4.5 - Builder                           │
+│  SONNET 4.5 / GEMINI 3 PRO - Builder            │
 │  • Feature implementation                       │
 │  • Debugging & refactoring                      │
 │  • Integration work                             │
@@ -34,7 +34,7 @@
 
 ## Handoff Protocol
 
-### From Opus/Sonnet → Haiku
+### From Opus/Sonnet/Gemini → Haiku
 
 Create `.add/handoffs/<task-id>.md`:
 
@@ -85,7 +85,7 @@ Update session file when complete.
 
 ## Escalation Rules
 
-Haiku MUST escalate to Sonnet/Opus when:
+Haiku MUST escalate to Sonnet/Gemini/Opus when:
 
 - Task requires multi-file coordination
 - Architectural decisions needed

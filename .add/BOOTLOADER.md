@@ -1,6 +1,6 @@
 # ADD Framework Bootloader
 
-> **Version**: 3.1.0 | **Entry Point**: `@entry-point` | **Target**: Haiku 4.5 / Sonnet 4.5 / Opus 4.5
+> **Version**: 3.1.0 | **Entry Point**: `@entry-point` | **Target**: Haiku 4.5 / Sonnet 4.5 / Gemini 3 Pro / Opus 4.5
 
 ## Quick Command
 
@@ -129,11 +129,12 @@ Delegates a task to a smaller model with compressed context.
 
 ### Token Budgets by Model
 
-| Model      | Max Context | Reserved for Response | Available for Memory |
-| ---------- | ----------- | --------------------- | -------------------- |
-| Haiku 4.5  | 200K        | 8K                    | ~8-12K recommended   |
-| Sonnet 4.5 | 200K        | 16K                   | ~16-24K recommended  |
-| Opus 4.5   | 200K        | 32K                   | ~32-48K recommended  |
+| Model        | Max Context | Reserved for Response | Available for Memory |
+| ------------ | ----------- | --------------------- | -------------------- |
+| Haiku 4.5    | 200K        | 8K                    | ~8-12K recommended   |
+| Sonnet 4.5   | 200K        | 16K                   | ~16-24K recommended  |
+| Gemini 3 Pro | 2M          | 16K                   | ~16-24K recommended  |
+| Opus 4.5     | 200K        | 32K                   | ~32-48K recommended  |
 
 ### Loading Priority
 

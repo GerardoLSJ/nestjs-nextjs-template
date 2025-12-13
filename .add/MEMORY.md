@@ -752,3 +752,61 @@ source ~/.zshrc && npm run test:all
 694 | - Include context, rationale, and alternatives
 695 | - Update status if decision is deprecated/superseded
 696 | - Link to related ADRs when applicable
+
+### CI/CD Pipeline Gotchas (2025-12-09)
+
+**Problem**: CI fails with "Cannot find module '../generated/prisma'"
+**Root Cause**: Prisma client not generated after `npm ci` - generated files only exist locally
+**Solution**: Add postinstall hook to package.json:
+
+```json
+"postinstall": "npm run db:generate"
+```
+
+**Key Learning**: CI starts fresh every time. Generated files that persist locally will be missing in CI.
+
+**Problem**: Prisma generate fails with "Missing required environment variable: DATABASE_URL"
+**Root Cause**: `prisma.config.ts` requires DATABASE_URL during client generation
+**Solution**: Add dummy DATABASE_URL to CI job environments in `.github/workflows/ci.yml`:
+
+```yaml
+env:
+  DATABASE_URL: postgresql://user:pass@localhost:5432/test_db
+```
+
+**Key Learning**: Even client generation (not just runtime) can require environment variables.
+
+**Problem**: API E2E tests fail in CI with "Config validation error: 'JWT_SECRET' is required"
+**Root Cause**: E2E tests initialize full NestJS app which validates JWT_SECRET at module load
+**Solution**: Add JWT_SECRET to e2e job environment in CI workflow
+**Key Learning**: E2E tests need all required env vars, even if not using auth in specific tests.
+
+**Problem**: SWC warnings about missing Prisma client.js.map files
+**Root Cause**: Prisma client doesn't generate source maps, but SWC expects them
+**Impact**: Non-blocking warnings that clutter CI output
+**Key Learning**: Generated dependencies may not have source maps - configure build tools to ignore.
+
+### ADD Framework Model Support (2025-12-12)
+
+**Update**: Added Gemini 3 Pro as a Builder-tier model alongside Sonnet 4.5
+
+**Changes Made**:
+
+1. **agents.md**: Updated Model Hierarchy to include "SONNET 4.5 / GEMINI 3 PRO - Builder"
+2. **BOOTLOADER.md**: Added Gemini 3 Pro to token budget table (2M max context, 16K response reserve)
+3. **manifest.json**: Added gemini model configuration with same capabilities as Sonnet (16K context budget, suitable for medium-tasks, refactoring, debugging, review, long-context)
+
+**Key Characteristics**:
+
+- **Tier**: Builder (same as Sonnet 4.5)
+- **Max Context**: 2M tokens (significantly larger than Sonnet's 200K)
+- **Context Budget**: 16K recommended for ADD framework memory
+- **Use Cases**: Feature implementation, debugging, refactoring, integration work, long-context tasks
+- **Delegation**: Can delegate simple sub-tasks to Haiku
+
+**Rationale**:
+
+- Gemini 3 Pro offers comparable capabilities to Sonnet 4.5 for development tasks
+- Exceptional context window (2M tokens) makes it ideal for large codebase exploration
+- Positioned as alternative Builder-tier model for users with Gemini access
+- Maintains framework compatibility with existing handoff and escalation protocols

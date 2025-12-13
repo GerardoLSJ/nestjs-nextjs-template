@@ -55,6 +55,11 @@
       "responseReserve": 8000,
       "suitable": ["medium-tasks", "refactoring", "debugging", "review"]
     },
+    "gemini": {
+      "contextBudget": 16000,
+      "responseReserve": 8000,
+      "suitable": ["medium-tasks", "refactoring", "debugging", "review", "long-context"]
+    },
     "opus": {
       "contextBudget": 32000,
       "responseReserve": 16000,
@@ -194,7 +199,7 @@
     {
       "name": "memory/modules/deployment",
       "path": "memory/modules/deployment.md",
-      "tokens": 1200,
+      "tokens": 1800,
       "priority": "normal",
       "triggers": [
         "deploy",
@@ -207,9 +212,11 @@
         "production",
         "staging",
         "acr",
-        "devops"
+        "devops",
+        "logs",
+        "monitoring"
       ],
-      "description": "Deployment: Azure Container Apps, Docker, CI/CD, environment config"
+      "description": "Deployment: Azure Container Apps, Docker, CI/CD, logging, monitoring"
     },
     {
       "name": "memory/decisions",
