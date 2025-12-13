@@ -66,6 +66,10 @@ RUN npx prisma generate --schema=prisma/schema.prisma
 # Copy built application
 COPY --from=builder /app/dist/apps/api ./dist
 
+# Copy and prepare entrypoint script for migrations
+COPY apps/api/docker-entrypoint.sh ./docker-entrypoint.sh
+RUN chmod +x ./docker-entrypoint.sh
+
 # Set ownership to non-root user
 RUN chown -R nestjs:nodejs /app
 
@@ -83,5 +87,5 @@ ENV PORT=3333
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD wget -q --spider http://localhost:3333/api/health || exit 1
 
-# Start the application
-CMD ["node", "dist/main.js"]
+# Start the application (with migrations)
+CMD ["./docker-entrypoint.sh"]

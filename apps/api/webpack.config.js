@@ -22,6 +22,7 @@ module.exports = {
     '@prisma/adapter-pg': 'commonjs @prisma/adapter-pg',
     '@prisma/client-runtime-utils': 'commonjs @prisma/client-runtime-utils',
     pg: 'commonjs pg',
+    nodemailer: 'commonjs nodemailer',
   },
   watchOptions: {
     ignored: ['**/node_modules/**', '**/dist/**', '**/out-tsc/**'],
