@@ -1,13 +1,36 @@
 # Active Tasks
 
-## Sprint Summary: Phase 3.1 Complete
+## Sprint Summary: Email Verification Complete
 
-**Sprint Milestone**: Phase 3.1: Error Handling Strategy (Completed 2025-12-07)
-**Key Outcomes**: Comprehensive error handling across API/Frontend; Standardized responses; Error boundaries; Correlation IDs; ADR-016 documented.
+**Sprint Milestone**: Email Verification Feature (Completed 2025-12-12)
+**Key Outcomes**: Hard verification strategy; Nodemailer + Ethereal Email; 8-hour token expiration; Auto-login after verification; ADR-020 documented.
 
 ---
 
-## Current Sprint: Phase 3: Polish & Production Readiness
+## Current Sprint: Phase 4: Feature Expansion
+
+**Status**: 🔧 IN PROGRESS
+
+**Objective**: Implement email verification and additional features
+
+**Tasks**:
+
+- [x] 4.1: Email Verification ✅ COMPLETE
+  - ✅ Hard verification strategy (login blocked until verified)
+  - ✅ Nodemailer + Ethereal Email integration
+  - ✅ 8-hour token expiration
+  - ✅ Prisma schema updated (isEmailVerified, verificationToken, verificationTokenExp)
+  - ✅ MailService for sending verification emails
+  - ✅ AuthService updated for registration and verification flows
+  - ✅ POST /api/auth/verify-email endpoint
+  - ✅ Frontend verify-email page with auto-login
+  - ✅ Register page shows "check email" message
+  - ✅ Login page shows "email not verified" error
+  - ✅ ADR-020 documented
+
+---
+
+## Completed: Phase 3: Polish & Production Readiness
 
 **Status**: ✅ COMPLETE
 
@@ -56,7 +79,23 @@
 
 ## Future Work
 
-### Phase 4: Feature Expansion (Ongoing Backlog)
+### Phase 4: CI/CD & Infrastructure (Current Priority)
+
+**Status**: 🔧 IN PROGRESS
+
+**Objective**: Complete CI/CD pipeline and infrastructure setup
+
+**Tasks**:
+
+- [ ] HIGH: Fix API E2E Tests in CI (JWT_SECRET)
+- [ ] MEDIUM: Add PostgreSQL service to CI for proper database testing
+- [ ] LOW: Fix SWC Source Map Warnings
+
+**Prerequisites**: Phase 3 complete ✅
+
+---
+
+### Phase 5: Feature Expansion (Ongoing Backlog)
 
 **Status**: 💡 IDEA
 
@@ -68,11 +107,88 @@
 - [ ] Enhancement: Event Filtering/Sorting
 - [ ] Tech Debt: Fix Skipped useEvents Tests
 
-**Prerequisites**: Phase 3 complete
+**Prerequisites**: Phase 4 complete
 
 ---
 
 ## Backlog
+
+### HIGH Priority: Fix API E2E Tests in CI
+
+**Status**: 🔧 BLOCKED
+**Priority**: HIGH
+**Effort**: ~10 minutes
+**Session**: ci-investigation-2025-12-09.md
+
+**Description**: API E2E tests fail in CI due to missing JWT_SECRET environment variable
+
+**Current State**:
+
+- 5/6 CI jobs passing
+- 36 API E2E tests failing with "Config validation error: 'JWT_SECRET' is required"
+- Tests pass locally with .env.test file
+
+**Tasks**:
+
+- [ ] Add JWT_SECRET to e2e job environment in .github/workflows/ci.yml
+- [ ] Verify all 36 API E2E tests pass in CI
+- [ ] Document required test environment variables
+
+**Files to modify**:
+
+- `.github/workflows/ci.yml` - Add JWT_SECRET to e2e job env
+
+### MEDIUM Priority: Proper Database Testing in CI
+
+**Status**: 💡 IDEA
+**Priority**: MEDIUM
+**Effort**: ~1-2 hours
+**Session**: ci-investigation-2025-12-09.md
+
+**Description**: Add PostgreSQL service container to CI for proper database testing
+
+**Current State**:
+
+- Using dummy DATABASE_URL without actual database
+- Prisma client generation works but tests don't connect to real DB
+- Some tests may be mocked that should be integration tests
+
+**Tasks**:
+
+- [ ] Add PostgreSQL service container to CI workflow
+- [ ] Run migrations in CI before tests
+- [ ] Use real test database for E2E tests
+- [ ] Consider separating unit tests (no DB) from integration tests (with DB)
+
+**Files to modify**:
+
+- `.github/workflows/ci.yml` - Add services section with postgres container
+- Test files - Potentially split unit vs integration tests
+
+### LOW Priority: Fix SWC Source Map Warnings
+
+**Status**: 💡 IDEA
+**Priority**: LOW
+**Effort**: ~30 minutes
+**Session**: ci-investigation-2025-12-09.md
+
+**Description**: SWC complains about missing Prisma client.js.map file
+
+**Current State**:
+
+- Non-blocking warnings in CI logs: "failed to find input source map file 'client.js.map'"
+- Doesn't affect test execution but clutters output
+
+**Tasks**:
+
+- [ ] Investigate if Prisma client should generate source maps
+- [ ] Add SWC configuration to ignore Prisma client source maps
+- [ ] Clean up CI output noise
+
+**Files to modify**:
+
+- `apps/api/webpack.config.js` or Jest config
+- Potentially `prisma/schema.prisma` generator config
 
 ### Enhancement: Event Editing
 

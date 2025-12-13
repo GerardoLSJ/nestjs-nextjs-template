@@ -13,6 +13,7 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,19 +51,33 @@ export default function RegisterPage() {
         throw new Error(data.message || 'Registration failed');
       }
 
-      const data = await response.json();
-
-      // Store token and user in localStorage
-      localStorage.setItem('accessToken', data.accessToken);
-      localStorage.setItem('user', JSON.stringify(data.user));
-
-      // Redirect to home page
-      router.push('/');
+      // Show success message
+      setIsSuccess(true);
+      setIsLoading(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
       setIsLoading(false);
     }
   };
+
+  if (isSuccess) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.card}>
+          <h1 className={styles.title}>Check Your Email</h1>
+          <p className={styles.hint}>
+            We have sent a verification link to <strong>{email}</strong>. Please check your inbox
+            and verify your email address to continue.
+          </p>
+          <div className={styles.actions}>
+            <a href="/login" className={styles.button}>
+              Proceed to Login
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>

@@ -1,11 +1,109 @@
 # Architecture Decision Records (ADRs)
 
-2 |
-3 | > Immutable log of architectural decisions. Each entry documents a decision, its context, and rationale.
-4 |
-5 | ## Decision Log
-6 |
-7 | ### ADR-019: Deployment Architecture (2025-12-08)
+> Immutable log of architectural decisions. Each entry documents a decision, its context, and rationale.
+
+## Decision Log
+
+### ADR-020: Email Verification Strategy (2025-12-12)
+
+**Status**: ✅ ACCEPTED
+
+**Context**:
+
+- User registration needs email verification for security and spam prevention
+- Need to prevent fake/invalid email registrations
+- Must balance security with user experience
+- Development environment needs easy testing without real email setup
+
+**Decision**: Implement "Hard Verification" strategy with Nodemailer + Ethereal Email
+
+**Rationale**:
+
+- **Hard Verification**: Users cannot login until email is verified (highest security)
+- **Nodemailer**: Industry-standard Node.js email library, well-maintained
+- **Ethereal Email**: Fake SMTP for development - generates preview URLs without sending real emails
+- **8-hour token expiration**: Balance between security and user convenience
+- **Auto-login after verification**: Improves UX by not requiring separate login step
+
+**Alternatives Considered**:
+
+- Soft Verification (rejected: users could use unverified accounts indefinitely)
+- Magic Links (rejected: more complex, different auth flow)
+- Third-party services like SendGrid (rejected: adds external dependency for MVP)
+- Shorter token expiration (rejected: 24h too long, 1h too short for busy users)
+
+**Implementation**:
+
+**Database Schema**:
+
+```prisma
+model User {
+  isEmailVerified       Boolean   @default(false)
+  verificationToken     String?   @unique
+  verificationTokenExp  DateTime?
+}
+```
+
+**Backend Flow**:
+
+1. `register()`: Create unverified user → Generate token → Send email → Return success message (no JWT)
+2. `login()`: Check `isEmailVerified` → Block if false (403 Forbidden)
+3. `verifyEmail()`: Validate token → Mark verified → Return JWT (auto-login)
+
+**Frontend Flow**:
+
+1. Register page shows "Check your email" message after success
+2. Verification link opens `/verify-email?token=xxx`
+3. Page calls API, stores JWT on success, redirects to home
+4. Login shows "Email not verified" error for unverified users
+
+**Files Created**:
+
+- `apps/api/src/mail/mail.module.ts`
+- `apps/api/src/mail/mail.service.ts`
+- `apps/api/src/auth/dto/verify-email.dto.ts`
+- `apps/web/src/app/verify-email/page.tsx`
+- `apps/web/src/app/verify-email/verify-email.module.css`
+
+**Files Modified**:
+
+- `apps/api/prisma/schema.prisma` - Added verification fields
+- `apps/api/src/auth/auth.service.ts` - Added verification logic
+- `apps/api/src/auth/auth.controller.ts` - Added verify-email endpoint
+- `apps/api/src/auth/auth.module.ts` - Added MailModule import
+- `apps/api/src/app/app.module.ts` - Added MailModule
+- `apps/web/src/app/register/page.tsx` - Show success message
+- `apps/web/src/app/login/page.tsx` - Show verification error
+
+**Dependencies Added**:
+
+- nodemailer
+- @types/nodemailer
+
+**Environment Variables**:
+
+```
+SMTP_HOST=smtp.ethereal.email
+SMTP_PORT=587
+SMTP_USER=xxx@ethereal.email
+SMTP_PASS=xxx
+FRONTEND_URL=http://localhost:3000
+```
+
+**Impact**:
+
+- ✅ Users must verify email before accessing the application
+- ✅ Prevents fake/spam registrations
+- ✅ Development-friendly with Ethereal Email preview URLs
+- ✅ Auto-login after verification improves UX
+- ✅ 8-hour expiration balances security and convenience
+- ✅ Easy to swap Ethereal for production SMTP (SendGrid, SES, etc.)
+- ⚠️ Users may miss verification emails (add resend endpoint in future)
+
+---
+
+### ADR-019: Deployment Architecture (2025-12-08)
+
 8 |
 9 | **Status**: ✅ ACCEPTED
 10 |

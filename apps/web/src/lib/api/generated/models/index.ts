@@ -12,3 +12,4 @@ export * from './createEventDto';
 export * from './loginDto';
 export * from './registerDto';
 export * from './updateEventDto';
+export * from './verifyEmailDto';

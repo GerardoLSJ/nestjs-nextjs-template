@@ -13,7 +13,7 @@ import type {
   UseMutationResult,
 } from '@tanstack/react-query';
 
-import type { LoginDto, RegisterDto } from '.././models';
+import type { LoginDto, RegisterDto, VerifyEmailDto } from '.././models';
 
 import { customFetch } from '../../client';
 
@@ -138,10 +138,18 @@ export type authControllerLoginResponse401 = {
   status: 401;
 };
 
+export type authControllerLoginResponse403 = {
+  data: void;
+  status: 403;
+};
+
 export type authControllerLoginResponseSuccess = authControllerLoginResponse200 & {
   headers: Headers;
 };
-export type authControllerLoginResponseError = authControllerLoginResponse401 & {
+export type authControllerLoginResponseError = (
+  | authControllerLoginResponse401
+  | authControllerLoginResponse403
+) & {
   headers: Headers;
 };
 
@@ -165,7 +173,10 @@ export const authControllerLogin = async (
   });
 };
 
-export const getAuthControllerLoginMutationOptions = <TError = void, TContext = unknown>(options?: {
+export const getAuthControllerLoginMutationOptions = <
+  TError = void | void,
+  TContext = unknown,
+>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof authControllerLogin>>,
     TError,
@@ -202,12 +213,12 @@ export type AuthControllerLoginMutationResult = NonNullable<
   Awaited<ReturnType<typeof authControllerLogin>>
 >;
 export type AuthControllerLoginMutationBody = LoginDto;
-export type AuthControllerLoginMutationError = void;
+export type AuthControllerLoginMutationError = void | void;
 
 /**
  * @summary Login with email and password
  */
-export const useAuthControllerLogin = <TError = void, TContext = unknown>(
+export const useAuthControllerLogin = <TError = void | void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof authControllerLogin>>,
@@ -225,6 +236,112 @@ export const useAuthControllerLogin = <TError = void, TContext = unknown>(
   TContext
 > => {
   const mutationOptions = getAuthControllerLoginMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
+ * @summary Verify email address
+ */
+export type authControllerVerifyEmailResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type authControllerVerifyEmailResponse400 = {
+  data: void;
+  status: 400;
+};
+
+export type authControllerVerifyEmailResponseSuccess = authControllerVerifyEmailResponse200 & {
+  headers: Headers;
+};
+export type authControllerVerifyEmailResponseError = authControllerVerifyEmailResponse400 & {
+  headers: Headers;
+};
+
+export type authControllerVerifyEmailResponse =
+  | authControllerVerifyEmailResponseSuccess
+  | authControllerVerifyEmailResponseError;
+
+export const getAuthControllerVerifyEmailUrl = () => {
+  return `/api/auth/verify-email`;
+};
+
+export const authControllerVerifyEmail = async (
+  verifyEmailDto: VerifyEmailDto,
+  options?: RequestInit
+): Promise<authControllerVerifyEmailResponse> => {
+  return customFetch<authControllerVerifyEmailResponse>(getAuthControllerVerifyEmailUrl(), {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(verifyEmailDto),
+  });
+};
+
+export const getAuthControllerVerifyEmailMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof authControllerVerifyEmail>>,
+    TError,
+    { data: VerifyEmailDto },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof authControllerVerifyEmail>>,
+  TError,
+  { data: VerifyEmailDto },
+  TContext
+> => {
+  const mutationKey = ['authControllerVerifyEmail'];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof authControllerVerifyEmail>>,
+    { data: VerifyEmailDto }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return authControllerVerifyEmail(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AuthControllerVerifyEmailMutationResult = NonNullable<
+  Awaited<ReturnType<typeof authControllerVerifyEmail>>
+>;
+export type AuthControllerVerifyEmailMutationBody = VerifyEmailDto;
+export type AuthControllerVerifyEmailMutationError = void;
+
+/**
+ * @summary Verify email address
+ */
+export const useAuthControllerVerifyEmail = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof authControllerVerifyEmail>>,
+      TError,
+      { data: VerifyEmailDto },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient
+): UseMutationResult<
+  Awaited<ReturnType<typeof authControllerVerifyEmail>>,
+  TError,
+  { data: VerifyEmailDto },
+  TContext
+> => {
+  const mutationOptions = getAuthControllerVerifyEmailMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };

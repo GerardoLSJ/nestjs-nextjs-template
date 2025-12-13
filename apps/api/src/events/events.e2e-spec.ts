@@ -5,12 +5,24 @@ import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 
 import { AppModule } from '../app/app.module';
+import { MailService } from '../mail/mail.service';
+
+// Mock MailService to prevent actual emails and capture the token
+const mailServiceMock = {
+  send: jest.fn().mockImplementation((options) => {
+    // Preventing actual email sending during E2E test setup
+    return Promise.resolve();
+  }),
+};
 
 // Helper function to setup test application
 async function setupTestApp() {
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
-  }).compile();
+  })
+    .overrideProvider(MailService)
+    .useValue(mailServiceMock)
+    .compile();
 
   const app = moduleFixture.createNestApplication();
   app.setGlobalPrefix('api');
@@ -24,17 +36,43 @@ async function setupTestApp() {
   return app;
 }
 
-// Helper function to register a test user
-async function registerTestUser(app: INestApplication, email: string, name: string) {
-  const response = await request(app.getHttpServer()).post('/api/auth/register').send({
+// Helper function to register, verify, and get auth token for a test user
+async function registerVerifyAndLoginUser(app: INestApplication, email: string, name: string) {
+  let capturedToken = '';
+
+  // 1. Set up token capture for this specific registration
+  const originalMock = mailServiceMock.send.getMockImplementation();
+  mailServiceMock.send.mockImplementation((options) => {
+    const match = options.html.match(/token=([a-fA-F0-9]+)/);
+    if (match && match[1]) {
+      capturedToken = match[1];
+    }
+    return Promise.resolve();
+  });
+
+  // 2. Register User
+  await request(app.getHttpServer()).post('/api/auth/register').send({
     email,
     name,
     password: 'password123',
   });
 
+  // 3. Restore mock
+  if (originalMock) {
+    mailServiceMock.send.mockImplementation(originalMock);
+  }
+
+  // 4. Verify User (auto-login: returns JWT + user)
+  const verifyResponse = await request(app.getHttpServer())
+    .post('/api/auth/verify-email')
+    .send({
+      token: capturedToken,
+    })
+    .expect(200);
+
   return {
-    token: response.body.accessToken,
-    userId: response.body.user.id,
+    token: verifyResponse.body.accessToken,
+    userId: verifyResponse.body.user.id,
   };
 }
 
@@ -51,13 +89,13 @@ describe('Events E2E Tests', () => {
   beforeAll(async () => {
     app = await setupTestApp();
 
-    // Register and login primary test user
-    const primaryUser = await registerTestUser(app, testEmail, 'Event Test User');
+    // Register, verify, and login primary test user
+    const primaryUser = await registerVerifyAndLoginUser(app, testEmail, 'Event Test User');
     authToken = primaryUser.token;
     userId = primaryUser.userId;
 
-    // Register and login second user for ownership tests
-    const otherUser = await registerTestUser(app, otherEmail, 'Other Test User');
+    // Register, verify, and login second user for ownership tests
+    const otherUser = await registerVerifyAndLoginUser(app, otherEmail, 'Other Test User');
     otherUserToken = otherUser.token;
   });
 

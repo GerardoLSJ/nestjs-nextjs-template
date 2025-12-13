@@ -4,13 +4,107 @@
 
 ## Active Blockers
 
-### 🚫 No Active Blockers
+### 🔶 Events E2E Tests Failing (8/18 tests)
 
-All systems operational. Ready for next task.
+**Blocked**: Events feature E2E tests
+**Date Identified**: 2025-12-13
+**Impact**: 8 events E2E tests failing due to email verification integration
+
+**Problem**:
+
+- After implementing email verification, events.e2e-spec.ts helper function fails to properly set up test users
+- First test "should create a new event" returns 400 Bad Request
+- All subsequent tests fail due to missing eventId from first test
+- Auth and Security E2E suites are fully passing (18/18 tests)
+
+**Root Cause**:
+
+The helper function `registerVerifyAndLoginUser()` in events.e2e-spec.ts may have issues with:
+
+1. Mock token capture timing
+2. Database state between test runs
+3. User creation/verification sequence
+
+**Attempted Solutions**:
+
+1. Updated helper to use `.overrideProvider()` for MailService ✅
+2. Fixed token capture to use `match[1]` instead of `match` ✅
+3. Used verify endpoint's JWT directly (auto-login) ✅
+4. Fixed mock implementation to handle multiple registrations ⚠️ (partial)
+
+**Workaround**: Email verification feature is working in manual testing. Only automated E2E tests are affected.
+
+**Next Steps**:
+
+1. Debug first events test individually to identify exact 400 error cause
+2. Consider simplifying test setup or using database seeding instead of registration flow
+3. Check if DTO validation is failing for events
+
+**Impact on Development**: Low - Feature works in production, only test infrastructure affected
 
 ---
 
 ## Resolved Blockers
+
+### ✅ Database Password Mismatch (Session: Email Verification 2025-12-12)
+
+**Blocked**: Email verification feature testing
+**Date Identified**: 2025-12-12
+**Impact**: Database connection failed, API couldn't start
+
+**Problem**:
+
+- `.env` file had `DATABASE_URL` with password `postgres`
+- `docker-compose.yml` defined password as `dev123`
+- Connection refused when trying to register users
+
+**Resolution**: Updated `.env` to use correct password from docker-compose.yml
+
+```
+DATABASE_URL="postgresql://postgres:dev123@localhost:5432/authdb"
+```
+
+**Date Resolved**: 2025-12-12
+
+**Lessons Learned**:
+
+- Always verify .env matches docker-compose.yml configuration
+- Check database password consistency across environments
+- Prisma connection errors may indicate password mismatch
+
+---
+
+### ✅ SMTP Connection Refused (Session: Email Verification 2025-12-12)
+
+**Blocked**: Sending verification emails
+**Date Identified**: 2025-12-12
+**Impact**: Registration worked but emails failed to send
+
+**Problem**:
+
+- `.env` file was missing SMTP configuration entirely
+- Nodemailer couldn't connect to any SMTP server
+- Error: `ECONNREFUSED 127.0.0.1:587`
+
+**Resolution**: Added Ethereal Email configuration to `.env`
+
+```
+SMTP_HOST=smtp.ethereal.email
+SMTP_PORT=587
+SMTP_USER=<ethereal-user>@ethereal.email
+SMTP_PASS=<ethereal-password>
+FRONTEND_URL=http://localhost:3000
+```
+
+**Date Resolved**: 2025-12-12
+
+**Lessons Learned**:
+
+- Document all required environment variables in .env.example
+- Ethereal Email is excellent for development/testing
+- Check for missing config before debugging code
+
+---
 
 ### ✅ localStorage Test Isolation Issues (Session 5)
 

@@ -7,12 +7,23 @@ import request from 'supertest';
 
 import { AppModule } from '../app/app.module';
 import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
+import { MailService } from '../mail/mail.service';
+
+// Mock MailService to prevent actual emails and capture the token
+const mailServiceMock = {
+  send: jest.fn().mockImplementation((options) => {
+    return Promise.resolve();
+  }),
+};
 
 // Helper function to setup test application with security middleware
 async function setupTestApp() {
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
-  }).compile();
+  })
+    .overrideProvider(MailService)
+    .useValue(mailServiceMock)
+    .compile();
 
   const app = moduleFixture.createNestApplication();
 
@@ -117,10 +128,21 @@ describe('Security E2E Tests', () => {
 
   describe('Rate Limiting', () => {
     it('should allow requests within rate limit', async () => {
-      // Register a new user (should succeed)
+      // Register a new user and get an access token after verification
       const testEmail = `rate-limit-test-${Date.now()}@example.com`;
+      let capturedToken = '';
 
-      const response = await request(app.getHttpServer())
+      // 1. Mock MailService for this run to capture the token
+      mailServiceMock.send.mockImplementationOnce((options) => {
+        const match = options.html.match(/token=([a-fA-F0-9]+)/);
+        if (match && match[1]) {
+          capturedToken = match[1];
+        }
+        return Promise.resolve();
+      });
+
+      // 2. Register User (Receives NO token)
+      await request(app.getHttpServer())
         .post('/api/auth/register')
         .send({
           email: testEmail,
@@ -129,7 +151,15 @@ describe('Security E2E Tests', () => {
         })
         .expect(201);
 
-      expect(response.body).toHaveProperty('accessToken');
+      // 3. Verify User (Receives the accessToken)
+      const verifyResponse = await request(app.getHttpServer())
+        .post('/api/auth/verify-email')
+        .send({
+          token: capturedToken,
+        })
+        .expect(200);
+
+      expect(verifyResponse.body).toHaveProperty('accessToken');
     });
 
     it('should apply rate limiting to protected endpoints', async () => {

@@ -10,6 +10,7 @@ import configuration from '../config/configuration';
 import { validationSchema } from '../config/validation';
 import { DatabaseModule } from '../database/database.module';
 import { EventsModule } from '../events/events.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { EventsModule } from '../events/events.module';
     DatabaseModule,
     AuthModule,
     EventsModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [

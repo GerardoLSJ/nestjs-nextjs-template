@@ -1,11 +1,11 @@
 # Deployment & Infrastructure
 
-<!-- @confidence: 0.75 -->
-<!-- @verified: 2024-12-09 -->
+<!-- @confidence: 0.9 -->
+<!-- @verified: 2025-12-11 -->
 <!-- @source: manual-audit -->
 
-> **Trigger Keywords**: deploy, deployment, azure, docker, container, ci/cd, infrastructure, production, staging
-> **~1200 tokens** | Last Updated: 2024-12-09
+> **Trigger Keywords**: deploy, deployment, azure, docker, container, ci/cd, infrastructure, production, staging, logs, monitoring
+> **~1800 tokens** | Last Updated: 2025-12-11
 
 ## Architecture
 
@@ -162,6 +162,110 @@ az postgres flexible-server create \
   --tier Burstable --sku-name Standard_B1ms \
   --storage-size 32 --version 16 \
   --admin-user adminuser --admin-password <PASSWORD>
+```
+
+## Logging & Monitoring
+
+### Azure CLI - Container App Logs
+
+#### Stream Real-time Logs
+
+```bash
+az containerapp logs show \
+  --name authapp-dev-api \
+  --resource-group rg-authapp-dev-westus3 \
+  --follow
+```
+
+The `--follow` flag streams logs in real-time (like `tail -f`).
+
+#### Get Recent Logs
+
+```bash
+# Get last 100 lines
+az containerapp logs show \
+  --name authapp-dev-api \
+  --resource-group rg-authapp-dev-westus3 \
+  --tail 100
+```
+
+#### Logs from Specific Revision
+
+```bash
+# List revisions first
+az containerapp revision list \
+  --name authapp-dev-api \
+  --resource-group rg-authapp-dev-westus3 \
+  --query "[].{Name:name, Active:properties.active}" -o table
+
+# Get logs from specific revision
+az containerapp logs show \
+  --name authapp-dev-api \
+  --resource-group rg-authapp-dev-westus3 \
+  --revision <revision-name>
+```
+
+#### Logs from Specific Container (if multiple containers)
+
+```bash
+az containerapp logs show \
+  --name authapp-dev-api \
+  --resource-group rg-authapp-dev-westus3 \
+  --container <container-name>
+```
+
+### Azure Portal Access
+
+#### Log Stream (Real-time)
+
+1. **Azure Portal** → Search "**authapp-dev-api**"
+2. Left sidebar → **Log stream**
+3. View real-time console output from NestJS application
+
+#### Application Insights (if configured)
+
+1. Go to Container App → **Application Insights**
+2. Select resource
+3. Available views:
+   - **Live Metrics** - Real-time performance
+   - **Failures** - Exceptions and errors
+   - **Performance** - Response times
+   - **Logs** - KQL queries for detailed analysis
+
+#### Log Analytics Queries
+
+```kusto
+ContainerAppConsoleLogs_CL
+| where ContainerAppName_s == "authapp-dev-api"
+| where TimeGenerated > ago(1h)
+| order by TimeGenerated desc
+```
+
+Common Application Insights queries:
+
+```kusto
+requests | where timestamp > ago(1h)
+exceptions | where timestamp > ago(1h)
+traces | where timestamp > ago(1h)
+```
+
+### Quick Troubleshooting
+
+| Issue                   | Solution                                    |
+| ----------------------- | ------------------------------------------- |
+| Need to debug quickly   | Use `--follow` flag for real-time streaming |
+| Looking for errors      | Use Application Insights → Failures         |
+| Performance issues      | Application Insights → Performance          |
+| Historical analysis     | Log Analytics with KQL queries              |
+| Deployment verification | Check last 50 lines: `--tail 50`            |
+
+### Check Container App Status
+
+```bash
+az containerapp show \
+  --name authapp-dev-api \
+  --resource-group rg-authapp-dev-westus3 \
+  --query "{Name:name, Status:properties.provisioningState, FQDN:properties.configuration.ingress.fqdn}"
 ```
 
 ## Cost Optimization
