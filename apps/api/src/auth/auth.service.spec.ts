@@ -1,10 +1,12 @@
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as bcrypt from 'bcryptjs';
 
 import { AuthService } from './auth.service';
 import { PrismaService } from '../database/prisma.service';
+import { MailService } from '../mail/mail.service';
 
 jest.mock('bcryptjs');
 
@@ -45,13 +47,13 @@ describe('AuthService', () => {
           },
         },
         {
-          provide: 'MailService',
+          provide: MailService,
           useValue: {
             send: jest.fn().mockResolvedValue(undefined),
           },
         },
         {
-          provide: 'ConfigService',
+          provide: ConfigService,
           useValue: {
             get: jest.fn().mockReturnValue('http://localhost:3000'),
           },
