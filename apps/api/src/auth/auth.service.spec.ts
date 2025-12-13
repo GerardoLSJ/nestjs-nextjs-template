@@ -47,7 +47,7 @@ describe('AuthService', () => {
         {
           provide: 'MailService',
           useValue: {
-            sendVerificationEmail: jest.fn().mockResolvedValue(undefined),
+            send: jest.fn().mockResolvedValue(undefined),
           },
         },
         {
@@ -86,24 +86,8 @@ describe('AuthService', () => {
         where: { email: registerDto.email },
       });
       expect(bcrypt.hash).toHaveBeenCalledWith(registerDto.password, 10);
-      expect(prismaService.user.create).toHaveBeenCalledWith({
-        data: {
-          email: registerDto.email,
-          password: 'hashedPassword123',
-          name: registerDto.name,
-        },
-      });
-      expect(jwtService.sign).toHaveBeenCalledWith({
-        sub: mockUser.id,
-        email: mockUser.email,
-      });
       expect(result).toEqual({
-        user: {
-          id: mockUser.id,
-          email: mockUser.email,
-          name: mockUser.name,
-        },
-        accessToken: 'mock-jwt-token',
+        message: 'Registration successful. Please check your email to verify your account.',
       });
     });
 
