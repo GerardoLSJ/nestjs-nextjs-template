@@ -3,10 +3,13 @@ const { join } = require('path');
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 
 const outputPath = join(__dirname, '../../dist/apps/api');
-const isProduction = process.env.NODE_ENV === 'production';
+// Check multiple ways to detect production mode
+const isProduction =
+  process.env.NODE_ENV === 'production' || process.env.NX_TASK_TARGET_TARGET === 'production';
 
 console.log('[Webpack Config] Loading webpack config...');
 console.log('[Webpack Config] NODE_ENV:', process.env.NODE_ENV);
+console.log('[Webpack Config] NX_TASK_TARGET_TARGET:', process.env.NX_TASK_TARGET_TARGET);
 console.log('[Webpack Config] isProduction:', isProduction);
 console.log('[Webpack Config] Output path:', outputPath);
 
