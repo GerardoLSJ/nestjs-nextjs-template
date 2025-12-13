@@ -18,6 +18,9 @@ describe('AuthService', () => {
     email: 'test@example.com',
     password: 'hashedPassword123',
     name: 'Test User',
+    isEmailVerified: true,
+    verificationToken: null,
+    verificationTokenExp: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -39,6 +42,18 @@ describe('AuthService', () => {
           provide: JwtService,
           useValue: {
             sign: jest.fn().mockReturnValue('mock-jwt-token'),
+          },
+        },
+        {
+          provide: 'MailService',
+          useValue: {
+            sendVerificationEmail: jest.fn().mockResolvedValue(undefined),
+          },
+        },
+        {
+          provide: 'ConfigService',
+          useValue: {
+            get: jest.fn().mockReturnValue('http://localhost:3000'),
           },
         },
       ],
